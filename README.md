@@ -1,8 +1,8 @@
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/dbuezas)
 
-# ICSee ptz control integration for Home Assistant
+# ICSee PTZ control integration for Home Assistant
 
-Home Assistant integration to send ptz commands to ICSee/DVR-IP/NetSurveillance/Sofia cameras
+Home Assistant integration to send ptz commands to ICSee/DVR-IP/NetSurveillance/Sofia cameras.
 
 # Installation
 
@@ -25,7 +25,9 @@ This integration exposes two new services. Test them from the [![Developer Tools
 - icsee_ptz.move: move, zoom and set/goto preseets.
 - icsee_ptz.synchronize_clock: updates the camera's clock.
 
-# Usage in WebRTC card:
+# Usage in [WebRTC card](https://github.com/AlexxIT/WebRTC):
+
+![image](https://github.com/dbuezas/icsee-ptz/assets/777196/36674140-11bf-438c-ba68-159a9d422158)
 
 ```yaml
 type: custom:webrtc-camera
@@ -97,4 +99,16 @@ ptz:
     move_time: 1
     step: 10
     cmd: DirectionDown
+```
+
+# Video stream from [go2rtc](https://github.com/AlexxIT/go2rtc)
+
+```yaml
+# go2rtc.yaml
+streams:
+  camara:
+    - dvrip://admin:camarablanca3@192.168.178.27:34567?channel=0&subtype=0
+  if_you_dont_get_video_or_audio:
+    - dvrip://admin:camarablanca3@192.168.178.27:34567?channel=0&subtype=0
+    - ffmpeg:antena#video=h264#hardware#audio=copy
 ```
