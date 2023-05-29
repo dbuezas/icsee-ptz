@@ -1,0 +1,102 @@
+move:
+  description: "Move an ICSee/DVR-IP/NetSurveillance/Sofia camera"
+  fields:
+    host:
+      description: "Local ip address of the camera (without http: //)"
+      example: "192.168.178.27"
+      default: "192.168.178.27"
+      required: true
+      selector:
+        text:
+    username:
+      description: "Username"
+      default: "admin"
+      selector:
+        text:
+    password:
+      description: "Password (Required)"
+      example: "my_cam_password"
+      selector:
+        text:
+      required: true
+    cmd:
+      description: "Command (Required)"
+      example: "DirectionUp"
+      default: "DirectionUp"
+      required: true
+      selector:
+        select:
+          options:
+            - DirectionUp
+            - DirectionDown
+            - DirectionLeft
+            - DirectionRight
+            - DirectionLeftUp
+            - DirectionLeftDown
+            - DirectionRightUp
+            - DirectionRightDown
+            - ZoomTile
+            - ZoomWide
+            - FocusNear
+            - FocusFar
+            - IrisSmall
+            - IrisLarge
+            - SetPreset
+            - GotoPreset
+            - ClearPreset
+            - StartTour
+            - StopTour
+
+    move_time:
+      description: "Duration time of camera movement in seeconds"
+      default: 0.3
+      selector:
+        number:
+          min: 0
+          max: 10
+          step: .1
+    channel:
+      description: "Channel"
+      default: 0
+      selector:
+        number:
+          mode: box
+          min: 0
+          max: 2
+    step:
+      description: "Movement speed"
+      default: 2
+      selector:
+        number:
+          min: 0
+          max: 10
+    preset:
+      description: Only applicable to SetPreset and GotoPreset
+      default: 0
+      selector:
+        number:
+          mode: box
+          min: 0
+          max: 100
+
+synchronize_clock:
+  description: "Synchronize camera clock"
+  fields:
+    host:
+      description: "Local ip address of the camera (without http: //)"
+      example: "192.168.178.27"
+      default: "192.168.178.27"
+      selector:
+        text:
+      required: true
+    username:
+      description: "Username"
+      example: "admin"
+      selector:
+        text:
+    password:
+      description: "Password"
+      example: "my_cam_password"
+      selector:
+        text:
+      required: true

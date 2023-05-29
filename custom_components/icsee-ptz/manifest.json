@@ -1,0 +1,10 @@
+{
+  "domain": "icsee_ptz",
+  "name": "ICSee",
+  "config_flow": false,
+  "documentation": "https://github.com/dbuezas/icsee_ptz",
+  "requirements": ["python-dvr"],
+  "dependencies": [],
+  "codeowners": "@dbuezas",
+  "version": "1.0.0"
+}
