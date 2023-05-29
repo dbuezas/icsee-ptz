@@ -4,6 +4,8 @@
 
 Home Assistant integration to send ptz commands to ICSee/DVR-IP/NetSurveillance/Sofia cameras.
 
+It can also set presets and recall them and synchronize the camera clock.
+
 # Installation
 
 ~~Method 1. HACS > Integrations > Plus > WebRTC > Install~~ (**not yet possible**)
@@ -23,7 +25,9 @@ icsee_ptz:
 This integration exposes two new services. Test them from the [![Developer Tools / Services.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
 
 - icsee_ptz.move: move, zoom and set/goto preseets.
+![image](https://github.com/dbuezas/icsee-ptz/assets/777196/14ec2cb6-ef39-4249-aa63-e7044a2d6221)
 - icsee_ptz.synchronize_clock: updates the camera's clock.
+![image](https://github.com/dbuezas/icsee-ptz/assets/777196/ec114a00-8b78-4a3c-82cb-27807266be49)
 
 # Usage in [WebRTC card](https://github.com/AlexxIT/WebRTC):
 
@@ -112,3 +116,8 @@ streams:
     - dvrip://admin:camarablanca3@192.168.178.27:34567?channel=0&subtype=0
     - ffmpeg:antena#video=h264#hardware#audio=copy
 ```
+
+# Miscelaneous
+
+From a windows computer, you can configure the fps and encoding params of ICSee cameras. I increased the fps from 12 to 30 and changed the color profile from 2 to 1 and they work really nicely.
+Here's a video that shows the software involved: https://www.youtube.com/watch?v=KFX47EUpP24
