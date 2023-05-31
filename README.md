@@ -106,5 +106,5 @@ streams:
 
 # Miscelaneous
 
-From a windows computer and that old software, you can configure the fps and encoding params of ICSee cameras. I suggest you increase the fps from 12 to 30 and change the color profile from 2 to 1, they feel like better cameras. 
+With https://xmeye.org/xmeye-for-pc/ you can configure the fps and encoding params of ICSee cameras. I suggest you increase the fps from 12 to 30 and change the color profile from 2 to 1, they feel like better cameras.
 Here's a video that shows the software involved: https://www.youtube.com/watch?v=KFX47EUpP24
