@@ -18,6 +18,11 @@ Add this to your `configuration.yaml`
 
 ```yaml
 icsee_ptz:
+  my_cam_1:
+    host: 192.168.178.27
+    password: my_cam_password
+    move_time: 1
+    step: 10
 ```
 
 # Usage
@@ -45,66 +50,45 @@ shortcuts:
       icon: mdi:clock-check
       service: icsee_ptz.synchronize_clock
       service_data:
-        host: 192.168.178.27
-        password: camarablanca3
+        camera: my_cam_1
     - name: Record
       icon: mdi:floppy
       service: icsee_ptz.move
       service_data:
-        host: 192.168.178.27
+        camera: my_cam_1
         cmd: SetPreset
         preset: 2
-        password: camarablanca3
     - name: Record
       icon: mdi:backup-restore
       service: icsee_ptz.move
       service_data:
-        host: 192.168.178.27
+        camera: my_cam_1
         cmd: GotoPreset
         preset: 2
-        password: camarablanca3
 ptz:
   service: icsee_ptz.move
   data_home:
-    host: 192.168.178.27
+    camera: my_cam_1
     cmd: GotoPreset
     preset: 1
-    password: camarablanca3
   data_zoom_in:
-    host: 192.168.178.27
-    password: camarablanca3
-    move_time: 1
-    step: 10
+    camera: my_cam_1
     cmd: ZoomTile
   data_zoom_out:
-    host: 192.168.178.27
-    password: camarablanca3
-    move_time: 1
-    step: 10
+    camera: my_cam_1
     cmd: ZoomFar
   data_left:
-    host: 192.168.178.27
-    password: camarablanca3
-    move_time: 1
-    step: 10
+    camera: my_cam_1
     cmd: DirectionRight
   data_right:
-    host: 192.168.178.27
-    password: camarablanca3
-    move_time: 1
-    step: 10
+    camera: my_cam_1
     cmd: DirectionLeft
   data_up:
-    host: 192.168.178.27
-    password: camarablanca3
-    move_time: 1
-    step: 10
+    camera: my_cam_1
     cmd: DirectionUp
   data_down:
-    host: 192.168.178.27
-    password: camarablanca3
-    move_time: 1
-    step: 10
+    camera: my_cam_1
+    step: 5 # this overrides the default in the configuration.yaml
     cmd: DirectionDown
 ```
 
@@ -114,9 +98,9 @@ ptz:
 # go2rtc.yaml
 streams:
   camara:
-    - dvrip://admin:camarablanca3@192.168.178.27:34567?channel=0&subtype=0
+    - dvrip://admin:my_cam_password@192.168.178.27:34567
   if_you_dont_get_video_or_audio:
-    - dvrip://admin:camarablanca3@192.168.178.27:34567?channel=0&subtype=0
+    - dvrip://admin:my_cam_password@192.168.178.27:34567
     - ffmpeg:antena#video=h264#hardware#audio=copy
 ```
 
