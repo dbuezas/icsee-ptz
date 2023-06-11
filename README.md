@@ -2,7 +2,7 @@
 
 # ICSee PTZ control integration for Home Assistant
 
-Home Assistant integration to send ptz commands to ICSee/DVR-IP/NetSurveillance/Sofia cameras.
+Home Assistant integration to send ptz commands to ICSee/XMEye/DVR-IP/NetSurveillance/Sofia cameras.
 
 It can also set presets and recall them and synchronize the camera clock.
 
