@@ -2,28 +2,16 @@ move:
   description: "Move an ICSee/DVR-IP/NetSurveillance/Sofia camera"
   fields:
     camera:
-      description: "Camera name from the configuration.yaml."
+      description: "Camera name from the configuration.yaml"
       example: "my_camera"
-    host:
-      description: "Local ip address of the camera (without http: //)"
-      example: "192.168.178.27"
-      default: "192.168.178.27"
       selector:
         text:
-    username:
-      description: "Username"
-      default: "admin"
-      selector:
-        text:
-    password:
-      description: "Password (Required)"
-      example: "my_cam_password"
-      selector:
-        text:
+      required: true
     cmd:
-      description: "Command (Required)"
+      description: "Command"
       example: "DirectionUp"
       default: "DirectionUp"
+      required: true
       selector:
         select:
           options:
@@ -85,19 +73,6 @@ synchronize_clock:
     camera:
       description: "Camera name from the configuration.yaml"
       example: "my_camera"
-    host:
-      description: "Local ip address of the camera (without http: //)"
-      example: "192.168.178.27"
-      default: "192.168.178.27"
       selector:
         text:
-    username:
-      description: "Username"
-      example: "admin"
-      selector:
-        text:
-    password:
-      description: "Password"
-      example: "my_cam_password"
-      selector:
-        text:
+      required: true

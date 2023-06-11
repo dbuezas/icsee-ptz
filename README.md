@@ -8,7 +8,7 @@ It can also set presets and recall them and synchronize the camera clock.
 
 # Installation
 
-~~Method 1. HACS > Integrations > Plus > WebRTC > Install~~ (**not yet possible**)
+~~Method 1. HACS > Integrations > Plus > ICSee-PTZ > Install~~ (**not yet possible**)
 
 Method 2. Manually copy icsee-ptz folder from latest release to /config/custom_components folder.
 
@@ -99,9 +99,12 @@ ptz:
 streams:
   camara:
     - dvrip://admin:my_cam_password@192.168.178.27:34567
-  if_you_dont_get_video_or_audio:
-    - dvrip://admin:my_cam_password@192.168.178.27:34567
-    - ffmpeg:antena#video=h264#hardware#audio=copy
+  camara_fix_chopiness: # try this if the video or audio are choppy (don't remove the one above)
+    - ffmpeg:camara#audio=opus#async
+    - ffmpeg:camara#video=copy#async
+  camara_fix_no_video: # try this if the camera outputs h265 and your browser doesn't show video
+    - ffmpeg:camara#audio=opus#async
+    - ffmpeg:camara#video=h264#async
 ```
 
 # Miscelaneous
