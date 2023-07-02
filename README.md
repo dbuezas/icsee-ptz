@@ -46,21 +46,28 @@ type: custom:webrtc-camera
 url: camarablanca
 shortcuts:
   services:
-    - name: Record
+    - name: Synch clock
       icon: mdi:clock-check
       service: icsee_ptz.synchronize_clock
       service_data:
         camera: my_cam_1
-    - name: Record
+    - name: Set preset
       icon: mdi:floppy
       service: icsee_ptz.move
       service_data:
         camera: my_cam_1
         cmd: SetPreset
         preset: 2
-    - name: Record
+    - name: Go to preset
       icon: mdi:backup-restore
       service: icsee_ptz.move
+      service_data:
+        camera: my_cam_1
+        cmd: GotoPreset
+        preset: 2
+    - name: Go to preset
+      icon: mdi:play
+      service: icsee_ptz.force_frame
       service_data:
         camera: my_cam_1
         cmd: GotoPreset

@@ -76,3 +76,12 @@ synchronize_clock:
       selector:
         text:
       required: true
+force_frame:
+  description: "Force the camera to send a new frame. Useful to speed up video start"
+  fields:
+    camera:
+      description: "Camera name from the configuration.yaml"
+      example: "my_camera"
+      selector:
+        text:
+      required: true

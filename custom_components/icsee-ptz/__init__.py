@@ -99,7 +99,20 @@ def setup(hass, config):
         cam.set_time()
         cam.close()
 
+    def force_frame(call):
+        camera = call.data.get("camera", "")
+        conf = config[DOMAIN].get(camera, {})
+        host = call.data.get("host", conf.get("host", ""))
+        password = call.data.get("password", conf.get("password", ""))
+        username = call.data.get("username", conf.get("username", "admin"))
+
+        cam = DVRIPCam(host, user=username, password=password)
+        cam.login()
+        cam.start_monitor()
+        cam.close()
+
     hass.services.register(DOMAIN, "move", move)
     hass.services.register(DOMAIN, "synchronize_clock", synchronize_clock)
+    hass.services.register(DOMAIN, "force_frame", force_frame)
 
     return True
