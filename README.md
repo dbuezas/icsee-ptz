@@ -17,13 +17,18 @@ Method 2. Manually copy icsee-ptz folder from latest release to /config/custom_c
 Add this to your `configuration.yaml`
 
 ```yaml
+# configuration.yaml
 icsee_ptz:
-  my_cam_1:
+  my_dvrip_camera:
     host: 192.168.178.27
     password: my_cam_password
-    move_time: 1
-    step: 10
+    step: 10 # speed
+    move_time: 10
 ```
+
+Requires:
+
+- WebRTC integration v3.2.0 - 2023-07-11
 
 # Usage
 
@@ -42,61 +47,63 @@ This integration exposes two new services. Test them from the [![Developer Tools
 <img src="https://github.com/dbuezas/icsee-ptz/assets/777196/36674140-11bf-438c-ba68-159a9d422158"  width="350">
 
 ```yaml
+# lovelace card
 type: custom:webrtc-camera
-url: camarablanca
+url: my_dvrip_camera
+muted: false
+intersection: 0
+ui: true
+digital_ptz: null
 shortcuts:
   services:
-    - name: Synch clock
+    - name: Sync
       icon: mdi:clock-check
       service: icsee_ptz.synchronize_clock
       service_data:
-        camera: my_cam_1
-    - name: Set preset
-      icon: mdi:floppy
-      service: icsee_ptz.move
-      service_data:
-        camera: my_cam_1
-        cmd: SetPreset
-        preset: 2
-    - name: Go to preset
-      icon: mdi:backup-restore
-      service: icsee_ptz.move
-      service_data:
-        camera: my_cam_1
-        cmd: GotoPreset
-        preset: 2
-    - name: Go to preset
+        camera: my_dvrip_camera
+    - name: Force frame # force keyframe
       icon: mdi:play
       service: icsee_ptz.force_frame
       service_data:
-        camera: my_cam_1
-        cmd: GotoPreset
-        preset: 2
+        camera: my_dvrip_camera
 ptz:
   service: icsee_ptz.move
   data_home:
-    camera: my_cam_1
+    camera: my_dvrip_camera
     cmd: GotoPreset
-    preset: 1
-  data_zoom_in:
-    camera: my_cam_1
-    cmd: ZoomTile
-  data_zoom_out:
-    camera: my_cam_1
-    cmd: ZoomFar
-  data_left:
-    camera: my_cam_1
-    cmd: DirectionRight
-  data_right:
-    camera: my_cam_1
+    preset: 0
+  data_long_home:
+    camera: my_dvrip_camera
+    cmd: SetPreset
+    preset: 0
+  data_start_left:
+    camera: my_dvrip_camera
     cmd: DirectionLeft
-  data_up:
-    camera: my_cam_1
+  data_end_left:
+    camera: my_dvrip_camera
+    cmd: DirectionLeft
+    move_time: 0
+  data_start_right:
+    camera: my_dvrip_camera
+    cmd: DirectionRight
+  data_end_right:
+    camera: my_dvrip_camera
+    cmd: DirectionRight
+    move_time: 0
+  data_start_up:
+    camera: my_dvrip_camera
     cmd: DirectionUp
-  data_down:
-    camera: my_cam_1
-    step: 5 # this overrides the default in the configuration.yaml
+  data_end_up:
+    camera: my_dvrip_camera
+    cmd: DirectionUp
+    move_time: 0
+  data_start_down:
+    camera: my_dvrip_camera
     cmd: DirectionDown
+  data_end_down:
+    camera: my_dvrip_camera
+    cmd: DirectionDown
+    move_time: 0
 ```
 
 # Video stream from [go2rtc](https://github.com/AlexxIT/go2rtc)
@@ -104,17 +111,23 @@ ptz:
 ```yaml
 # go2rtc.yaml
 streams:
-  camara:
-    - dvrip://admin:my_cam_password@192.168.178.27:34567
-  camara_fix_chopiness: # try this if the video or audio are choppy (don't remove the one above)
-    - ffmpeg:camara#audio=opus#async
-    - ffmpeg:camara#video=copy#async
-  camara_fix_no_video: # try this if the camera outputs h265 and your browser doesn't show video
-    - ffmpeg:camara#audio=opus#async
-    - ffmpeg:camara#video=h264#async
+  my_dvrip_camera: dvrip://admin:my_cam_password@192.168.178.27:34567
 ```
 
 # Miscelaneous
 
-With https://xmeye.org/xmeye-for-pc/ you can configure the fps and encoding params of ICSee cameras. I suggest you increase the fps from 12 to 30 and change the color profile from 2 to 1, they feel like better cameras.
-Here's a video that shows the software involved: https://www.youtube.com/watch?v=KFX47EUpP24
+With https://xmeye.org/xmeye-for-pc/ you can configure the fps and encoding params of ICSee cameras.
+
+## Recommended configuration:
+
+in `device config` / `encode config` select:
+
+- fps: 30 (maximum available)
+- Iframe interval: 1 (minimum available)
+- Static encode config: high profile
+- H264+ enable: disabled
+
+in `device config` / `camera param` select:
+
+- Clear fog: ON
+- Level: 100
