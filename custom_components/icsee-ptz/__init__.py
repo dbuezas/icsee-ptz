@@ -27,13 +27,13 @@ def get_q(
         def runner():
             cam = DVRIPCam(host, user=user, password=password)
             try:
-                _LOGGER.warn("logging in")
+                _LOGGER.debug("logging in")
                 cam.login()
                 while True:
-                    task = q.get(timeout=5)
+                    task = q.get(timeout=15)
                     task(cam)
             finally:
-                _LOGGER.warn("closing")
+                _LOGGER.debug("closing")
                 queues.pop(key)
                 cam.close()
 
@@ -108,8 +108,13 @@ def setup(hass, config):
 
         cam = DVRIPCam(host, user=username, password=password)
         cam.login()
-        cam.start_monitor()
-        cam.close()
+
+        def callback(*args):
+            cam.stop_monitor()
+        try:
+            cam.start_monitor(callback)
+        finally:
+            cam.close()
 
     hass.services.register(DOMAIN, "move", move)
     hass.services.register(DOMAIN, "synchronize_clock", synchronize_clock)
