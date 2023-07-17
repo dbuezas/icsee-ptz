@@ -31,7 +31,9 @@ Then, you can use the provided entity in your automations.
 
 <img width="350" alt="image" src="https://github.com/dbuezas/icsee-ptz/assets/777196/06ef6fd4-e04c-4c06-83e1-724db6d65b05">
 
-## icsee_ptz.move: move, zoom and set/goto preseets.
+## Pan, tilt, zoom (PTZ)
+
+icsee_ptz.move: move, zoom and set/goto preseets.
 
 Requires:
 
@@ -41,6 +43,29 @@ Requires:
 Test PTZ control from [![Developer Tools / Services.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
 
 <img width="350" alt="image" src="https://github.com/dbuezas/icsee-ptz/assets/777196/18941eed-c370-428d-b2fd-31db13a21bc7">
+
+## Example automation
+
+```yaml
+alias: Notify camera motion alarm
+description: ""
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.garden_motion_alarm
+    to: "on"
+condition: []
+action:
+  - service: notify.mobile_app_pixel_7
+    data:
+      message: TTS
+      data:
+        tts_text: Attention: motion detected in garden
+        ttl: 0
+        priority: high
+mode: single
+
+```
 
 # Usage in [WebRTC card](https://github.com/AlexxIT/WebRTC):
 
