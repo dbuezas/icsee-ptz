@@ -14,33 +14,33 @@ Method 2. Manually copy icsee-ptz folder from latest release to /config/custom_c
 
 # Configuration
 
-Add this to your `configuration.yaml`
+Go to the integration and add an entry for each of your cameras
 
-```yaml
-# configuration.yaml
-icsee_ptz:
-  my_dvrip_camera:
-    host: 192.168.178.27
-    password: my_cam_password
-    step: 10 # speed
-    move_time: 10
-```
+[![Open your Home Assistant instance and show an integration.](https://my.home-assistant.io/badges/integration.svg)](https://my.home-assistant.io/redirect/integration/?domain=icsee_ptz)
+
+<img width="447" alt="image" src="https://github.com/dbuezas/icsee-ptz/assets/777196/1853de8a-85c1-4578-8932-11a0923d4dd8" width="350">
+
+# Usage
+
+This integration exposes services for PTZ and a motion alarm entity. 
+
+## Motion alarm
+
+First make sure to enable and configure motion alarms in the standard camera application (e.g ICSee or XMEye).
+Then, you can use the provided entity in your automations.
+
+<img width="350" alt="image" src="https://github.com/dbuezas/icsee-ptz/assets/777196/06ef6fd4-e04c-4c06-83e1-724db6d65b05">
+
+## icsee_ptz.move: move, zoom and set/goto preseets.
 
 Requires:
 
 - WebRTC integration v3.2.0 - 2023-07-11
 
-# Usage
 
-This integration exposes two new services. Test them from the [![Developer Tools / Services.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
+Test PTZ control from [![Developer Tools / Services.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
 
-## icsee_ptz.move: move, zoom and set/goto preseets.
-
-<img src="https://github.com/dbuezas/icsee-ptz/assets/777196/14ec2cb6-ef39-4249-aa63-e7044a2d6221"  width="350">
-
-## icsee_ptz.synchronize_clock: updates the camera's clock.
-
-<img src="https://github.com/dbuezas/icsee-ptz/assets/777196/ec114a00-8b78-4a3c-82cb-27807266be49"  width="350">
+<img width="350" alt="image" src="https://github.com/dbuezas/icsee-ptz/assets/777196/18941eed-c370-428d-b2fd-31db13a21bc7">
 
 # Usage in [WebRTC card](https://github.com/AlexxIT/WebRTC):
 
@@ -49,61 +49,55 @@ This integration exposes two new services. Test them from the [![Developer Tools
 ```yaml
 # lovelace card
 type: custom:webrtc-camera
-url: my_dvrip_camera
-muted: false
-intersection: 0
+url: garden_dvrip
 ui: true
-digital_ptz: null
 shortcuts:
   services:
     - name: Sync
       icon: mdi:clock-check
       service: icsee_ptz.synchronize_clock
       service_data:
-        camera: my_dvrip_camera
-    - name: Force frame # force keyframe
+        entity_id: binary_sensor.garten_motion_alarm
+    - name: Force frame
       icon: mdi:play
       service: icsee_ptz.force_frame
       service_data:
-        camera: my_dvrip_camera
+        entity_id: binary_sensor.garten_motion_alarm
 ptz:
   service: icsee_ptz.move
   data_home:
-    camera: my_dvrip_camera
+    entity_id: binary_sensor.garten_motion_alarm
     cmd: GotoPreset
     preset: 0
   data_long_home:
-    camera: my_dvrip_camera
+    entity_id: binary_sensor.garten_motion_alarm
     cmd: SetPreset
     preset: 0
   data_start_left:
-    camera: my_dvrip_camera
+    entity_id: binary_sensor.garten_motion_alarm
     cmd: DirectionLeft
   data_end_left:
-    camera: my_dvrip_camera
-    cmd: DirectionLeft
-    move_time: 0
+    entity_id: binary_sensor.garten_motion_alarm
+    cmd: Stop
   data_start_right:
-    camera: my_dvrip_camera
+    entity_id: binary_sensor.garten_motion_alarm
     cmd: DirectionRight
   data_end_right:
-    camera: my_dvrip_camera
-    cmd: DirectionRight
-    move_time: 0
-  data_start_up:
-    camera: my_dvrip_camera
-    cmd: DirectionUp
-  data_end_up:
-    camera: my_dvrip_camera
-    cmd: DirectionUp
-    move_time: 0
+    entity_id: binary_sensor.garten_motion_alarm
+    cmd: Stop
   data_start_down:
-    camera: my_dvrip_camera
+    entity_id: binary_sensor.garten_motion_alarm
     cmd: DirectionDown
   data_end_down:
-    camera: my_dvrip_camera
-    cmd: DirectionDown
-    move_time: 0
+    entity_id: binary_sensor.garten_motion_alarm
+    cmd: Stop
+  data_start_up:
+    entity_id: binary_sensor.garten_motion_alarm
+    cmd: DirectionUp
+  data_end_up:
+    entity_id: binary_sensor.garten_motion_alarm
+    cmd: Stop
+
 ```
 
 # Video stream from [go2rtc](https://github.com/AlexxIT/go2rtc)
@@ -111,7 +105,12 @@ ptz:
 ```yaml
 # go2rtc.yaml
 streams:
-  my_dvrip_camera: dvrip://admin:my_cam_password@192.168.178.27:34567
+  garden_dvrip:
+    - dvrip://admin:my_password@192.168.178.104:34567
+  garden_dvrip_mini:
+    - dvrip://admin:my_password@192.168.178.104:34567?channel=0&subtype=1
+  garden: # try this if the video is choppy or audio is out of synch
+    - ffmpeg:garden_dvrip#audio=copy#async#video=copy#async
 ```
 
 # Miscelaneous

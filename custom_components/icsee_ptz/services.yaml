@@ -1,12 +1,9 @@
 move:
   description: "Move an ICSee/DVR-IP/NetSurveillance/Sofia camera"
+  target:
+    device:
+      integration: icsee_ptz
   fields:
-    camera:
-      description: "Camera name from the configuration.yaml"
-      example: "my_camera"
-      selector:
-        text:
-      required: true
     cmd:
       description: "Command"
       example: "DirectionUp"
@@ -15,6 +12,7 @@ move:
       selector:
         select:
           options:
+            - Stop
             - DirectionUp
             - DirectionDown
             - DirectionLeft
@@ -34,23 +32,6 @@ move:
             - ClearPreset
             - StartTour
             - StopTour
-
-    move_time:
-      description: "Duration time of camera movement in seeconds"
-      default: 0.3
-      selector:
-        number:
-          min: 0
-          max: 10
-          step: .1
-    channel:
-      description: "Channel"
-      default: 0
-      selector:
-        number:
-          mode: box
-          min: 0
-          max: 2
     step:
       description: "Movement speed"
       default: 2
@@ -69,19 +50,11 @@ move:
 
 synchronize_clock:
   description: "Synchronize camera clock"
-  fields:
-    camera:
-      description: "Camera name from the configuration.yaml"
-      example: "my_camera"
-      selector:
-        text:
-      required: true
+  target:
+    device:
+      integration: icsee_ptz
 force_frame:
+  target:
+    device:
+      integration: icsee_ptz
   description: "Force the camera to send a new frame. Useful to speed up video start"
-  fields:
-    camera:
-      description: "Camera name from the configuration.yaml"
-      example: "my_camera"
-      selector:
-        text:
-      required: true
