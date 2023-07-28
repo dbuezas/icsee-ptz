@@ -1,6 +1,5 @@
 from datetime import timedelta
 import logging
-import threading
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import DeviceInfo
@@ -58,7 +57,7 @@ async def async_setup_entry(
         [
             Alarm(hass, data),
         ],
-        update_before_add=True,
+        update_before_add=False,
     )
 
 
@@ -77,9 +76,13 @@ class Alarm(BinarySensorEntity):
         self._attr_is_on = what["Status"] == "Start"
         self.async_write_ha_state()
 
+    async def async_added_to_hass(self) -> None:
+        self.async_schedule_update_ha_state(force_refresh=True)
+
     @property
     def available(self) -> bool:
-        is_available_alarm = bool(self.dvrip_alarm and self.dvrip_alarm.socket_reader)
+        is_available_alarm = bool(
+            self.dvrip_alarm and self.dvrip_alarm.socket_reader)
         return is_available_alarm
 
     @property
@@ -153,7 +156,7 @@ class Alarm(BinarySensorEntity):
             dvrip_alarm.setAlarm(self.onAlarm)
             await dvrip_alarm.alarmStart(self.hass.loop)
             if not self.system_info:
-                self.system_info = await dvrip.get_system_info()
+                self.system_info = await dvrip.get_system_info()  # type: ignore
                 await dvrip.set_time()
         except SomethingIsWrongWithCamera:
             pass
