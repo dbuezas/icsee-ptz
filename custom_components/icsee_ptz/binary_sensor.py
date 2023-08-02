@@ -1,7 +1,8 @@
-from datetime import timedelta
 import logging
+from .icsee_entity import ICSeeEntity
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_UNIQUE_ID
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -14,14 +15,10 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers import config_validation as cv
 import logging
 import voluptuous as vol
-from .asyncio_dvrip import DVRIPCam, SomethingIsWrongWithCamera
 
-from .const import DOMAIN, Data
+from .const import CONF_CHANNEL, CONF_CHANNEL_COUNT, CONF_PRESET, CONF_STEP, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-
-
-SCAN_INTERVAL = timedelta(seconds=20)
 
 
 async def async_setup_entry(
@@ -52,119 +49,71 @@ async def async_setup_entry(
         {},
         "async_force_frame",
     )
-    data = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         [
-            Alarm(hass, data),
+            Alarm(hass, entry, channel)
+            for channel in range(entry.data[CONF_CHANNEL_COUNT])
         ],
         update_before_add=False,
     )
 
 
-class Alarm(BinarySensorEntity):
-    def __init__(self, hass: HomeAssistant, data: Data):
-        self._attr_has_entity_name = True
+class Alarm(ICSeeEntity, BinarySensorEntity):
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):
+        super().__init__(hass, entry)
         self._attr_device_class = BinarySensorDeviceClass.MOTION
-        self._attr_name = "Motion Alarm"
-        self.hass = hass
-        self.data = data
-        self.dvrip = None
-        self.dvrip_alarm = None
-        self.system_info: dict = {}
+        self.channel = channel
+        self._attr_unique_id = f"{self.entry.data[CONF_UNIQUE_ID]}_alarm_{self.channel}"
+        if channel == 0:
+            self._attr_name = "Motion Alarm"
+        else:
+            self._attr_name = f"Motion Alarm {channel}"
+        self.cam.add_alarm_callback(self.onAlarm)
 
     def onAlarm(self, what, n):
-        self._attr_is_on = what["Status"] == "Start"
-        self.async_write_ha_state()
-
-    async def async_added_to_hass(self) -> None:
-        self.async_schedule_update_ha_state(force_refresh=True)
+        if what["Channel"] == self.channel:
+            self._attr_is_on = what["Status"] == "Start"
+            self._attr_extra_state_attributes = what
+            self.async_write_ha_state()
 
     @property
     def available(self) -> bool:
-        is_available_alarm = bool(
-            self.dvrip_alarm and self.dvrip_alarm.socket_reader)
-        return is_available_alarm
-
-    @property
-    def unique_id(self) -> str:
-        assert self.name
-        return DOMAIN + "_" + self.data["host"].replace(".", "_") + "_" + self.name
+        return self.cam.is_connected
 
     @property
     def device_info(self) -> DeviceInfo:
-        assert self.name
-
         return DeviceInfo(
-            name=self.data["name"],
-            identifiers={(DOMAIN, self.data["name"])},
-            sw_version=self.system_info.get("SoftWareVersion"),
-            hw_version=self.system_info.get("HardWare"),
-            model=self.system_info.get("DeviceModel"),
-            connections={("ip", self.data["host"])},
+            name=self.entry.data[CONF_NAME],
+            identifiers={(DOMAIN, self.entry.data[CONF_UNIQUE_ID])},
+            sw_version=self.cam.system_info.get("SoftWareVersion"),
+            hw_version=self.cam.system_info.get("HardWare"),
+            model=self.cam.system_info.get("DeviceModel"),
+            connections={("ip", self.entry.data[CONF_HOST])},
         )
 
     async def async_move(self, cmd: str, **kwargs):
-        assert self.dvrip
-        step = kwargs.get("step", self.data["step"])
-        preset = kwargs.get("preset", self.data["preset"])
-        channel = kwargs.get("channel", self.data["channel"])
+        step = kwargs.get("step", self.entry.options.get(CONF_STEP, 2))
+        preset = kwargs.get("preset", self.entry.options.get(CONF_PRESET, 0))
+        channel = kwargs.get("channel", self.entry.options.get(CONF_CHANNEL, 0))
         if cmd == "Stop":
-            await self.dvrip.ptz("DirectionUp", preset=-1)
+            await self.cam.dvrip.ptz("DirectionUp", preset=-1)
         else:
-            await self.dvrip.ptz(cmd, step=step, preset=preset, ch=channel)
+            await self.cam.dvrip.ptz(cmd, step=step, preset=preset, ch=channel)
 
     async def async_synchronize_clock(self):
-        assert self.dvrip
-        await self.dvrip.set_time()
+        assert self.cam.dvrip
+        await self.cam.dvrip.set_time()
 
     async def async_force_frame(self):
         def callback(*args):
-            assert self.dvrip
-            self.dvrip.stop_monitor()
+            assert self.cam.dvrip
+            self.cam.dvrip.stop_monitor()
 
         try:
-            assert self.dvrip
-            await self.dvrip.start_monitor(callback)
+            assert self.cam.dvrip
+            await self.cam.dvrip.start_monitor(callback)
         except:
             pass
 
     async def async_will_remove_from_hass(self):
-        if self.dvrip:
-            self.dvrip.close()
-        if self.dvrip_alarm:
-            self.dvrip_alarm.close()
-        self.dvrip = None
-        self.dvrip_alarm = None
-
-    async def async_update(self):
-        # Keepalive is currently broken in python-dvr (see https://github.com/NeiroNx/python-dvr/issues/48),
-        # so I'm instead logging in again on every update.
-        # To ensure no messages are lost, a new connection is established before dropping the previous one.
-        dvrip = DVRIPCam(
-            self.data["host"],
-            user=self.data["user"],
-            password=self.data["password"],
-        )
-        dvrip_alarm = DVRIPCam(
-            self.data["host"],
-            user=self.data["user"],
-            password=self.data["password"],
-        )
-        try:
-            await dvrip.login(self.hass.loop)
-            await dvrip_alarm.login(self.hass.loop)
-            dvrip_alarm.setAlarm(self.onAlarm)
-            await dvrip_alarm.alarmStart(self.hass.loop)
-            if not self.system_info:
-                self.system_info = await dvrip.get_system_info()  # type: ignore
-                await dvrip.set_time()
-        except SomethingIsWrongWithCamera:
-            pass
-
-        dvrip, self.dvrip = self.dvrip, dvrip
-        dvrip_alarm, self.dvrip_alarm = self.dvrip_alarm, dvrip_alarm
-
-        if dvrip:
-            dvrip.close()
-        if dvrip_alarm:
-            dvrip_alarm.close()
+        self.cam.remove_alarm_callback(self.onAlarm)

@@ -1,22 +1,24 @@
 """Support for ICSee devices."""
 from __future__ import annotations
-from .const import CONF_CHANNEL, CONF_PRESET, CONF_STEP, DOMAIN, Data
+
+from .camera import Camera
+
+from .const import DOMAIN
 
 import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_HOST,
-    CONF_NAME,
     CONF_PASSWORD,
     CONF_USERNAME,
     Platform,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,
+    Platform.SWITCH,
 ]
 
 _LOGGER = logging.getLogger(__name__)
@@ -28,16 +30,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Store an instance of the "connecting" class that does the work of speaking
     # with your actual devices.
 
-    data: Data = {
-        "name": entry.data[CONF_NAME],
-        "host": entry.data[CONF_HOST],
-        "user": entry.data[CONF_USERNAME],
-        "password": entry.data[CONF_PASSWORD],
-        "step": entry.options.get(CONF_STEP, 2),
-        "preset": entry.options.get(CONF_PRESET, 0),
-        "channel": entry.options.get(CONF_CHANNEL, 0),
-    }
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = data
+    cam = Camera(
+        hass,
+        entry.data[CONF_HOST],
+        entry.data[CONF_USERNAME],
+        entry.data[CONF_PASSWORD],
+    )
+    entry.async_create_background_task(
+        hass, cam.async_ensure_alive(), "DVRIPCam connections"
+    )
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = cam
 
     # This creates each HA object for each platform your device requires.
     # It's done by calling the `async_setup_entry` function in each platform module.

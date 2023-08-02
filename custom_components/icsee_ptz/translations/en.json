@@ -9,7 +9,6 @@
     "step": {
       "user": {
         "title": "Fill in your DVRIP cam information",
-        "description": "Description2",
         "data": {
           "name": "Name",
           "host": "Host or IP",
