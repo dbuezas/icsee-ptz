@@ -2,15 +2,16 @@ import logging
 from homeassistant.components.switch import SwitchEntity
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_UNIQUE_ID
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import logging
 from .icsee_entity import ICSeeEntity
 
-from .const import CONF_CHANNEL, CONF_CHANNEL_COUNT, CONF_PRESET, CONF_STEP, DOMAIN
+from .const import (
+    CONF_CHANNEL_COUNT,
+    CONF_SYSTEM_CAPABILITIES,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,15 +22,26 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Add sensors for passed config_entry in HA."""
+    new_entities = []
+    _LOGGER.error(
+        "entry.data[CONF_SYSTEM_CAPABILITIES]", entry.data[CONF_SYSTEM_CAPABILITIES]
+    )
+    _LOGGER.error(
+        'entry.data[CONF_SYSTEM_CAPABILITIES]["AlarmFunction"]',
+        entry.data[CONF_SYSTEM_CAPABILITIES]["AlarmFunction"],
+    )
+    _LOGGER.error(
+        'entry.data[CONF_SYSTEM_CAPABILITIES]["AlarmFunction"]["MotionDetect"]',
+        entry.data[CONF_SYSTEM_CAPABILITIES]["AlarmFunction"]["MotionDetect"],
+    )
+    for channel in range(entry.data[CONF_CHANNEL_COUNT]):
+        if entry.data[CONF_SYSTEM_CAPABILITIES]["AlarmFunction"]["MotionDetect"]:
+            new_entities.append(AlarmSwitch(hass, entry, channel))
+        if entry.data[CONF_SYSTEM_CAPABILITIES]["AlarmFunction"]["HumanDection"]:
+            new_entities.append(HumanSwitch(hass, entry, channel))
+
     async_add_entities(
-        [
-            AlarmSwitch(hass, entry, channel)
-            for channel in range(entry.data[CONF_CHANNEL_COUNT])
-        ]
-        + [
-            HumanSwitch(hass, entry, channel)
-            for channel in range(entry.data[CONF_CHANNEL_COUNT])
-        ],
+        new_entities,
         update_before_add=False,
     )
 
@@ -38,14 +50,16 @@ class AlarmSwitch(ICSeeEntity, SwitchEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):
         super().__init__(hass, entry)
         self.channel = channel
+        self._attr_entity_registry_enabled_default = False
         self._attr_icon = "mdi:motion"
-        self._attr_unique_id = (
-            f"{self.entry.data[CONF_UNIQUE_ID]}_motion_switch_{self.channel}"
-        )
+        assert self._attr_unique_id  # set by ICSeeEntity
+        self._attr_unique_id += f"_motion_switch_{self.channel}"
+
         if channel == 0:
             self._attr_name = "Motion Detection Enabled"
         else:
             self._attr_name = f"Motion Detection Enabled {channel}"
+        self._attr_extra_state_attributes = entry.data[CONF_SYSTEM_CAPABILITIES]
 
     @property
     def is_on(self, **kwargs):
@@ -68,10 +82,10 @@ class HumanSwitch(ICSeeEntity, SwitchEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):
         super().__init__(hass, entry)
         self.channel = channel
+        self._attr_entity_registry_enabled_default = False
         self._attr_icon = "mdi:human"
-        self._attr_unique_id = (
-            f"{self.entry.data[CONF_UNIQUE_ID]}_human_switch_{self.channel}"
-        )
+        assert self._attr_unique_id  # set by ICSeeEntity
+        self._attr_unique_id += f"_human_switch_{self.channel}"
         if channel == 0:
             self._attr_name = "Human Detection Enabled"
         else:

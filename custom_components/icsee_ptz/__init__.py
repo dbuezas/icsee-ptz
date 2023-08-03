@@ -19,6 +19,7 @@ from homeassistant.core import HomeAssistant
 PLATFORMS = [
     Platform.BINARY_SENSOR,
     Platform.SWITCH,
+    Platform.SELECT,
 ]
 
 _LOGGER = logging.getLogger(__name__)

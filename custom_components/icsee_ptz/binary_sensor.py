@@ -1,9 +1,5 @@
 import logging
-from .icsee_entity import ICSeeEntity
-
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, CONF_NAME, CONF_UNIQUE_ID
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import HomeAssistant
@@ -15,8 +11,8 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers import config_validation as cv
 import logging
 import voluptuous as vol
-
-from .const import CONF_CHANNEL, CONF_CHANNEL_COUNT, CONF_PRESET, CONF_STEP, DOMAIN
+from .const import CONF_CHANNEL, CONF_CHANNEL_COUNT, CONF_PRESET, CONF_STEP
+from .icsee_entity import ICSeeEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -63,7 +59,8 @@ class Alarm(ICSeeEntity, BinarySensorEntity):
         super().__init__(hass, entry)
         self._attr_device_class = BinarySensorDeviceClass.MOTION
         self.channel = channel
-        self._attr_unique_id = f"{self.entry.data[CONF_UNIQUE_ID]}_alarm_{self.channel}"
+        assert self._attr_unique_id  # set by ICSeeEntity
+        self._attr_unique_id += f"_alarm_{self.channel}"
         if channel == 0:
             self._attr_name = "Motion Alarm"
         else:
@@ -74,22 +71,11 @@ class Alarm(ICSeeEntity, BinarySensorEntity):
         if what["Channel"] == self.channel:
             self._attr_is_on = what["Status"] == "Start"
             self._attr_extra_state_attributes = what
-            self.async_write_ha_state()
+            self.schedule_update_ha_state()
 
     @property
     def available(self) -> bool:
         return self.cam.is_connected
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        return DeviceInfo(
-            name=self.entry.data[CONF_NAME],
-            identifiers={(DOMAIN, self.entry.data[CONF_UNIQUE_ID])},
-            sw_version=self.cam.system_info.get("SoftWareVersion"),
-            hw_version=self.cam.system_info.get("HardWare"),
-            model=self.cam.system_info.get("DeviceModel"),
-            connections={("ip", self.entry.data[CONF_HOST])},
-        )
 
     async def async_move(self, cmd: str, **kwargs):
         step = kwargs.get("step", self.entry.options.get(CONF_STEP, 2))

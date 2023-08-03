@@ -16,8 +16,13 @@ class Camera:
         self.dvrip = None
         self.dvrip_alarm = None
         self.alarm_callbacks = []
+        self.onload_callbacks = []
         self.system_info: dict = {}
         self.detect_info: dict = {}
+        self.camara_info: dict = {}
+
+    def add_onload_callback(self, callback):
+        self.onload_callbacks.append(callback)
 
     def add_alarm_callback(self, callback):
         self.alarm_callbacks.append(callback)
@@ -58,7 +63,14 @@ class Camera:
                 if not self.detect_info:
                     self.system_info = await dvrip.get_system_info()  # type: ignore
                     self.detect_info = await dvrip.get_info("Detect")  # type: ignore
+                    self.camara_info = await dvrip.get_info("Camera")  # type: ignore
                     await dvrip.set_time()
+                    for cb in self.onload_callbacks:
+                        try:
+                            cb()  # if it fails nowm it isn't loaded yet.
+                        except:
+                            pass
+                    self.onload_callbacks = []
 
                 dvrip, self.dvrip = self.dvrip, dvrip
                 dvrip_alarm, self.dvrip_alarm = self.dvrip_alarm, dvrip_alarm
