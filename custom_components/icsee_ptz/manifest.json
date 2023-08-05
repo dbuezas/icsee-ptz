@@ -3,8 +3,8 @@
   "name": "ICSee",
   "config_flow": true,
   "documentation": "https://github.com/dbuezas/icsee-ptz",
-  "requirements": ["python-dvr"],
+  "requirements": ["python-dvr", "getmac==0.8.2"],
   "dependencies": [],
   "codeowners": ["@dbuezas"],
-  "version": "2.0.2"
+  "version": "3.0.0"
 }

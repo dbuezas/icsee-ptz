@@ -1,22 +1,23 @@
 """Support for ICSee devices."""
-from __future__ import annotations
-from .const import CONF_CHANNEL, CONF_PRESET, CONF_STEP, DOMAIN, Data
-
+from .config_flow import async_get_entry_data
+from .camera import Camera
+from .const import DOMAIN
 import logging
-
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_HOST,
-    CONF_NAME,
+    CONF_MAC,
     CONF_PASSWORD,
     CONF_USERNAME,
     Platform,
 )
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.core import HomeAssistant, callback
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,
+    Platform.SWITCH,
+    Platform.SELECT,
 ]
 
 _LOGGER = logging.getLogger(__name__)
@@ -28,16 +29,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Store an instance of the "connecting" class that does the work of speaking
     # with your actual devices.
 
-    data: Data = {
-        "name": entry.data[CONF_NAME],
-        "host": entry.data[CONF_HOST],
-        "user": entry.data[CONF_USERNAME],
-        "password": entry.data[CONF_PASSWORD],
-        "step": entry.options.get(CONF_STEP, 2),
-        "preset": entry.options.get(CONF_PRESET, 0),
-        "channel": entry.options.get(CONF_CHANNEL, 0),
-    }
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = data
+    cam = Camera(
+        hass,
+        entry.data[CONF_HOST],
+        entry.data[CONF_USERNAME],
+        entry.data[CONF_PASSWORD],
+    )
+    entry.async_create_background_task(
+        hass, cam.async_ensure_alive(), "DVRIPCam connections"
+    )
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = cam
 
     # This creates each HA object for each platform your device requires.
     # It's done by calling the `async_setup_entry` function in each platform module.
@@ -61,3 +62,39 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update listener. Called when integration options are changed"""
     await hass.config_entries.async_reload(entry.entry_id)
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+        data = await async_get_entry_data(hass, config_entry.data)
+
+        config_entry.version = 2
+        new_unique_id = data[CONF_MAC]
+
+        @callback
+        def update_unique_id(entity_entry):
+            """Update unique ID of entity entry."""
+            return {"new_unique_id": f"{new_unique_id}_alarm_0"}
+
+        await er.async_migrate_entries(hass, config_entry.entry_id, update_unique_id)
+
+        hass.config_entries.async_update_entry(
+            config_entry, data=data, unique_id=new_unique_id
+        )
+
+        # update identifiers of old device
+        device_registry = dr.async_get(hass)
+        old_devices = dr.async_entries_for_config_entry(
+            device_registry, config_entry.entry_id
+        )
+        for old_device in old_devices:
+            device_registry.async_update_device(
+                old_device.id, new_identifiers={(DOMAIN, new_unique_id)}
+            )
+
+    _LOGGER.info("Migration to version %s successful", config_entry.version)
+
+    return True
