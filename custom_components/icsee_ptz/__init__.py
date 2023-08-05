@@ -3,15 +3,16 @@ from .config_flow import async_get_entry_data
 from .camera import Camera
 from .const import DOMAIN
 import logging
-
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_HOST,
+    CONF_MAC,
     CONF_PASSWORD,
     CONF_USERNAME,
     Platform,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,
@@ -71,7 +72,28 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         data = await async_get_entry_data(hass, config_entry.data)
 
         config_entry.version = 2
-        hass.config_entries.async_update_entry(config_entry, data=data)
+        new_unique_id = data[CONF_MAC]
+
+        @callback
+        def update_unique_id(entity_entry):
+            """Update unique ID of entity entry."""
+            return {"new_unique_id": f"{new_unique_id}_alarm_0"}
+
+        await er.async_migrate_entries(hass, config_entry.entry_id, update_unique_id)
+
+        hass.config_entries.async_update_entry(
+            config_entry, data=data, unique_id=new_unique_id
+        )
+
+        # update identifiers of old device
+        device_registry = dr.async_get(hass)
+        old_devices = dr.async_entries_for_config_entry(
+            device_registry, config_entry.entry_id
+        )
+        for old_device in old_devices:
+            device_registry.async_update_device(
+                old_device.id, new_identifiers={(DOMAIN, new_unique_id)}
+            )
 
     _LOGGER.info("Migration to version %s successful", config_entry.version)
 

@@ -1,14 +1,14 @@
 import logging
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, CONF_MAC, CONF_NAME
+from homeassistant.const import CONF_MAC, CONF_NAME
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo, Entity
 from homeassistant.core import HomeAssistant
 import logging
 from .camera import Camera
 
-from .const import CONF_CHANNEL, CONF_PRESET, CONF_STEP, DOMAIN
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
