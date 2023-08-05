@@ -1,10 +1,7 @@
 """Support for ICSee devices."""
-from __future__ import annotations
-
+from .config_flow import async_get_entry_data
 from .camera import Camera
-
 from .const import DOMAIN
-
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -64,3 +61,18 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update listener. Called when integration options are changed"""
     await hass.config_entries.async_reload(entry.entry_id)
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+        data = await async_get_entry_data(hass, config_entry.data)
+
+        config_entry.version = 2
+        hass.config_entries.async_update_entry(config_entry, data=data)
+
+    _LOGGER.info("Migration to version %s successful", config_entry.version)
+
+    return True

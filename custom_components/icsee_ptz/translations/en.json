@@ -26,7 +26,8 @@
         "data": {
           "channel": "Channel",
           "step": "Step",
-          "preset": "Preset"
+          "preset": "Preset",
+          "experimental_entities": "Enable experimental entities"
         }
       }
     }

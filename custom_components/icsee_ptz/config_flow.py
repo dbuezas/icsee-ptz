@@ -17,6 +17,7 @@ import logging
 from .const import (
     CONF_CHANNEL,
     CONF_CHANNEL_COUNT,
+    CONF_EXPERIMENTAL_ENTITIES,
     CONF_PRESET,
     CONF_STEP,
     CONF_SYSTEM_CAPABILITIES,
@@ -32,7 +33,6 @@ async def _async_get_mac_address(hass: HomeAssistant, host: str) -> str | None:
     """Get mac address from host name, IPv4 address, or IPv6 address."""
     # ** Taken from dlna_dmr component **
     # Help mypy, which has trouble with the async_add_executor_job + partial call
-    mac_address: str | None
     # getmac has trouble using IPv6 addresses as the "hostname" parameter so
     # assume host is an IP address, then handle the case it's not.
     try:
@@ -52,10 +52,29 @@ async def _async_get_mac_address(hass: HomeAssistant, host: str) -> str | None:
             )
 
 
+async def async_get_entry_data(hass: HomeAssistant, user_input):
+    data = {**user_input}
+    dvrip = DVRIPCam(
+        data[CONF_HOST],
+        user=data[CONF_USERNAME],
+        password=data[CONF_PASSWORD],
+    )
+    await dvrip.login(hass.loop)
+    x: dict = await dvrip.get_info("Detect")  # type: ignore
+    data[CONF_CHANNEL_COUNT] = len(x.get("MotionDetect", [0]))
+    data[CONF_SYSTEM_CAPABILITIES] = await dvrip.get_system_capabilities()
+    mac = await _async_get_mac_address(
+        hass,
+        data[CONF_HOST],
+    )
+    data[CONF_MAC] = mac
+    return data
+
+
 class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
     """Config flow for ICSeePTZ"""
 
-    VERSION = 1
+    VERSION = 2
 
     def __init__(self):
         """Initialize the ICSeePTZ flow."""
@@ -68,28 +87,11 @@ class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
         errors = {}
         if user_input:
             try:
-                dvrip = DVRIPCam(
-                    user_input[CONF_HOST],
-                    user=user_input[CONF_USERNAME],
-                    password=user_input[CONF_PASSWORD],
-                )
-                await dvrip.login(self.hass.loop)
-                x: dict = await dvrip.get_info("Detect")  # type: ignore
-                user_input[CONF_CHANNEL_COUNT] = len(x["MotionDetect"])
-                user_input[
-                    CONF_SYSTEM_CAPABILITIES
-                ] = await dvrip.get_system_capabilities()
-                mac = await _async_get_mac_address(
-                    self.hass,
-                    user_input[CONF_HOST],
-                )
-                user_input[CONF_MAC] = mac
-                await self.async_set_unique_id(mac)
-                self._abort_if_unique_id_configured(updates=user_input)
+                data = await async_get_entry_data(self.hass, user_input)
+                await self.async_set_unique_id(data[CONF_MAC])
+                self._abort_if_unique_id_configured(updates=data)
+                return self.async_create_entry(title=data[CONF_NAME], data=data)
 
-                return self.async_create_entry(
-                    title=user_input[CONF_NAME], data=user_input
-                )
             except SomethingIsWrongWithCamera:
                 errors["base"] = "cannot_connect"
 
@@ -164,6 +166,14 @@ class OptionsFlowHandler(OptionsFlow):
                             )
                         },
                     ): cv.positive_int,
+                    vol.Optional(
+                        CONF_EXPERIMENTAL_ENTITIES,
+                        description={
+                            "suggested_value": self.config_entry.options.get(
+                                CONF_EXPERIMENTAL_ENTITIES, False
+                            )
+                        },
+                    ): cv.boolean,
                 }
             ),
         )

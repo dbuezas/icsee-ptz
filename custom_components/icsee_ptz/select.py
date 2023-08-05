@@ -9,6 +9,7 @@ from .icsee_entity import ICSeeEntity
 
 from .const import (
     CONF_CHANNEL_COUNT,
+    CONF_EXPERIMENTAL_ENTITIES,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -20,18 +21,20 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Add sensors for passed config_entry in HA."""
+    if not entry.options.get(CONF_EXPERIMENTAL_ENTITIES):
+        return
+
     async_add_entities(
         [
             DayNightColorSelect(hass, entry, channel)
             for channel in range(entry.data[CONF_CHANNEL_COUNT])
-            # if entry.data[CONF_SYSTEM_CAPABILITIES]["MotionDetect"]
         ],
         update_before_add=False,
     )
 
 
 DAY_NIGHT_COLOR_MAPPING = {
-    "Not sure what this is": "0x00000000",
+    "Unknown": "0x00000000",
     "Color": "0x00000001",
     "IR Filter": "0x00000002",
     "IR LED, light on alert": "0x00000003",
