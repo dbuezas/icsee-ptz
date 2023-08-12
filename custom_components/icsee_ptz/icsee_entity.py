@@ -20,7 +20,11 @@ class ICSeeEntity(Entity):
         self.hass = hass
         self.entry = entry
         self.cam: Camera = hass.data[DOMAIN][entry.entry_id]
-        self.cam.add_onload_callback(self.schedule_update_ha_state)
+        self.cam.on_update(self.schedule_update_ha_state)
+
+    async def async_will_remove_from_hass(self):
+        super(ICSeeEntity)
+        self.cam.remove_on_update(self.schedule_update_ha_state)
 
     @property
     def available(self) -> bool:

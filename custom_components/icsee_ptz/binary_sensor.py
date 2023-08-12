@@ -102,4 +102,5 @@ class Alarm(ICSeeEntity, BinarySensorEntity):
             pass
 
     async def async_will_remove_from_hass(self):
+        super(ICSeeEntity)
         self.cam.remove_alarm_callback(self.onAlarm)
