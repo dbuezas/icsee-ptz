@@ -8,6 +8,7 @@ from homeassistant.const import (
     CONF_HOST,
     CONF_MAC,
     CONF_NAME,
+    CONF_UNIQUE_ID,
     CONF_USERNAME,
     CONF_PASSWORD,
 )
@@ -63,6 +64,8 @@ async def async_get_entry_data(hass: HomeAssistant, user_input):
     x: dict = await dvrip.get_info("Detect")  # type: ignore
     data[CONF_CHANNEL_COUNT] = len(x.get("MotionDetect", [0]))
     data[CONF_SYSTEM_CAPABILITIES] = await dvrip.get_system_capabilities()
+    system_info: dict[str, str] = await dvrip.get_system_info()  # type: ignore
+    data[CONF_UNIQUE_ID] = system_info["SerialNo"]
     mac = await _async_get_mac_address(
         hass,
         data[CONF_HOST],
@@ -74,7 +77,7 @@ async def async_get_entry_data(hass: HomeAssistant, user_input):
 class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
     """Config flow for ICSeePTZ"""
 
-    VERSION = 2
+    VERSION = 4
 
     def __init__(self):
         """Initialize the ICSeePTZ flow."""
@@ -88,7 +91,7 @@ class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input:
             try:
                 data = await async_get_entry_data(self.hass, user_input)
-                await self.async_set_unique_id(data[CONF_MAC])
+                await self.async_set_unique_id(data[CONF_UNIQUE_ID])
                 self._abort_if_unique_id_configured(updates=data)
                 return self.async_create_entry(title=data[CONF_NAME], data=data)
 

@@ -6,5 +6,5 @@
   "requirements": ["python-dvr", "getmac==0.8.2"],
   "dependencies": [],
   "codeowners": ["@dbuezas"],
-  "version": "3.0.3"
+  "version": "4.0.0"
 }
