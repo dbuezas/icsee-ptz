@@ -7,7 +7,6 @@ from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_HOST,
-    CONF_MAC,
     CONF_PASSWORD,
     CONF_USERNAME,
     Platform,

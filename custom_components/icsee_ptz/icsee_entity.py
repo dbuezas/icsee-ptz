@@ -1,7 +1,7 @@
 import logging
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_MAC, CONF_NAME, CONF_UNIQUE_ID
+from homeassistant.const import ATTR_CONNECTIONS, CONF_MAC, CONF_NAME, CONF_UNIQUE_ID
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo, Entity
 from homeassistant.core import HomeAssistant
@@ -32,11 +32,14 @@ class ICSeeEntity(Entity):
 
     @property
     def device_info(self) -> DeviceInfo:
-        return DeviceInfo(
+        device_info = DeviceInfo(
             name=self.entry.data[CONF_NAME],
             identifiers={(DOMAIN, self.entry.data[CONF_UNIQUE_ID])},
             sw_version=self.cam.system_info.get("SoftWareVersion"),
             hw_version=self.cam.system_info.get("HardWare"),
             model=self.cam.system_info.get("DeviceModel"),
-            connections={(CONNECTION_NETWORK_MAC, self.entry.data[CONF_MAC])},
         )
+        mac = self.entry.data[CONF_MAC]
+        if mac:
+            device_info[ATTR_CONNECTIONS] = {(CONNECTION_NETWORK_MAC, mac)}
+        return device_info
