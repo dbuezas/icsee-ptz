@@ -412,7 +412,7 @@ class DVRIPCam(object):
         return await self.get_command("", self.QCODES["AlarmSet"])
 
     async def alarm_worker(self):
-        while self.socket_writer:
+        while True:
             await self.busy.acquire()
             try:
                 (
@@ -431,7 +431,9 @@ class DVRIPCam(object):
                     if self.alarm_func is not None:
                         self.alarm_func(reply[reply["Name"]], sequence_number)
             except:
-                pass
+                self.close()
+                return
+
             finally:
                 self.busy.release()
             
