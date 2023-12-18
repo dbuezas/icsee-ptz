@@ -26,45 +26,30 @@ async def async_setup_entry(
 
     async_add_entities(
         [
-            DayNightColorSelect(hass, entry, channel)
+            WhiteLightSelect(hass, entry, channel)
             for channel in range(entry.data[CONF_CHANNEL_COUNT])
         ],
         update_before_add=False,
     )
+WHITE_LIGHT_WORK_MODE_LIST = ['Intelligent', 'Auto', 'Close']
 
-
-DAY_NIGHT_COLOR_MAPPING = {
-    "Unknown": "0x00000000",
-    "Color": "0x00000001",
-    "IR Filter": "0x00000002",
-    "IR LED, light on alert": "0x00000003",
-    "Color light": "0x00000004",
-    "IR LED": "0x00000005",
-}
-
-DAY_NIGHT_COLOR_MAPPING_INV = {v: k for k, v in DAY_NIGHT_COLOR_MAPPING.items()}
-
-
-class DayNightColorSelect(ICSeeEntity, SelectEntity):
+class WhiteLightSelect(ICSeeEntity, SelectEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):
         super().__init__(hass, entry)
         self.channel = channel
         self._attr_icon = "mdi:light-flood-down"
         assert self._attr_unique_id  # set by ICSeeEntity
-        self._attr_unique_id += f"_DayNightColorSelect_{self.channel}"
+        self._attr_unique_id += f"_WhiteLightSelect_{self.channel}"
         if channel == 0:
-            self._attr_name = "Day Night Color"
+            self._attr_name = "White light"
         else:
-            self._attr_name = f"Day Night Color {channel}"
-        self._attr_options = list(DAY_NIGHT_COLOR_MAPPING.keys())
+            self._attr_name = f"White light {channel}"
+        self._attr_options = WHITE_LIGHT_WORK_MODE_LIST
 
     @property
     def current_option(self) -> str | None:
-        x = self.cam.camara_info["Param"][self.channel]["DayNightColor"]
-        return DAY_NIGHT_COLOR_MAPPING_INV[x]
+        return self.cam.camara_info["WhiteLight"]["WorkMode"]
 
     async def async_select_option(self, option: str) -> None:
-        x = await self.cam.dvrip.get_info("Camera.Param")
-        x[self.channel]["DayNightColor"] = DAY_NIGHT_COLOR_MAPPING[option]
-        await self.cam.dvrip.set_info("Camera.Param", x)
-        self.cam.camara_info["Param"] = x
+        await self.cam.dvrip.set_info("Camera.WhiteLight.WorkMode", option)
+        self.cam.camara_info["WhiteLight"]["WorkMode"] = option
