@@ -155,6 +155,21 @@ streams:
   garden: # try this if the video is choppy or audio is out of synch
     - ffmpeg:garden_dvrip#audio=copy#async#video=copy#async
 ```
+# Entities
+
+> [!NOTE]  
+> There are some disabled entities, But you can enable them on 
+>
+> `Settings -> Devices & Services -> ICSee -> Configure -> Enable experimental entities`
+
+| Entity                                    | Description                                                              | Enabled by default |
+| ----------------------------------------- | ------------------------------------------------------------------------ | ------------------ |
+| `switch.*_blinddetect_enabled`            |                                                                          | No                 |
+| `select.*_day_night_color`                | You can control camera's lights.                                         | No                 |
+| `switch.*_humandetection_enabled`         |                                                                          | No                 |
+| `switch.*_lossdetect_enabled`             |                                                                          | No                 |
+| `binary_sensor.*_varanda_motion_alarm`    | It will be trigged when someone pass on front of camera.                 | Yes                |
+| `switch.*_motiondetect_enabled`           |                                                                          | No                 |
 
 # Miscelaneous
 
