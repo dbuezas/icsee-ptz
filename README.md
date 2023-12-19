@@ -165,7 +165,7 @@ streams:
 | Entity                                    | Description                                                              | Enabled by default |
 | ----------------------------------------- | ------------------------------------------------------------------------ | ------------------ |
 | `switch.*_blinddetect_enabled`            |                                                                          | No                 |
-| `select.*_whith_light`                    | You can control camera's lights.                                         | No                 |
+| `select.*_white_light`                    | You can control camera's lights.                                         | No                 |
 | `switch.*_humandetection_enabled`         |                                                                          | No                 |
 | `switch.*_lossdetect_enabled`             |                                                                          | No                 |
 | `binary_sensor.*_varanda_motion_alarm`    | It will be trigged when someone pass on front of camera.                 | Yes                |
