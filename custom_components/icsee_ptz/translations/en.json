@@ -31,5 +31,33 @@
         }
       }
     }
+  },
+  "services": {
+    "move": {
+      "description": "Move an ICSee/DVR-IP/NetSurveillance/Sofia camera",
+      "fields": {
+        "cmd": {
+          "description": "Command",
+          "name": "Command"
+        },
+        "step": {
+          "description": "Speed at which PTZ operations are performed.",
+          "name": "Movement speed"
+        },
+        "preset": {
+          "description": "Only applicable to SetPreset and GotoPreset",
+          "name": "Preset"
+        }
+      },
+      "name": "Move"
+    },
+    "synchronize_clock": {
+      "description": "Synchronize remote camera clock to the Home Assistant instance.",
+      "name": "Synchronize camera clock"
+    },
+    "force_frame": {
+      "description": "Force the camera to send a new frame. Useful to speed up video start",
+      "name": "Force frame"
+    }
   }
 }
