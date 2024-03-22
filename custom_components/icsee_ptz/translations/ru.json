@@ -1,0 +1,63 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Устройство уже настроено"
+    },
+    "error": {
+      "cannot_connect": "Не удалось подключиться"
+    },
+    "step": {
+      "user": {
+        "title": "Введите информацию о вашей камере DVRIP",
+        "data": {
+          "name": "Имя",
+          "host": "Хост или IP",
+          "username": "имя пользователя",
+          "password": "пароль"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Параметры PTZ по умолчанию",
+        "description": "Шаг означает скорость. Предустановка актуально только для служб SetPreset/GotoPreset/ClearPreset. Канал обычно равен 0.",
+        "data": {
+          "channel": "Канал",
+          "step": "Шаг",
+          "preset": "Предустановка",
+          "experimental_entities": "Включить экспериментальные сущности"
+        }
+      }
+    }
+  },
+  "services": {
+    "move": {
+      "description": "Переместить камеру ICSee/DVR-IP/NetSurveillance/Sofia",
+      "fields": {
+        "cmd": {
+          "description": "Команда",
+          "name": "Команда"
+        },
+        "step": {
+          "description": "Скорость перемещения при выполнении операции.",
+          "name": "Шаг"
+        },
+        "preset": {
+          "description": "Применимо только к SetPreset и GotoPreset",
+          "name": "Предустановка"
+        }
+      },
+      "name": "Переместить"
+    },
+    "synchronize_clock": {
+      "description": "Синхронизировать часы удалённой камеры с экземпляром Home Assistant.",
+      "name": "Синхронизация часов камеры"
+    },
+    "force_frame": {
+      "description": "Принудительно отправить новый кадр с камеры. Полезно для ускорения запуска видео",
+      "name": "Принудительный кадр"
+    }
+  }
+}
