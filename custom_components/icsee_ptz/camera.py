@@ -1,6 +1,7 @@
 import asyncio
 
 from homeassistant.core import HomeAssistant
+
 from .asyncio_dvrip import DVRIPCam, SomethingIsWrongWithCamera
 
 
@@ -40,7 +41,11 @@ class Camera:
 
     @property
     def is_connected(self) -> bool:
-        return bool(self._last_connection_success and self.dvrip_alarm and self.dvrip_alarm.socket_reader)
+        return bool(
+            self._last_connection_success
+            and self.dvrip_alarm
+            and self.dvrip_alarm.socket_reader
+        )
 
     async def async_ensure_alive(self):
         # Keepalive is currently broken in python-dvr (see https://github.com/NeiroNx/python-dvr/issues/48),

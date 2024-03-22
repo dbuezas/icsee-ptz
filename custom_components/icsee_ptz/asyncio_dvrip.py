@@ -1,15 +1,17 @@
+import asyncio
+import hashlib
+import json
+import logging
 import os
 import struct
-import json
-import hashlib
-import asyncio
+import time
 from datetime import *
 from re import compile
-import time
-import logging
+
 
 class SomethingIsWrongWithCamera(Exception):
     pass
+
 
 class DVRIPCam(object):
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -108,7 +110,9 @@ class DVRIPCam(object):
     async def connect(self, timeout=10):
         try:
             if self.proto == "tcp":
-                self.socket_reader, self.socket_writer = await asyncio.wait_for(asyncio.open_connection(self.ip, self.port), timeout=timeout)
+                self.socket_reader, self.socket_writer = await asyncio.wait_for(
+                    asyncio.open_connection(self.ip, self.port), timeout=timeout
+                )
                 self.socket_send = self.tcp_socket_send
                 self.socket_recv = self.tcp_socket_recv
             elif self.proto == "udp":
@@ -119,7 +123,7 @@ class DVRIPCam(object):
             # it's important to extend timeout for upgrade procedure
             self.timeout = timeout
         except OSError:
-            raise SomethingIsWrongWithCamera('Cannot connect to camera')
+            raise SomethingIsWrongWithCamera("Cannot connect to camera")
 
     def close(self):
         try:
@@ -147,7 +151,9 @@ class DVRIPCam(object):
 
         while True:
             try:
-                data = await asyncio.wait_for(self.socket_recv(length - received), timeout=self.timeout)
+                data = await asyncio.wait_for(
+                    self.socket_recv(length - received), timeout=self.timeout
+                )
                 buf.extend(data)
                 received += len(data)
                 if length == received:
@@ -173,6 +179,8 @@ class DVRIPCam(object):
         if self.socket_writer is None:
             return {"Ret": 101}
         await self.busy.acquire()
+        if data is None:
+            data = {}
         if hasattr(data, "__iter__"):
             data = bytes(json.dumps(data, ensure_ascii=False), "utf-8")
         pkt = (
@@ -191,7 +199,7 @@ class DVRIPCam(object):
         self.logger.debug("=> %s", pkt)
         self.socket_send(pkt)
         if wait_response:
-            reply = {"Ret": 101}
+            reply = {"Ret": 101}  # ??
             data = await self.socket_recv(20)
             if data is None or len(data) < 20:
                 return None
@@ -207,7 +215,8 @@ class DVRIPCam(object):
             self.busy.release()
             return reply
 
-    def sofia_hash(self, password=""):
+    @staticmethod
+    def sofia_hash(password="") -> str:
         md5 = hashlib.md5(bytes(password, "utf-8")).digest()
         chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
         return "".join([chars[sum(x) % 62] for x in zip(md5[::2], md5[1::2])])
@@ -280,7 +289,10 @@ class DVRIPCam(object):
     async def delGroup(self, name):
         data = await self.send(
             self.QCODES["DelGroup"],
-            {"Name": name, "SessionID": "0x%08X" % self.session,},
+            {
+                "Name": name,
+                "SessionID": "0x%08X" % self.session,
+            },
         )
         return data["Ret"] in self.OK_CODES
 
@@ -349,7 +361,10 @@ class DVRIPCam(object):
     async def delUser(self, name):
         data = await self.send(
             self.QCODES["DelUser"],
-            {"Name": name, "SessionID": "0x%08X" % self.session,},
+            {
+                "Name": name,
+                "SessionID": "0x%08X" % self.session,
+            },
         )
         return data["Ret"] in self.OK_CODES
 
@@ -414,7 +429,7 @@ class DVRIPCam(object):
 
     async def alarmStart(self, loop):
         loop.create_task(self.alarm_worker())
-        
+
         return await self.get_command("", self.QCODES["AlarmSet"])
 
     async def alarm_worker(self):
@@ -442,10 +457,11 @@ class DVRIPCam(object):
 
             finally:
                 self.busy.release()
-            
+
     async def set_remote_alarm(self, state):
         await self.set_command(
-            "OPNetAlarm", {"Event": 0, "State": state},
+            "OPNetAlarm",
+            {"Event": 0, "State": state},
         )
 
     async def keep_alive_workner(self):
@@ -466,12 +482,14 @@ class DVRIPCam(object):
 
     async def keyDown(self, key):
         await self.set_command(
-            "OPNetKeyboard", {"Status": "KeyDown", "Value": key},
+            "OPNetKeyboard",
+            {"Status": "KeyDown", "Value": key},
         )
 
     async def keyUp(self, key):
         await self.set_command(
-            "OPNetKeyboard", {"Status": "KeyUp", "Value": key},
+            "OPNetKeyboard",
+            {"Status": "KeyUp", "Value": key},
         )
 
     async def keyPress(self, key):
@@ -519,7 +537,8 @@ class DVRIPCam(object):
             "Tour": 1 if "Tour" in cmd else 0,
         }
         return await self.set_command(
-            "OPPTZControl", {"Command": cmd, "Parameter": ptz_param},
+            "OPPTZControl",
+            {"Command": cmd, "Parameter": ptz_param},
         )
 
     async def set_info(self, command, data):
@@ -539,14 +558,18 @@ class DVRIPCam(object):
         if not code:
             code = self.QCODES[command]
 
-        data = await self.send(code, {"Name": command, "SessionID": "0x%08X" % self.session})
+        data = await self.send(
+            code, {"Name": command, "SessionID": "0x%08X" % self.session}
+        )
         if data["Ret"] in self.OK_CODES and command in data:
             return data[command]
         else:
             return data
 
     async def get_time(self):
-        return datetime.strptime(await self.get_command("OPTimeQuery"), self.DATE_FORMAT)
+        return datetime.strptime(
+            await self.get_command("OPTimeQuery"), self.DATE_FORMAT
+        )
 
     async def set_time(self, time=None):
         if time is None:
@@ -579,8 +602,8 @@ class DVRIPCam(object):
     async def get_encode_info(self, default_config=False):
         """Request data for 'Simplify.Encode' from the target DVRIP device.
 
-            Arguments:
-            default_config -- returns the default values for the type if True
+        Arguments:
+        default_config -- returns the default values for the type if True
         """
         if default_config:
             code = 1044
@@ -721,9 +744,14 @@ class DVRIPCam(object):
                 (data_type,) = struct.unpack(">I", packet[:4])
                 if data_type == 0x1FC or data_type == 0x1FE:
                     frame_len = 16
-                    (media, metadata["fps"], w, h, dt, length,) = struct.unpack(
-                        "BBBBII", packet[4:frame_len]
-                    )
+                    (
+                        media,
+                        metadata["fps"],
+                        w,
+                        h,
+                        dt,
+                        length,
+                    ) = struct.unpack("BBBBII", packet[4:frame_len])
                     metadata["width"] = w * 8
                     metadata["height"] = h * 8
                     metadata["datetime"] = internal_to_datetime(dt)
@@ -778,7 +806,9 @@ class DVRIPCam(object):
             "StreamType": stream,
             "TransMode": "TCP",
         }
-        data = await self.set_command("OPMonitor", {"Action": "Claim", "Parameter": params})
+        data = await self.set_command(
+            "OPMonitor", {"Action": "Claim", "Parameter": params}
+        )
         if data["Ret"] not in self.OK_CODES:
             return data
 
