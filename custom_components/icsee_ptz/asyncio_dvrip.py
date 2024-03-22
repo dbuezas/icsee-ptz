@@ -351,13 +351,17 @@ class DVRIPCam(object):
         )
         return data["Ret"] in self.OK_CODES
 
-    async def changePasswd(self, newpass="", oldpass=None, user=None):
+    async def changePasswd(
+        self, newpass: str = "", oldpass: str | None = None, user: str | None = None
+    ):
+        if oldpass is None:
+            oldpass = self.hash_pass
         data = await self.send(
             self.QCODES["ModifyPassword"],
             {
                 "EncryptType": "MD5",
                 "NewPassWord": self.sofia_hash(newpass),
-                "PassWord": oldpass or self.password,
+                "PassWord": oldpass,
                 "SessionID": "0x%08X" % self.session,
                 "UserName": user or self.user,
             },
