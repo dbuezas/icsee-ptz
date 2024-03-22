@@ -42,7 +42,7 @@
         },
         "step": {
           "description": "Speed at which PTZ operations are performed.",
-          "name": "Movement speed"
+          "name": "Step"
         },
         "preset": {
           "description": "Only applicable to SetPreset and GotoPreset",
