@@ -169,7 +169,7 @@ class DVRIPCam(object):
         reply = json.loads(data[:-2])
         return reply
 
-    async def send(self, msg, data={}, wait_response=True):
+    async def send(self, msg, data: dict | None = None, wait_response: bool = True):
         if self.socket_writer is None:
             return {"Ret": 101}
         await self.busy.acquire()
@@ -666,7 +666,10 @@ class DVRIPCam(object):
                 return data
             vprint(f"Upgraded {data['Ret']}%")
 
-    async def reassemble_bin_payload(self, metadata={}):
+    async def reassemble_bin_payload(self, metadata: dict | None = None):
+        if metadata is None:
+            metadata = {}
+
         def internal_to_type(data_type, value):
             if data_type == 0x1FC or data_type == 0x1FD:
                 if value == 1:
@@ -764,7 +767,11 @@ class DVRIPCam(object):
         packet = await self.reassemble_bin_payload()
         return packet
 
-    async def start_monitor(self, frame_callback, user={}, stream="Main"):
+    async def start_monitor(
+        self, frame_callback, user: dict | None = None, stream="Main"
+    ):
+        if user is None:
+            user = {}
         params = {
             "Channel": 0,
             "CombinMode": "NONE",
