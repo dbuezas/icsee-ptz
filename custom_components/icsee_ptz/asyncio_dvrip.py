@@ -316,7 +316,7 @@ class DVRIPCam(object):
     async def modifyUser(
         self, name, newname=None, comment=None, group=None, auth=None, sharable=None
     ):
-        u = [x for x in self.getUsers() if x["Name"] == name]
+        u = [x for x in await self.getUsers() if x["Name"] == name]
         if u == []:
             print(f'User "{name}" not found!')
             return False
