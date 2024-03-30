@@ -1,9 +1,7 @@
 """Support for ICSee devices."""
-from .config_flow import async_get_entry_data
-from .camera import Camera
-from .const import DOMAIN
+
 import logging
-from homeassistant.helpers import device_registry as dr, entity_registry as er
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_HOST,
@@ -11,7 +9,11 @@ from homeassistant.const import (
     CONF_USERNAME,
     Platform,
 )
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
+
+from .camera import Camera
+from .config_flow import async_get_entry_data
+from .const import DOMAIN
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,

@@ -1,16 +1,12 @@
 import logging
+
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-import logging
-from .icsee_entity import ICSeeEntity
 
-from .const import (
-    CONF_CHANNEL_COUNT,
-    CONF_EXPERIMENTAL_ENTITIES,
-)
+from .const import CONF_CHANNEL_COUNT, CONF_EXPERIMENTAL_ENTITIES
+from .icsee_entity import ICSeeEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,6 +31,7 @@ async def async_setup_entry(
         update_before_add=False,
     )
 
+
 DAY_NIGHT_COLOR_MAPPING = {
     "Unknown": "0x00000000",
     "Color": "0x00000001",
@@ -46,7 +43,8 @@ DAY_NIGHT_COLOR_MAPPING = {
 
 DAY_NIGHT_COLOR_MAPPING_INV = {v: k for k, v in DAY_NIGHT_COLOR_MAPPING.items()}
 
-WHITE_LIGHT_WORK_MODE_LIST = ['Intelligent', 'Auto', 'Close']
+WHITE_LIGHT_WORK_MODE_LIST = ["Intelligent", "Auto", "Close"]
+
 
 class DayNightColorSelect(ICSeeEntity, SelectEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):
@@ -71,6 +69,7 @@ class DayNightColorSelect(ICSeeEntity, SelectEntity):
         x[self.channel]["DayNightColor"] = DAY_NIGHT_COLOR_MAPPING[option]
         await self.cam.dvrip.set_info("Camera.Param", x)
         self.cam.camara_info["Param"] = x
+
 
 class WhiteLightSelect(ICSeeEntity, SelectEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):

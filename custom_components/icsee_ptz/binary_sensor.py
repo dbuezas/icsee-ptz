@@ -1,16 +1,14 @@
 import logging
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.components.binary_sensor import BinarySensorEntity
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.core import HomeAssistant
-from homeassistant.components.binary_sensor import (
-    BinarySensorDeviceClass,
-)
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers import entity_platform
-from homeassistant.helpers import config_validation as cv
-import logging
+
 import voluptuous as vol
+from homeassistant.components.binary_sensor import BinarySensorDeviceClass
+from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
 from .const import CONF_CHANNEL, CONF_CHANNEL_COUNT, CONF_PRESET, CONF_STEP
 from .icsee_entity import ICSeeEntity
 

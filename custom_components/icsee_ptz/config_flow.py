@@ -1,9 +1,16 @@
+import logging
 from functools import partial
 from ipaddress import IPv6Address, ip_address
 from typing import Any
-from homeassistant.data_entry_flow import FlowResult
-from homeassistant.helpers import config_validation as cv
-from homeassistant.config_entries import ConfigEntry, OptionsFlow, ConfigFlow
+
+import voluptuous as vol
+from getmac import get_mac_address
+from homeassistant.config_entries import (
+    ConfigEntry,
+    OptionsFlow,
+    ConfigFlow,
+    OptionsFlowWithConfigEntry,
+)
 from homeassistant.const import (
     CONF_HOST,
     CONF_MAC,
@@ -13,8 +20,10 @@ from homeassistant.const import (
     CONF_PASSWORD,
 )
 from homeassistant.core import HomeAssistant, callback
-import voluptuous as vol
-import logging
+from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers import config_validation as cv
+
+from .asyncio_dvrip import DVRIPCam, SomethingIsWrongWithCamera
 from .const import (
     CONF_CHANNEL,
     CONF_CHANNEL_COUNT,
@@ -24,8 +33,6 @@ from .const import (
     CONF_SYSTEM_CAPABILITIES,
     DOMAIN,
 )
-from .asyncio_dvrip import DVRIPCam, SomethingIsWrongWithCamera
-from getmac import get_mac_address
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -129,11 +136,17 @@ class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
         return OptionsFlowHandler(config_entry)
 
 
-class OptionsFlowHandler(OptionsFlow):
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize options flow."""
-        self.config_entry = config_entry
+OPTIONS_SCHEMA = vol.Schema(
+    {
+        vol.Optional(CONF_CHANNEL): cv.positive_int,
+        vol.Optional(CONF_STEP): cv.positive_int,
+        vol.Optional(CONF_PRESET): cv.positive_int,
+        vol.Optional(CONF_EXPERIMENTAL_ENTITIES): cv.boolean,
+    }
+)
 
+
+class OptionsFlowHandler(OptionsFlowWithConfigEntry):
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
@@ -143,40 +156,15 @@ class OptionsFlowHandler(OptionsFlow):
 
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
+            data_schema=self.add_suggested_values_to_schema(
+                OPTIONS_SCHEMA,
                 {
-                    vol.Optional(
-                        CONF_CHANNEL,
-                        description={
-                            "suggested_value": self.config_entry.options.get(
-                                CONF_CHANNEL, 0
-                            )
-                        },
-                    ): cv.positive_int,
-                    vol.Optional(
-                        CONF_STEP,
-                        description={
-                            "suggested_value": self.config_entry.options.get(
-                                CONF_STEP, 2
-                            )
-                        },
-                    ): cv.positive_int,
-                    vol.Optional(
-                        CONF_PRESET,
-                        description={
-                            "suggested_value": self.config_entry.options.get(
-                                CONF_PRESET, 0
-                            )
-                        },
-                    ): cv.positive_int,
-                    vol.Optional(
-                        CONF_EXPERIMENTAL_ENTITIES,
-                        description={
-                            "suggested_value": self.config_entry.options.get(
-                                CONF_EXPERIMENTAL_ENTITIES, False
-                            )
-                        },
-                    ): cv.boolean,
-                }
+                    CONF_CHANNEL: self._options.get(CONF_CHANNEL, 0),
+                    CONF_STEP: self._options.get(CONF_STEP, 2),
+                    CONF_PRESET: self.options.get(CONF_PRESET, 0),
+                    CONF_EXPERIMENTAL_ENTITIES: self.options.get(
+                        CONF_EXPERIMENTAL_ENTITIES, False
+                    ),
+                },
             ),
         )
