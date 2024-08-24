@@ -46,7 +46,7 @@ DAY_NIGHT_COLOR_MAPPING = {
 
 DAY_NIGHT_COLOR_MAPPING_INV = {v: k for k, v in DAY_NIGHT_COLOR_MAPPING.items()}
 
-WHITE_LIGHT_WORK_MODE_LIST = ['Intelligent', 'Auto', 'Close']
+WHITE_LIGHT_WORK_MODE_LIST = ['Intelligent', 'Auto', 'KeepOpen', 'Close']
 
 class DayNightColorSelect(ICSeeEntity, SelectEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):
