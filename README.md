@@ -164,12 +164,19 @@ streams:
 
 | Entity                                    | Description                                                              | Enabled by default |
 | ----------------------------------------- | ------------------------------------------------------------------------ | ------------------ |
+| `binary_sensor.*_motion_alarm`            | Triggered when motion is detected.                                       | Yes                |
+| `button.*_ptz_stop`                       | Stop PTZ movement.                                                       | Yes (configured channel) |
+| `button.*_ptz_up/down/left/right`         | Move camera in a direction.                                              | Yes (configured channel) |
+| `button.*_ptz_left_up/down/right_up/down` | Move camera diagonally.                                                  | No                 |
+| `button.*_ptz_zoom_in/out`                | Zoom in/out.                                                             | No                 |
+| `button.*_home_go_to`                     | Go to home preset position.                                              | Yes (configured channel) |
+| `button.*_home_set`                       | Save current position as home preset.                                    | Yes (configured channel) |
+| `button.*_home_clear`                     | Clear the configured home preset.                                        | No                 |
+| `switch.*_motiondetect_enabled`           |                                                                          | No                 |
 | `switch.*_blinddetect_enabled`            |                                                                          | No                 |
-| `select.*_white_light`                    | You can control camera's lights.                                         | No                 |
 | `switch.*_humandetection_enabled`         |                                                                          | No                 |
 | `switch.*_lossdetect_enabled`             |                                                                          | No                 |
-| `binary_sensor.*_varanda_motion_alarm`    | It will be trigged when someone pass on front of camera.                 | Yes                |
-| `switch.*_motiondetect_enabled`           |                                                                          | No                 |
+| `select.*_white_light`                    | You can control camera's lights.                                         | No                 |
 
 # Miscelaneous
 

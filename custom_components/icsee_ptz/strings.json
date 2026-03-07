@@ -22,11 +22,12 @@
     "step": {
       "init": {
         "title": "Defaults",
-        "description": "Default ptz parameters. Step means speed. Preset is only relevant for SetPreset/GotoPreset/ClearPreset. Channel is usually 0.",
+        "description": "Default ptz parameters. Step means speed. Preset is only relevant for SetPreset/GotoPreset/ClearPreset. Channel is usually 0. By default, PTZ buttons are only created for the configured channel.",
         "data": {
           "channel": "Channel",
           "step": "Step",
           "preset": "Preset",
+          "add_ptz_buttons_all_channels": "Add PTZ button entities for all channels",
           "experimental_entities": "Enable experimental entities"
         }
       }
@@ -45,7 +46,7 @@
           "name": "Step"
         },
         "preset": {
-          "description": "Only applicable to SetPreset and GotoPreset",
+          "description": "Only applicable to SetPreset, GotoPreset, and ClearPreset",
           "name": "Preset"
         }
       },

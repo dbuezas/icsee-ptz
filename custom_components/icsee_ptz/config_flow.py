@@ -16,6 +16,7 @@ from homeassistant.core import HomeAssistant, callback
 import voluptuous as vol
 import logging
 from .const import (
+    CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS,
     CONF_CHANNEL,
     CONF_CHANNEL_COUNT,
     CONF_EXPERIMENTAL_ENTITIES,
@@ -166,6 +167,14 @@ class OptionsFlowHandler(OptionsFlow):
                             )
                         },
                     ): cv.positive_int,
+                    vol.Optional(
+                        CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS,
+                        description={
+                            "suggested_value": self.config_entry.options.get(
+                                CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS, False
+                            )
+                        },
+                    ): cv.boolean,
                     vol.Optional(
                         CONF_EXPERIMENTAL_ENTITIES,
                         description={

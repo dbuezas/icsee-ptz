@@ -15,6 +15,7 @@ from homeassistant.core import HomeAssistant, callback
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,
+    Platform.BUTTON,
     Platform.SWITCH,
     Platform.SELECT,
 ]

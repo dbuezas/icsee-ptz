@@ -22,11 +22,12 @@
     "step": {
       "init": {
         "title": "Параметры PTZ по умолчанию",
-        "description": "Шаг означает скорость. Предустановка актуально только для служб SetPreset/GotoPreset/ClearPreset. Канал обычно равен 0.",
+        "description": "Шаг означает скорость. Предустановка актуально только для служб SetPreset/GotoPreset/ClearPreset. Канал обычно равен 0. По умолчанию кнопки PTZ создаются только для настроенного канала.",
         "data": {
           "channel": "Канал",
           "step": "Шаг",
           "preset": "Предустановка",
+          "add_ptz_buttons_all_channels": "Добавить кнопки PTZ для всех каналов",
           "experimental_entities": "Включить экспериментальные сущности"
         }
       }
@@ -45,7 +46,7 @@
           "name": "Шаг"
         },
         "preset": {
-          "description": "Применимо только к SetPreset и GotoPreset",
+          "description": "Применимо только к SetPreset, GotoPreset и ClearPreset",
           "name": "Предустановка"
         }
       },
