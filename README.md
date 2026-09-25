@@ -10,7 +10,7 @@ It can also set presets and recall them and synchronize the camera clock.
 
 ### Option 1: [HACS](https://hacs.xyz/) Link
 
-1. Click [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=David+Buezas+&repository=https%3A%2F%2Fgithub.com%2Fdbuezas%2Ficsee-ptz&category=Integration)
+1. Click [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=dbuezas&repository=icsee-ptz&category=integration)
 2. Restart Home Assistant
 
 ### Option 2: [HACS](https://hacs.xyz/)
