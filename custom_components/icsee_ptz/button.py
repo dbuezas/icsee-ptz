@@ -170,7 +170,7 @@ class ICSeeButtonEntity(ICSeeEntity, ButtonEntity):
         cmd = self.entity_description.ptz_cmd
         step = self.entry.options.get(CONF_STEP, 2)
         preset = self.entry.options.get(CONF_PRESET, 0)
-        channel = self.entry.options.get(CONF_CHANNEL, self.channel)
+        channel = self.channel
         if cmd == "Stop":
             await self.cam.dvrip.ptz("DirectionUp", preset=-1)
         else:
