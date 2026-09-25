@@ -109,7 +109,7 @@ class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
                         CONF_USERNAME,
                         description={"suggested_value": "admin"},
                     ): cv.string,
-                    vol.Required(CONF_PASSWORD): str,
+                    vol.Optional(CONF_PASSWORD, default=""): str,
                 }
             ),
             description_placeholders={

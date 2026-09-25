@@ -2,8 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from homeassistant.components.button import ButtonEntity, ButtonEntityDescription
+from homeassistant.components.button import (
+    ButtonDeviceClass,
+    ButtonEntity,
+    ButtonEntityDescription,
+)
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -137,7 +142,8 @@ async def async_setup_entry(
             ICSeeButtonEntity(hass, entry, description, channel)
             for description in BUTTON_ENTITIES
             for channel in channels
-        ],
+        ]
+        + [ICSeeRebootButton(hass, entry)],
         update_before_add=False,
     )
 
@@ -172,6 +178,23 @@ class ICSeeButtonEntity(ICSeeEntity, ButtonEntity):
         preset = self.entry.options.get(CONF_PRESET, 0)
         channel = self.channel
         if cmd == "Stop":
-            await self.cam.dvrip.ptz("DirectionUp", preset=-1)
+            await self.cam.dvrip.ptz("DirectionUp", preset=-1, ch=channel)
         else:
             await self.cam.dvrip.ptz(cmd, step=step, preset=preset, ch=channel)
+
+
+class ICSeeRebootButton(ICSeeEntity, ButtonEntity):
+    """Reboot the camera."""
+
+    _attr_device_class = ButtonDeviceClass.RESTART
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
+        super().__init__(hass, entry)
+        assert self._attr_unique_id  # set by ICSeeEntity
+        self._attr_unique_id += "_reboot"
+        self._attr_name = "Reboot"
+
+    async def async_press(self) -> None:
+        """Reboot the camera. The integration reconnects by itself."""
+        await self.cam.dvrip.reboot()

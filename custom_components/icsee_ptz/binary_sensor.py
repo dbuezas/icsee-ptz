@@ -82,7 +82,7 @@ class Alarm(ICSeeEntity, BinarySensorEntity):
         preset = kwargs.get("preset", self.entry.options.get(CONF_PRESET, 0))
         channel = kwargs.get("channel", self.entry.options.get(CONF_CHANNEL, 0))
         if cmd == "Stop":
-            await self.cam.dvrip.ptz("DirectionUp", preset=-1)
+            await self.cam.dvrip.ptz("DirectionUp", preset=-1, ch=channel)
         else:
             await self.cam.dvrip.ptz(cmd, step=step, preset=preset, ch=channel)
 
