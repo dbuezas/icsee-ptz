@@ -154,6 +154,8 @@ class DVRIPCam(object):
                 data = await asyncio.wait_for(
                     self.socket_recv(length - received), timeout=self.timeout
                 )
+                if not data:
+                    return None
                 buf.extend(data)
                 received += len(data)
                 if length == received:
@@ -178,7 +180,10 @@ class DVRIPCam(object):
     async def send(self, msg, data={}, wait_response=True):
         if self.socket_writer is None:
             return {"Ret": 101}
-        await self.busy.acquire()
+        async with self.busy:
+            return await self._send_locked(msg, data, wait_response)
+
+    async def _send_locked(self, msg, data, wait_response):
         if hasattr(data, "__iter__"):
             data = bytes(json.dumps(data, ensure_ascii=False), "utf-8")
         pkt = (
@@ -197,9 +202,8 @@ class DVRIPCam(object):
         self.logger.debug("=> %s", pkt)
         self.socket_send(pkt)
         if wait_response:
-            reply = {"Ret": 101}
-            data = await self.socket_recv(20)
-            if data is None or len(data) < 20:
+            data = await self.receive_with_timeout(20)
+            if data is None:
                 return None
             (
                 head,
@@ -210,8 +214,7 @@ class DVRIPCam(object):
                 len_data,
             ) = struct.unpack("BB2xII2xHI", data)
             reply = await self.receive_json(len_data)
-            self.busy.release()
-            return reply
+            return reply or None
 
     def sofia_hash(self, password=""):
         md5 = hashlib.md5(bytes(password, "utf-8")).digest()
@@ -554,6 +557,8 @@ class DVRIPCam(object):
         data = await self.send(
             code, {"Name": command, "SessionID": "0x%08X" % self.session}
         )
+        if data is None:
+            raise SomethingIsWrongWithCamera("No reply from camera")
         if data["Ret"] in self.OK_CODES and command in data:
             return data[command]
         else:

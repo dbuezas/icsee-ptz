@@ -1,7 +1,10 @@
 import asyncio
+import logging
 
 from homeassistant.core import HomeAssistant
 from .asyncio_dvrip import DVRIPCam, SomethingIsWrongWithCamera
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class Camera:
@@ -82,9 +85,17 @@ class Camera:
                 if not self._last_connection_success:
                     await self.dvrip.set_time()
                     self._last_connection_success = True
-            except SomethingIsWrongWithCamera:
+            except Exception as e:
+                # Never let the reconnect loop die, or the camera stays dead until reload
+                if not isinstance(e, SomethingIsWrongWithCamera):
+                    _LOGGER.exception(
+                        "Unexpected error talking to camera %s", self.host
+                    )
                 self._last_connection_success = False
-                pass
+                if dvrip and dvrip is not self.dvrip:
+                    dvrip.close()
+                if dvrip_alarm and dvrip_alarm is not self.dvrip_alarm:
+                    dvrip_alarm.close()
             except asyncio.CancelledError:
                 self._last_connection_success = False
                 if dvrip:
