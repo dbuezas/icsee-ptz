@@ -46,7 +46,7 @@ DAY_NIGHT_COLOR_MAPPING = {
 
 DAY_NIGHT_COLOR_MAPPING_INV = {v: k for k, v in DAY_NIGHT_COLOR_MAPPING.items()}
 
-WHITE_LIGHT_WORK_MODE_LIST = ['Intelligent', 'Auto', 'Close']
+WHITE_LIGHT_WORK_MODE_LIST = ['Intelligent', 'Auto', 'KeepOpen', 'Close']
 
 class DayNightColorSelect(ICSeeEntity, SelectEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):
@@ -61,11 +61,27 @@ class DayNightColorSelect(ICSeeEntity, SelectEntity):
             self._attr_name = f"Day Night Color {channel}"
         self._attr_options = list(DAY_NIGHT_COLOR_MAPPING.keys())
 
+
     @property
     def current_option(self) -> str | None:
-        x = self.cam.camara_info["Param"][self.channel]["DayNightColor"]
-        return DAY_NIGHT_COLOR_MAPPING_INV[x]
+        info = self.cam.camara_info
+        if not isinstance(info, dict):
+            return None
 
+        params = info.get("Param")
+        if (
+            not isinstance(params, list)
+            or self.channel >= len(params)
+            or not isinstance(params[self.channel], dict)
+        ):
+            return None
+
+        x = params[self.channel].get("DayNightColor")
+        if x is None:
+            return None
+
+        return DAY_NIGHT_COLOR_MAPPING_INV.get(x)
+    
     async def async_select_option(self, option: str) -> None:
         x = await self.cam.dvrip.get_info("Camera.Param")
         x[self.channel]["DayNightColor"] = DAY_NIGHT_COLOR_MAPPING[option]
@@ -87,8 +103,17 @@ class WhiteLightSelect(ICSeeEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        return self.cam.camara_info["WhiteLight"]["WorkMode"]
+        info = self.cam.camara_info
+        if not isinstance(info, dict):
+            return None
+
+        white_light = info.get("WhiteLight")
+        if not isinstance(white_light, dict):
+            return None
+
+        return white_light.get("WorkMode")
 
     async def async_select_option(self, option: str) -> None:
         await self.cam.dvrip.set_info("Camera.WhiteLight.WorkMode", option)
-        self.cam.camara_info["WhiteLight"]["WorkMode"] = option
+        if isinstance(self.cam.camara_info, dict):
+            self.cam.camara_info.setdefault("WhiteLight", {})["WorkMode"] = option

@@ -16,6 +16,7 @@ from homeassistant.core import HomeAssistant, callback
 import voluptuous as vol
 import logging
 from .const import (
+    CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS,
     CONF_CHANNEL,
     CONF_CHANNEL_COUNT,
     CONF_EXPERIMENTAL_ENTITIES,
@@ -125,14 +126,11 @@ class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(
         config_entry: ConfigEntry,
     ) -> OptionsFlow:
-        """Create the options flow."""
-        return OptionsFlowHandler(config_entry)
+        return OptionsFlowHandler()
+
 
 
 class OptionsFlowHandler(OptionsFlow):
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize options flow."""
-        self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -169,6 +167,14 @@ class OptionsFlowHandler(OptionsFlow):
                             )
                         },
                     ): cv.positive_int,
+                    vol.Optional(
+                        CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS,
+                        description={
+                            "suggested_value": self.config_entry.options.get(
+                                CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS, False
+                            )
+                        },
+                    ): cv.boolean,
                     vol.Optional(
                         CONF_EXPERIMENTAL_ENTITIES,
                         description={
