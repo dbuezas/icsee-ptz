@@ -22,11 +22,12 @@
     "step": {
       "init": {
         "title": "Defaults",
-        "description": "Configurações padrão do PTZ. Passos é a velocidade do movimento. Predefinição é apenas importante para SetPreset/GotoPreset/ClearPreset. Canal geralmente é 0.",
+        "description": "Configurações padrão do PTZ. Passos é a velocidade do movimento. Predefinição é apenas importante para SetPreset/GotoPreset/ClearPreset. Canal geralmente é 0. Por padrão, os botões PTZ são criados apenas para o canal configurado.",
         "data": {
           "channel": "Canal",
           "step": "Passos",
           "preset": "Predefinição",
+          "add_ptz_buttons_all_channels": "Adicionar botões PTZ para todos os canais",
           "experimental_entities": "Ative entidades experimetais"
         }
       }
