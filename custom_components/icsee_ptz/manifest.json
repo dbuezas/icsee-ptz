@@ -7,6 +7,6 @@
   "documentation": "https://github.com/dbuezas/icsee-ptz",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/dbuezas/icsee-ptz/issues",
-  "requirements": ["python-dvr", "getmac==0.8.2"],
+  "requirements": ["getmac==0.9.5"],
   "version": "4.2.0"
 }
