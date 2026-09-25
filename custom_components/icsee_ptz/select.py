@@ -35,6 +35,7 @@ async def async_setup_entry(
         update_before_add=False,
     )
 
+
 DAY_NIGHT_COLOR_MAPPING = {
     "Unknown": "0x00000000",
     "Color": "0x00000001",
@@ -46,7 +47,8 @@ DAY_NIGHT_COLOR_MAPPING = {
 
 DAY_NIGHT_COLOR_MAPPING_INV = {v: k for k, v in DAY_NIGHT_COLOR_MAPPING.items()}
 
-WHITE_LIGHT_WORK_MODE_LIST = ['Intelligent', 'Auto', 'KeepOpen', 'Close']
+WHITE_LIGHT_WORK_MODE_LIST = ["Intelligent", "Auto", "KeepOpen", "Close"]
+
 
 class DayNightColorSelect(ICSeeEntity, SelectEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):
@@ -60,7 +62,6 @@ class DayNightColorSelect(ICSeeEntity, SelectEntity):
         else:
             self._attr_name = f"Day Night Color {channel}"
         self._attr_options = list(DAY_NIGHT_COLOR_MAPPING.keys())
-
 
     @property
     def current_option(self) -> str | None:
@@ -81,12 +82,13 @@ class DayNightColorSelect(ICSeeEntity, SelectEntity):
             return None
 
         return DAY_NIGHT_COLOR_MAPPING_INV.get(x)
-    
+
     async def async_select_option(self, option: str) -> None:
         x = await self.cam.dvrip.get_info("Camera.Param")
         x[self.channel]["DayNightColor"] = DAY_NIGHT_COLOR_MAPPING[option]
         await self.cam.dvrip.set_info("Camera.Param", x)
         self.cam.camara_info["Param"] = x
+
 
 class WhiteLightSelect(ICSeeEntity, SelectEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, channel: int = 0):

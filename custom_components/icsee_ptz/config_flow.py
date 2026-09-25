@@ -129,7 +129,6 @@ class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
         return OptionsFlowHandler()
 
 
-
 class OptionsFlowHandler(OptionsFlow):
 
     async def async_step_init(
