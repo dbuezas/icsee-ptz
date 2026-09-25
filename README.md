@@ -172,6 +172,7 @@ streams:
 | `button.*_home_go_to`                     | Go to home preset position.                                              | Yes (configured channel) |
 | `button.*_home_set`                       | Save current position as home preset.                                    | Yes (configured channel) |
 | `button.*_home_clear`                     | Clear the configured home preset.                                        | No                 |
+| `button.*_reboot`                         | Reboot the camera.                                                       | Yes                |
 | `switch.*_motiondetect_enabled`           |                                                                          | No                 |
 | `switch.*_blinddetect_enabled`            |                                                                          | No                 |
 | `switch.*_humandetection_enabled`         |                                                                          | No                 |
