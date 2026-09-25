@@ -2,13 +2,14 @@
 
 from .config_flow import async_get_entry_data
 from .camera import Camera
-from .const import DOMAIN
+from .const import DEFAULT_PORT, DOMAIN
 import logging
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_HOST,
     CONF_PASSWORD,
+    CONF_PORT,
     CONF_USERNAME,
     Platform,
 )
@@ -35,6 +36,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         entry.data[CONF_HOST],
         entry.data[CONF_USERNAME],
         entry.data[CONF_PASSWORD],
+        entry.data.get(CONF_PORT, DEFAULT_PORT),
     )
     entry.async_create_background_task(
         hass, cam.async_ensure_alive(), "DVRIPCam connections"

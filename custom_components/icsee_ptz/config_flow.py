@@ -11,6 +11,7 @@ from homeassistant.const import (
     CONF_UNIQUE_ID,
     CONF_USERNAME,
     CONF_PASSWORD,
+    CONF_PORT,
 )
 from homeassistant.core import HomeAssistant, callback
 import voluptuous as vol
@@ -23,6 +24,7 @@ from .const import (
     CONF_PRESET,
     CONF_STEP,
     CONF_SYSTEM_CAPABILITIES,
+    DEFAULT_PORT,
     DOMAIN,
 )
 from .asyncio_dvrip import DVRIPCam, SomethingIsWrongWithCamera
@@ -60,6 +62,7 @@ async def async_get_entry_data(hass: HomeAssistant, user_input):
         data[CONF_HOST],
         user=data[CONF_USERNAME],
         password=data[CONF_PASSWORD],
+        port=data[CONF_PORT],
     )
     await dvrip.login(hass.loop)
     x: dict = await dvrip.get_info("Detect")  # type: ignore
@@ -105,6 +108,7 @@ class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(CONF_NAME): str,
                     vol.Required(CONF_HOST): str,
+                    vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
                     vol.Required(
                         CONF_USERNAME,
                         description={"suggested_value": "admin"},

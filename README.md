@@ -34,6 +34,8 @@ It can also set presets and recall them and synchronize the camera clock.
 
 Go to the integration and add an entry for each of your cameras
 
+The port is usually 34567. Only change it if your camera uses a different one (e.g. behind port forwarding).
+
 [![Open your Home Assistant instance and show an integration.](https://my.home-assistant.io/badges/integration.svg)](https://my.home-assistant.io/redirect/integration/?domain=icsee_ptz)
 
 <img width="447" alt="image" src="https://github.com/dbuezas/icsee-ptz/assets/777196/1853de8a-85c1-4578-8932-11a0923d4dd8" width="350">

@@ -9,13 +9,14 @@ _LOGGER = logging.getLogger(__name__)
 
 class Camera:
     def __init__(
-        self, hass: HomeAssistant, host: str, user: str, password: str
+        self, hass: HomeAssistant, host: str, user: str, password: str, port: int
     ) -> None:
         """DVRIp wrapper that handles reconnects."""
         self.hass = hass
         self.host = host
         self.user = user
         self.password = password
+        self.port = port
         self.dvrip = None
         self.dvrip_alarm = None
         self.alarm_callbacks = []
@@ -58,11 +59,13 @@ class Camera:
                 self.host,
                 user=self.user,
                 password=self.password,
+                port=self.port,
             )
             dvrip_alarm = DVRIPCam(
                 self.host,
                 user=self.user,
                 password=self.password,
+                port=self.port,
             )
             try:
                 await dvrip.login(self.hass.loop)

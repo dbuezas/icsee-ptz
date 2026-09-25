@@ -12,6 +12,7 @@
         "data": {
           "name": "Nome",
           "host": "Host ou IP",
+          "port": "Porta",
           "username": "Usuário",
           "password": "Senha"
         }
