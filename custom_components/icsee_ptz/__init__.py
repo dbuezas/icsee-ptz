@@ -1,4 +1,5 @@
 """Support for ICSee devices."""
+
 from .config_flow import async_get_entry_data
 from .camera import Camera
 from .const import DOMAIN
