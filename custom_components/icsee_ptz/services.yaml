@@ -1,7 +1,8 @@
 move:
   target:
-    device:
+    entity:
       integration: icsee_ptz
+      domain: binary_sensor
   fields:
     cmd:
       example: "DirectionUp"
@@ -45,9 +46,11 @@ move:
           max: 100
 synchronize_clock:
   target:
-    device:
+    entity:
       integration: icsee_ptz
+      domain: binary_sensor
 force_frame:
   target:
-    device:
+    entity:
       integration: icsee_ptz
+      domain: binary_sensor
