@@ -201,11 +201,24 @@ async def test_ptz_button(hass: HomeAssistant, setup_integration, mock_device) -
     mock_device.async_ptz.assert_awaited_with("Stop", 2, 0, 0)
 
 
-async def test_camera_stream_source(hass: HomeAssistant, setup_integration) -> None:
+async def test_camera_needs_rtsp(
+    hass: HomeAssistant, setup_integration, mock_device
+) -> None:
     from homeassistant.components.camera import async_get_stream_source
+    from homeassistant.helpers import issue_registry as ir
 
+    issue = ("icsee_ptz", f"rtsp_disabled_{setup_integration.entry_id}")
+    # RTSP server off: no video, and a repair issue explains it
+    assert hass.states.get("camera.garten_sub_stream").state == "unavailable"
+    assert ir.async_get(hass).async_get_issue(*issue)
+    await hass.services.async_call(
+        "switch", "turn_on", {"entity_id": "switch.garten_rtsp_server"}, blocking=True
+    )
+    await hass.async_block_till_done()
+    assert hass.states.get("camera.garten_sub_stream").state != "unavailable"
+    assert not ir.async_get(hass).async_get_issue(*issue)
     assert await async_get_stream_source(hass, "camera.garten_sub_stream") == (
-        "dvrip://admin:secret@192.0.2.10:34567?channel=0&subtype=1"
+        "rtsp://192.0.2.10:554/user=admin&password=secret&channel=1&stream=1.sdp?real_stream"
     )
 
 

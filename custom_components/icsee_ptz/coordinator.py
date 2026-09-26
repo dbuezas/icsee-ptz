@@ -53,6 +53,7 @@ CONFIGS: dict[str, ConfigSpec] = {
     # security
     "NetWork.Nat": ConfigSpec(per_channel=False),  # XMEye cloud / P2P access
     "NetWork.PMS": ConfigSpec(per_channel=False),  # cloud push notifications
+    "NetWork.RTSP": ConfigSpec(per_channel=False),  # RTSP server (video)
     "General.PwdSafety": ConfigSpec(per_channel=False),  # password reset options
     # read only status
     "Users": ConfigSpec(per_channel=False, code=1472),

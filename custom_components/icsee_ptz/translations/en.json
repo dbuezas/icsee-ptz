@@ -265,6 +265,9 @@
       "voice_prompts": {
         "name": "Voice prompts"
       },
+      "rtsp_server": {
+        "name": "RTSP server"
+      },
       "cloud_access": {
         "name": "Cloud access (P2P)"
       },
@@ -478,6 +481,10 @@
     }
   },
   "issues": {
+    "rtsp_disabled": {
+      "title": "{name}: turn on the RTSP server for video",
+      "description": "Home Assistant plays the camera video over RTSP, but the RTSP server of {name} is off. Turn on its **RTSP server** switch to see the video."
+    },
     "reboot_required": {
       "title": "{name} needs a restart",
       "description": "A setting was saved, but the camera only applies it after a restart. Press the Restart button of {name}."

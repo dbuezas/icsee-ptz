@@ -179,6 +179,13 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
     ),
     ICSeeSwitchEntityDescription(
+        key="rtsp_server",
+        translation_key="rtsp_server",
+        config="NetWork.RTSP",
+        path=("IsServer",),
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSwitchEntityDescription(
         key="cloud_access",
         translation_key="cloud_access",
         config="NetWork.Nat",

@@ -1560,6 +1560,21 @@
     ],
     "PlysicalNo": 0
    }
-  ]
+  ],
+  "NetWork.RTSP": {
+   "Client": {
+    "Port": 554
+   },
+   "IsClient": false,
+   "IsServer": false,
+   "Server": {
+    "Address": "0x00000000",
+    "Anonymity": false,
+    "Name": "",
+    "Password": "",
+    "Port": 554,
+    "UserName": ""
+   }
+  }
  }
 }

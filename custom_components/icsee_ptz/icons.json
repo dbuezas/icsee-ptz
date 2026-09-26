@@ -67,6 +67,9 @@
       "voice_prompts": {
         "default": "mdi:account-voice"
       },
+      "rtsp_server": {
+        "default": "mdi:video-wireless"
+      },
       "cloud_access": {
         "default": "mdi:cloud-lock"
       },

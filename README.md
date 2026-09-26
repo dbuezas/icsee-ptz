@@ -155,8 +155,11 @@ ptz:
 # Video
 
 Each camera gets a `camera.*_main_stream` and a `camera.*_sub_stream` entity. Home Assistant
-plays them through its built-in go2rtc; you don't need to configure anything.
+plays them through its built-in go2rtc; you don't need to configure go2rtc.
 Snapshots come from the stream too.
+
+The video comes from the camera's RTSP server (Home Assistant's built-in go2rtc has no DVRIP
+support). If it is off, a repair message tells you to turn on the camera's **RTSP server** switch.
 
 If you prefer your own go2rtc, these streams work there as well:
 
@@ -179,7 +182,7 @@ Entities only appear if the camera supports them.
 | --- | --- | --- |
 | **Alarm and video** | | |
 | Motion alarm | binary_sensor | On while the camera reports an alarm. Motion or human detection must be enabled on the camera, e.g. with the detection switches below. Also the target of the `icsee_ptz.move` action. |
-| Main stream / Sub stream | camera | Live video in high / low quality. Played by Home Assistant's go2rtc; snapshots come from the stream. |
+| Main stream / Sub stream | camera | Live video in high / low quality. Played by Home Assistant's go2rtc; snapshots come from the stream. Needs the RTSP server switch on. |
 | **PTZ** | | |
 | PTZ up / down / left / right / stop | button | Move the camera. Speed = the Step option. |
 | PTZ diagonal moves, zoom in / out | button | Move diagonally, zoom. |
@@ -230,6 +233,7 @@ Entities only appear if the camera supports them.
 | Restart / Synchronize clock | button | Restart the camera / set its clock to the Home Assistant time. |
 | Siren | siren | The camera's built-in alarm siren. |
 | **Security** | | |
+| RTSP server | switch | The camera's RTSP video server (port 554). Needed for the camera entities. |
 | Cloud access (P2P) | switch | The XMEye/ICSee cloud connection that lets the apps reach the camera from anywhere. Turn it off if you only use it at home. |
 | Cloud push notifications | switch | Alarm messages to the phone app. |
 | Password reset by security questions / email or phone set | binary_sensor | On if someone can reset the camera password with security answers / a code sent by email or phone. |
