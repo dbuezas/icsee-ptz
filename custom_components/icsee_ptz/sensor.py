@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from homeassistant.components.sensor import (
     SensorEntity,
@@ -51,8 +52,20 @@ async def async_setup_entry(
 
 class ICSeeSensor(ICSeeConfigEntity, SensorEntity):
     entity_description: ICSeeSensorEntityDescription
+    # user names are shown, but not stored in the history database
+    _unrecorded_attributes = frozenset({"users"})
 
     @property
     def native_value(self) -> int | None:
         value = self.config_value
         return None if value is None else int(value)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        if self.entity_description.key != "extra_users":
+            return None
+        users = (self.coordinator.channel_value("System.ExUserMap", 0) or {}).get(
+            "User"
+        ) or []
+        # names only, never passwords
+        return {"users": [u.get("Name") for u in users if isinstance(u, dict)]}

@@ -238,7 +238,10 @@ async def test_security_entities(
         hass.states.get("binary_sensor.garten_password_reset_email_or_phone_set").state
         == "off"
     )
-    assert hass.states.get("sensor.garten_extra_users").state == "1"
+    extra = hass.states.get("sensor.garten_extra_users")
+    assert extra.state == "1"
+    assert extra.attributes["users"] == ["hiddenuser"]
+    assert "hiddenpass" not in str(extra.attributes)
     # the camera has no VerifyCodeRestorePwdType field
     assert hass.states.get("switch.garten_password_reset_by_code") is None
     await hass.services.async_call(
