@@ -6,6 +6,7 @@ from typing import Any
 
 from collections.abc import Callable
 from dataclasses import dataclass
+import time
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
@@ -28,6 +29,7 @@ from .entity import (
 )
 
 PARALLEL_UPDATES = 0
+PUSH_GRACE = 60  # seconds a pushed alarm wins over the polled state
 
 
 async def async_setup_entry(
@@ -113,7 +115,29 @@ class MotionAlarm(ICSeeEntity, BinarySensorEntity):
 
     def __init__(self, coordinator: ICSeeCoordinator, channel: int) -> None:
         super().__init__(coordinator, f"alarm_{channel}", channel)  # legacy unique id
-        self._attr_is_on = None
+        self._last_push = 0.0
+        self._attr_is_on = self._polled()
+
+    def _polled(self) -> bool | None:
+        """Current alarm state from WorkState (one bit per channel)."""
+        state = (self.coordinator.channel_value("WorkState", 0) or {}).get("AlarmState")
+        if not isinstance(state, dict) or state.get("VideoMotion") is None:
+            return None
+        try:
+            bits = int(state["VideoMotion"], 16)
+        except (TypeError, ValueError):
+            return None
+        return bool(bits >> self.channel & 1)
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        polled = self._polled()
+        # Use the polled state at start, and when an event was missed (e.g. the
+        # "motion ended" event during a connection drop)
+        recent_push = time.monotonic() - self._last_push < PUSH_GRACE
+        if polled is not None and polled != self._attr_is_on and not recent_push:
+            self._attr_is_on = polled
+        super()._handle_coordinator_update()
 
     @property
     def available(self) -> bool:
@@ -128,6 +152,7 @@ class MotionAlarm(ICSeeEntity, BinarySensorEntity):
     def _on_alarm(self, what: dict[str, Any]) -> None:
         if what.get("Channel") != self.channel:
             return
+        self._last_push = time.monotonic()
         self._attr_is_on = what.get("Status") == "Start"
         self._attr_extra_state_attributes = what
         self.async_write_ha_state()

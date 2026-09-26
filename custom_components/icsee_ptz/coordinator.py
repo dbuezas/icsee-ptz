@@ -74,6 +74,7 @@ CONFIGS: dict[str, ConfigSpec] = {
     "WifiRouteInfo": ConfigSpec(per_channel=False, code=1020),
     "Status.NatInfo": ConfigSpec(per_channel=False),  # cloud connection state
     "StorageInfo": ConfigSpec(per_channel=False, code=1020),  # SD card
+    "WorkState": ConfigSpec(per_channel=False, code=1020),  # current alarm state
 }
 
 # Abilities (cmd 1360) read once at setup

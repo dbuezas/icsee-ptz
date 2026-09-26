@@ -1686,6 +1686,15 @@
     "NoBitCnt": 1,
     "VideoInactiveCnt": 2
    }
-  ]
+  ],
+  "WorkState": {
+   "AlarmState": {
+    "AlarmIn": "0x00000000",
+    "AlarmOut": "0x00000000",
+    "VideoBlind": "0x00000000",
+    "VideoLoss": "0x00000000",
+    "VideoMotion": "0x00000000"
+   }
+  }
  }
 }

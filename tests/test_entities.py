@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import pytest
 
 from homeassistant.core import HomeAssistant
@@ -385,3 +387,26 @@ async def test_reboot_issue_cleared_on_reconnect(
     for cb in list(mock_device._connection_callbacks):
         cb()
     assert not ir.async_get(hass).async_get_issue(*issue)
+
+
+async def test_motion_alarm_polled(
+    hass: HomeAssistant, setup_integration, mock_device
+) -> None:
+    entity_id = "binary_sensor.garten_motion_alarm"
+    # known at start, without waiting for an event
+    assert hass.states.get(entity_id).state == "off"
+    coordinator = setup_integration.runtime_data.coordinator
+    # a pushed event wins for a while over the (older) polled state
+    mock_device.fire_alarm({"Channel": 0, "Status": "Start"})
+    await coordinator.async_refresh()
+    assert hass.states.get(entity_id).state == "on"
+    # missed "stop" event: the poll corrects it once the push is old
+    from custom_components.icsee_ptz import binary_sensor
+
+    with patch.object(binary_sensor, "PUSH_GRACE", 0):
+        await coordinator.async_refresh()
+    assert hass.states.get(entity_id).state == "off"
+    mock_device.configs["WorkState"]["AlarmState"]["VideoMotion"] = "0x00000001"
+    with patch.object(binary_sensor, "PUSH_GRACE", 0):
+        await coordinator.async_refresh()
+    assert hass.states.get(entity_id).state == "on"
