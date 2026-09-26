@@ -2,6 +2,7 @@ name: HACS Action
 
 on:
   push:
+    branches: ["**"]
   pull_request:
   workflow_dispatch:
   schedule:
