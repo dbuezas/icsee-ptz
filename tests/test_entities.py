@@ -284,3 +284,12 @@ async def test_all_entities_enabled(hass: HomeAssistant, setup_integration) -> N
     entries = er.async_entries_for_config_entry(registry, setup_integration.entry_id)
     assert entries
     assert [e.entity_id for e in entries if e.disabled_by] == []
+
+
+async def test_camera_snapshots_from_stream(
+    hass: HomeAssistant, setup_integration
+) -> None:
+    from homeassistant.components import camera
+
+    cam = camera.get_camera_from_entity_id(hass, "camera.garten_main_stream")
+    assert cam.use_stream_for_stills is True

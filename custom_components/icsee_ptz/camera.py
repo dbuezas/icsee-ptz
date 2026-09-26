@@ -32,8 +32,6 @@ async def async_setup_entry(
 
 class ICSeeCamera(ICSeeEntity, Camera):
     _attr_supported_features = CameraEntityFeature.STREAM
-    # Snapshots come from the stream (via go2rtc); OPSNAP is not supported by many cameras
-    _attr_use_stream_for_stills = True
 
     def __init__(
         self, coordinator: ICSeeCoordinator, stream: str, subtype: int, channel: int
@@ -46,6 +44,11 @@ class ICSeeCamera(ICSeeEntity, Camera):
     @property
     def available(self) -> bool:
         return self.device.is_connected
+
+    @property
+    def use_stream_for_stills(self) -> bool:
+        # Snapshots come from the stream (via go2rtc); OPSNAP is not supported by many cameras
+        return True
 
     async def stream_source(self) -> str:
         device = self.device
