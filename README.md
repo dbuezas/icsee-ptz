@@ -57,7 +57,7 @@ PTZ buttons, settings, and the `icsee_ptz.move` action for PTZ.
 
 ## Motion alarm
 
-Turn on motion or human detection with the detection switches of the camera.
+Motion or human detection must be enabled on the camera. You can do that with the detection switches of this integration.
 Then, you can use the motion alarm entity in your automations.
 
 <img width="350" alt="image" src="https://github.com/dbuezas/icsee-ptz/assets/777196/06ef6fd4-e04c-4c06-83e1-724db6d65b05">
@@ -178,7 +178,7 @@ Entities only appear if the camera supports them.
 | Entity | Type | What it does |
 | --- | --- | --- |
 | **Alarm and video** | | |
-| Motion alarm | binary_sensor | On while the camera reports an alarm. Which events count is set with the detection switches below. Also the target of the `icsee_ptz.move` action. |
+| Motion alarm | binary_sensor | On while the camera reports an alarm. Motion or human detection must be enabled on the camera, e.g. with the detection switches below. Also the target of the `icsee_ptz.move` action. |
 | Main stream / Sub stream | camera | Live video in high / low quality. Played by Home Assistant's go2rtc; snapshots come from the stream. |
 | **PTZ** | | |
 | PTZ up / down / left / right / stop | button | Move the camera. Speed = the Step option. |
