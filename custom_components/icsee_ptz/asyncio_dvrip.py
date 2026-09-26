@@ -922,11 +922,19 @@ class DVRIPCam(object):
         start = None
         sent = 0  # packets
         buffer = b""
+        # While talking, the camera streams its microphone back (msg 1433). Read and
+        # drop it, or the connection fills up and the camera stalls.
+        drain = asyncio.create_task(self._drain())
+        next_keepalive = loop.time() + self.alive_time
 
         async def send_packet(payload):
-            nonlocal start, sent
+            nonlocal start, sent, next_keepalive
             if start is None:
                 start = loop.time()
+            if loop.time() > next_keepalive:
+                # the drain task reads (and drops) the reply
+                self._write_raw(1006, self._json_payload("KeepAlive", {}))
+                next_keepalive = loop.time() + self.alive_time
             self._write_raw(1432, header + payload)
             sent += 1
             # pace in real time, staying up to 4 packets (160 ms) ahead
@@ -934,16 +942,33 @@ class DVRIPCam(object):
             if delay > 0:
                 await asyncio.sleep(delay)
 
-        async for chunk in chunks:
-            buffer += chunk
-            while len(buffer) >= packet_size:
-                await send_packet(buffer[:packet_size])
-                buffer = buffer[packet_size:]
-        if buffer:
-            await send_packet(buffer.ljust(packet_size, b"\xd5"))  # A-law silence
-        if start is not None:
-            # wait until the camera played the last packet
-            await asyncio.sleep(max(0, start + sent * packet_size / 8000 - loop.time()))
+        try:
+            async for chunk in chunks:
+                buffer += chunk
+                while len(buffer) >= packet_size:
+                    await send_packet(buffer[:packet_size])
+                    buffer = buffer[packet_size:]
+            if buffer:
+                await send_packet(buffer.ljust(packet_size, b"\xd5"))  # A-law silence
+            if start is not None:
+                # wait until the camera played the last packet
+                await asyncio.sleep(
+                    max(0, start + sent * packet_size / 8000 - loop.time())
+                )
+        finally:
+            drain.cancel()
+
+    async def _drain(self):
+        """Read and drop everything the camera sends."""
+        try:
+            while self.socket_reader and await self.socket_reader.read(65536):
+                pass
+        except (OSError, RuntimeError):
+            pass
+
+    def _json_payload(self, name, data):
+        body = {"Name": name, "SessionID": "0x%08X" % self.session, **data}
+        return json.dumps(body).encode() + b"\x0a\x00"
 
     async def _request(self, code, name):
         reply = await self.send(

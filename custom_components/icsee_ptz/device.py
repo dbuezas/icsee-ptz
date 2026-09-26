@@ -236,6 +236,8 @@ class ICSeeDevice:
     async def async_talk(self, chunks: AsyncIterator[bytes]) -> None:
         """Play A-law audio on the speaker, on its own connection."""
         cam = self._new_cam()
+        # talk_stream reads the connection itself and sends keepalives
+        cam.keep_alive = lambda loop: None
         try:
             await self._login(cam)
             await cam.talk_stream(chunks)
