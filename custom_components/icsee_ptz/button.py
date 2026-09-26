@@ -11,6 +11,7 @@ from homeassistant.components.button import (
 )
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .binary_sensor import _run
@@ -20,6 +21,7 @@ from .const import (
     CONF_CHANNEL_COUNT,
     CONF_PRESET,
     CONF_STEP,
+    DOMAIN,
 )
 from .coordinator import ICSeeConfigEntry, ICSeeCoordinator
 from .entity import ICSeeEntity
@@ -118,6 +120,9 @@ class RebootButton(ICSeeEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         await _run(self.device.async_reboot())
+        # settings that needed a restart are applied now
+        entry_id = self.coordinator.config_entry.entry_id
+        ir.async_delete_issue(self.hass, DOMAIN, f"reboot_required_{entry_id}")
 
 
 class SyncClockButton(ICSeeEntity, ButtonEntity):
