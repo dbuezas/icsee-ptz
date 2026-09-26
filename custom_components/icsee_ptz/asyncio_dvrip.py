@@ -886,7 +886,15 @@ class DVRIPCam(object):
             raise CommandFailed("OPRemoteCtrl", reply.get("Ret"))
 
     async def talk(self, alaw: bytes, packet_size=320):
-        """Play 8 kHz mono G.711 A-law audio on the camera speaker.
+        """Play 8 kHz mono G.711 A-law audio on the camera speaker."""
+
+        async def chunks():
+            yield alaw
+
+        await self.talk_stream(chunks(), packet_size)
+
+    async def talk_stream(self, chunks, packet_size=320):
+        """Play A-law audio from an async iterator of byte chunks, in real time.
 
         Protocol as in go2rtc (pkg/dvrip): OPTalk Claim (1434), Start (1430),
         then OPTalkData (1432) packets with an 8 byte media header.
@@ -911,17 +919,31 @@ class DVRIPCam(object):
             struct.pack(">I", 0x1FA) + bytes([14, 2]) + struct.pack("<H", packet_size)
         )
         loop = asyncio.get_running_loop()
-        start = loop.time()
-        for i, pos in enumerate(range(0, len(alaw), packet_size)):
-            chunk = alaw[pos : pos + packet_size].ljust(
-                packet_size, b"\xd5"
-            )  # A-law silence
-            self._write_raw(1432, header + chunk)
+        start = None
+        sent = 0  # packets
+        buffer = b""
+
+        async def send_packet(payload):
+            nonlocal start, sent
+            if start is None:
+                start = loop.time()
+            self._write_raw(1432, header + payload)
+            sent += 1
             # pace in real time, staying up to 4 packets (160 ms) ahead
-            delay = start + (i - 4) * packet_size / 8000 - loop.time()
+            delay = start + (sent - 4) * packet_size / 8000 - loop.time()
             if delay > 0:
                 await asyncio.sleep(delay)
-        await asyncio.sleep(max(0, start + len(alaw) / 8000 - loop.time()))
+
+        async for chunk in chunks:
+            buffer += chunk
+            while len(buffer) >= packet_size:
+                await send_packet(buffer[:packet_size])
+                buffer = buffer[packet_size:]
+        if buffer:
+            await send_packet(buffer.ljust(packet_size, b"\xd5"))  # A-law silence
+        if start is not None:
+            # wait until the camera played the last packet
+            await asyncio.sleep(max(0, start + sent * packet_size / 8000 - loop.time()))
 
     async def _request(self, code, name):
         reply = await self.send(

@@ -150,3 +150,32 @@ def test_stream_max_fps() -> None:
     # budget alone would allow 31 fps at 3M, but PAL caps it at 25
     h_enc["MainFormat"]["Video"]["Resolution"] = "3M"
     assert encode.stream_max_fps(h_cap, h_enc, encode.MAIN, 0, ntsc=False) == 25
+
+
+def test_parse_playlist() -> None:
+    from custom_components.icsee_ptz.media_player import parse_playlist
+
+    m3u = "#EXTM3U\n#EXTINF:-1,hr3\nhttp://dispatcher.example/hr3/stream.mp3\n"
+    assert parse_playlist(m3u) == "http://dispatcher.example/hr3/stream.mp3"
+    pls = "[playlist]\nNumberOfEntries=1\nFile1=https://radio.example/live\nTitle1=x\n"
+    assert parse_playlist(pls) == "https://radio.example/live"
+    assert parse_playlist("#EXTM3U\n") is None
+
+
+async def test_talk_stream_chunks(monkeypatch: pytest.MonkeyPatch) -> None:
+    cam = DVRIPCam("192.0.2.1")
+    cam.socket_writer = _Writer()
+
+    async def fake_send(msg, data=None, wait_response=True):
+        return {"Ret": 100} if wait_response else None
+
+    async def chunks():
+        for size in (100, 500, 1000, 7):  # odd sizes, 1607 bytes in total
+            yield b"\x02" * size
+
+    monkeypatch.setattr(cam, "send", fake_send)
+    monkeypatch.setattr(asyncio, "sleep", _no_sleep)
+    await cam.talk_stream(chunks())
+    packets = _packets(bytes(cam.socket_writer.data))
+    assert len(packets) == 6  # ceil(1607 / 320)
+    assert all(len(p) == 8 + 320 for _, p in packets)

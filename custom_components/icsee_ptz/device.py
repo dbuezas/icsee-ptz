@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
+from collections.abc import AsyncIterator, Callable
 import logging
 from typing import Any
 
@@ -233,12 +233,12 @@ class ICSeeDevice:
         finally:
             cam.close()
 
-    async def async_talk(self, alaw: bytes) -> None:
+    async def async_talk(self, chunks: AsyncIterator[bytes]) -> None:
         """Play A-law audio on the speaker, on its own connection."""
         cam = self._new_cam()
         try:
             await self._login(cam)
-            await cam.talk(alaw)
+            await cam.talk_stream(chunks)
         except SomethingIsWrongWithCamera as err:
             raise CannotConnect(str(err)) from err
         finally:
