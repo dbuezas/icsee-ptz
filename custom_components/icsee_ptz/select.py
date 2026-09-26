@@ -150,7 +150,6 @@ def _encode(stream: str, prefix: str) -> tuple[ICSeeSelectEntityDescription, ...
             path=(stream, "Video", "Compression"),
             options_fn=_encode_options("compression", stream),
             entity_category=EntityCategory.CONFIG,
-            entity_registry_enabled_default=False,
         ),
         ICSeeSelectEntityDescription(
             key=f"{prefix}_bitrate_control",
@@ -159,7 +158,6 @@ def _encode(stream: str, prefix: str) -> tuple[ICSeeSelectEntityDescription, ...
             path=(stream, "Video", "BitRateControl"),
             value_map={"CBR": "cbr", "VBR": "vbr"},
             entity_category=EntityCategory.CONFIG,
-            entity_registry_enabled_default=False,
         ),
     )
 
@@ -208,7 +206,6 @@ SELECTS: tuple[ICSeeSelectEntityDescription, ...] = (
         path=("Style",),
         value_map={"typedefault": "style_1", "type1": "style_2", "type2": "style_3"},
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=False,
     ),
     ICSeeSelectEntityDescription(
         key="tracking_sensitivity",

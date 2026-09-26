@@ -83,7 +83,6 @@ def _encode(stream: str, prefix: str) -> tuple[ICSeeNumberEntityDescription, ...
             device_class=NumberDeviceClass.DATA_RATE,
             native_unit_of_measurement=UnitOfDataRate.KILOBITS_PER_SECOND,
             entity_category=EntityCategory.CONFIG,
-            entity_registry_enabled_default=False,
         ),
         ICSeeNumberEntityDescription(
             key=f"{prefix}_gop",
@@ -96,12 +95,11 @@ def _encode(stream: str, prefix: str) -> tuple[ICSeeNumberEntityDescription, ...
             mode=NumberMode.BOX,
             native_unit_of_measurement=UnitOfTime.SECONDS,
             entity_category=EntityCategory.CONFIG,
-            entity_registry_enabled_default=False,
         ),
     )
 
 
-def _color(field: str, key: str, enabled: bool = True) -> ICSeeNumberEntityDescription:
+def _color(field: str, key: str) -> ICSeeNumberEntityDescription:
     return ICSeeNumberEntityDescription(
         key=key,
         translation_key=key,
@@ -112,7 +110,6 @@ def _color(field: str, key: str, enabled: bool = True) -> ICSeeNumberEntityDescr
         native_step=1,
         native_unit_of_measurement=PERCENTAGE,
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=enabled,
     )
 
 
@@ -173,7 +170,7 @@ NUMBERS: tuple[ICSeeNumberEntityDescription, ...] = (
     _color("Brightness", "image_brightness"),
     _color("Contrast", "image_contrast"),
     _color("Saturation", "image_saturation"),
-    _color("Hue", "image_hue", enabled=False),
+    _color("Hue", "image_hue"),
     ICSeeNumberEntityDescription(
         key="anti_fog_level",
         translation_key="anti_fog_level",
@@ -183,7 +180,6 @@ NUMBERS: tuple[ICSeeNumberEntityDescription, ...] = (
         native_max_value=100,
         native_step=1,
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=False,
     ),
     ICSeeNumberEntityDescription(
         key="motion_sensitivity",

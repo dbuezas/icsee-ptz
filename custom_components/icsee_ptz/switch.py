@@ -28,9 +28,7 @@ class ICSeeSwitchEntityDescription(
     off_value: Any = False
 
 
-def _alarm(
-    key: str, config: str, ability: str, translation_key: str, enabled: bool = True
-):
+def _alarm(key: str, config: str, ability: str, translation_key: str):
     return ICSeeSwitchEntityDescription(
         key=key,  # legacy unique id: {serial}_{key}_{channel}
         translation_key=translation_key,
@@ -38,7 +36,6 @@ def _alarm(
         path=("Enable",),
         ability=f"SystemFunction.AlarmFunction.{ability}",
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=enabled,
     )
 
 
@@ -66,14 +63,12 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
         "Detect.BlindDetect",
         "BlindDetect",
         "tamper_detection",
-        enabled=False,
     ),
     _alarm(
         "LossDetect",
         "Detect.LossDetect",
         "LossDetect",
         "video_loss_detection",
-        enabled=False,
     ),
     _alarm(
         "CarShapeDetection",
@@ -110,15 +105,12 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
     _param_ex("night_vision", "OpenDNC", on_value=True, off_value=False),
     _param_ex("night_enhance", "NightEnhance"),
     _param_ex("low_light_fill", "MicroFillLight"),
-    _param_ex("starlight", "LowLuxMode", entity_registry_enabled_default=False),
-    _param_ex(
-        "wdr", ("BroadTrends", "AutoGain"), entity_registry_enabled_default=False
-    ),
+    _param_ex("starlight", "LowLuxMode"),
+    _param_ex("wdr", ("BroadTrends", "AutoGain")),
     _param_ex(
         "prevent_overexposure",
         "PreventOverExpo",
         ability="Camera.SupportPreventOverExpo",
-        entity_registry_enabled_default=False,
     ),
     ICSeeSwitchEntityDescription(
         key="picture_flip",
@@ -146,7 +138,6 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
         on_value=1,
         off_value=0,
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=False,
     ),
     ICSeeSwitchEntityDescription(
         key="anti_fog",
@@ -154,7 +145,6 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
         config="Camera.ClearFog",
         path=("enable",),
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=False,
     ),
     ICSeeSwitchEntityDescription(
         key="privacy_mode",
@@ -169,7 +159,6 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
         config="General.TimingSleep",
         path=("Enable",),
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=False,
     ),
     ICSeeSwitchEntityDescription(
         key="status_led",
@@ -218,7 +207,6 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
         config="Simplify.Encode",
         path=("ExtraFormat", "VideoEnable"),
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=False,
     ),
     ICSeeSwitchEntityDescription(
         key="main_stream_audio",
@@ -226,7 +214,6 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
         config="Simplify.Encode",
         path=("MainFormat", "AudioEnable"),
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=False,
     ),
     ICSeeSwitchEntityDescription(
         key="sub_stream_audio",
@@ -234,7 +221,6 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
         config="Simplify.Encode",
         path=("ExtraFormat", "AudioEnable"),
         entity_category=EntityCategory.CONFIG,
-        entity_registry_enabled_default=False,
     ),
 )
 

@@ -32,12 +32,11 @@ class ICSeePtzButtonEntityDescription(ButtonEntityDescription):
     ptz_cmd: str
 
 
-def _ptz(key: str, cmd: str, enabled: bool = True) -> ICSeePtzButtonEntityDescription:
+def _ptz(key: str, cmd: str) -> ICSeePtzButtonEntityDescription:
     return ICSeePtzButtonEntityDescription(
         key=key,
         translation_key=key,
         ptz_cmd=cmd,
-        entity_registry_enabled_default=enabled,
     )
 
 
@@ -47,15 +46,15 @@ PTZ_BUTTONS: tuple[ICSeePtzButtonEntityDescription, ...] = (
     _ptz("ptz_down", "DirectionDown"),
     _ptz("ptz_left", "DirectionLeft"),
     _ptz("ptz_right", "DirectionRight"),
-    _ptz("ptz_left_up", "DirectionLeftUp", False),
-    _ptz("ptz_left_down", "DirectionLeftDown", False),
-    _ptz("ptz_right_up", "DirectionRightUp", False),
-    _ptz("ptz_right_down", "DirectionRightDown", False),
-    _ptz("ptz_zoom_in", "ZoomTile", False),
-    _ptz("ptz_zoom_out", "ZoomWide", False),
+    _ptz("ptz_left_up", "DirectionLeftUp"),
+    _ptz("ptz_left_down", "DirectionLeftDown"),
+    _ptz("ptz_right_up", "DirectionRightUp"),
+    _ptz("ptz_right_down", "DirectionRightDown"),
+    _ptz("ptz_zoom_in", "ZoomTile"),
+    _ptz("ptz_zoom_out", "ZoomWide"),
     _ptz("home_go_to", "GotoPreset"),
     _ptz("home_set", "SetPreset"),
-    _ptz("home_clear", "ClearPreset", False),
+    _ptz("home_clear", "ClearPreset"),
 )
 
 

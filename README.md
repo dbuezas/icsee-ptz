@@ -173,60 +173,59 @@ streams:
 
 # Entities
 
-Entities only appear if the camera supports them. Less common ones are disabled by default;
-enable them in the device page.
+Entities only appear if the camera supports them.
 
-| Entity | Type | On by default | What it does |
-| --- | --- | :---: | --- |
-| **Alarm and video** | | | |
-| Motion alarm | binary_sensor | ✓ | On while the camera reports an alarm (motion, human, ...). Enable alarms in the ICSee/XMEye app first. Also the target of the `icsee_ptz.move` action. |
-| Main stream / Sub stream | camera | ✓ | Live video in high / low quality. Played by Home Assistant's go2rtc; snapshots come from the stream. |
-| **PTZ** | | | |
-| PTZ up / down / left / right / stop | button | ✓ | Move the camera. Speed = the Step option. |
-| PTZ diagonal moves, zoom in / out | button |  | Only useful on cameras that support them. |
-| Home go to / Home set current position | button | ✓ | Go to / save the preset from the options (default 0). |
-| Home clear | button |  | Delete that preset. |
-| **Lights and night vision** | | | |
-| Day/night mode | select | ✓ | When the camera uses infrared (IR). **Auto**: IR at night. **Always color**: IR never turns on (dark at night). **Always black & white**: IR always on. Cameras with a white light also offer *white light on motion* and *full color at night*. |
-| White light | switch | ✓ | Turn the white light on / off by hand (sets the white light mode to *Always on* / *Off*). |
-| White light mode | select | ✓ | *Off*, *Always on*, *Auto* (at night), *Schedule*, *On motion*. On IR + white light cameras this is also the night vision mode: *Auto* = full color, *Off* = infrared. |
-| White light brightness / motion duration / motion sensitivity | number/select | ✓ | Brightness, and how long and how easily the light turns on in *On motion* mode. |
-| Day/night switch sensitivity | number | ✓ | 0-10. How early the camera switches to night mode. |
-| Day/night switch | select | ✓ | Newer cameras only: force day or night, or use a schedule. |
-| Night vision, night vision enhancement, low light fill, light sensor threshold | switch/number | ✓ | Newer cameras only. |
-| Starlight mode | switch |  | Low light boost. |
-| IR cut filter reversed | switch |  | Only for cameras whose day/night filter works the wrong way round. |
-| **Video settings (main and sub stream)** | | | |
-| Resolution | select | ✓ | Only sizes the camera offers. |
-| Frame rate | number | ✓ | The maximum follows the camera's encoding limit and the video standard (25 PAL / 30 NTSC). |
-| Quality | select | ✓ | *Bad* ... *Best*. Higher = better picture, more data. |
-| Codec | select |  | H.264 / H.265 (if the camera has both). H.265 uses less data but not every player supports it. |
-| Bitrate, bitrate control, key frame interval | number/select |  | Advanced. The official apps don't change these. |
-| Sub stream, main / sub stream audio | switch |  | Turn the sub stream or the audio in a stream off. |
-| **Image** | | | |
-| Flip image / Mirror image | switch | ✓ | For cameras mounted upside down or reversed. |
-| Image brightness / contrast / saturation | number | ✓ | Picture colors. |
-| Image hue, image style, anti-fog, wide dynamic range, prevent overexposure | number/select/switch |  | Fine tuning. |
-| **Detection** | | | |
-| Motion detection / Human detection | switch | ✓ | Turn the camera's detection on / off (this is what triggers the motion alarm). |
-| Motion sensitivity | number | ✓ | 1 (low) - 6 (high). |
-| Motion tracking, tracking sensitivity, tracking return time | switch/select/number | ✓ | PTZ cameras that follow people, and when they return to the start position. |
-| Tamper detection / Video loss detection | switch |  | Alarm when the camera is covered / loses video. |
-| **Audio** | | | |
-| Speaker | media_player | ✓ | Play text-to-speech or sounds on the camera speaker. |
-| Speaker volume / Microphone volume | number | ✓ |  |
-| **Other** | | | |
-| Status LED / Voice prompts | switch | ✓ | The LED and the spoken messages of the camera ("device connected", ...). |
-| Privacy mode | switch | ✓ | Blacks out the video. |
-| Sleep schedule | switch |  | The camera's own sleep schedule (set times in the app). |
-| Restart / Synchronize clock | button | ✓ | Restart the camera / set its clock to the Home Assistant time. |
-| Siren | siren | ✓ | Only on cameras with a built-in alarm siren. |
-| **Security** | | | |
-| Cloud access (P2P) | switch | ✓ | The XMEye/ICSee cloud connection that lets the apps reach the camera from anywhere. Turn it off if you only use it at home. |
-| Cloud push notifications | switch | ✓ | Alarm messages to the phone app. |
-| Password reset by security questions / email or phone set | binary_sensor | ✓ | On if someone can reset the camera password with security answers / a code sent by email or phone. |
-| Password reset by code | switch | ✓ | Only on cameras that have it. |
-| Extra users | sensor | ✓ | Hidden accounts the apps create on the camera. The names are in the `users` attribute. |
+| Entity | Type | What it does |
+| --- | --- | --- |
+| **Alarm and video** | | |
+| Motion alarm | binary_sensor | On while the camera reports an alarm (motion, human, ...). Enable alarms in the ICSee/XMEye app first. Also the target of the `icsee_ptz.move` action. |
+| Main stream / Sub stream | camera | Live video in high / low quality. Played by Home Assistant's go2rtc; snapshots come from the stream. |
+| **PTZ** | | |
+| PTZ up / down / left / right / stop | button | Move the camera. Speed = the Step option. |
+| PTZ diagonal moves, zoom in / out | button | Only useful on cameras that support them. |
+| Home go to / Home set current position | button | Go to / save the preset from the options (default 0). |
+| Home clear | button | Delete that preset. |
+| **Lights and night vision** | | |
+| Day/night mode | select | When the camera uses infrared (IR). **Auto**: IR at night. **Always color**: IR never turns on (dark at night). **Always black & white**: IR always on. Cameras with a white light also offer *white light on motion* and *full color at night*. |
+| White light | switch | Turn the white light on / off by hand (sets the white light mode to *Always on* / *Off*). |
+| White light mode | select | *Off*, *Always on*, *Auto* (at night), *Schedule*, *On motion*. On IR + white light cameras this is also the night vision mode: *Auto* = full color, *Off* = infrared. |
+| White light brightness / motion duration / motion sensitivity | number/select | Brightness, and how long and how easily the light turns on in *On motion* mode. |
+| Day/night switch sensitivity | number | 0-10. How early the camera switches to night mode. |
+| Day/night switch | select | Newer cameras only: force day or night, or use a schedule. |
+| Night vision, night vision enhancement, low light fill, light sensor threshold | switch/number | Newer cameras only. |
+| Starlight mode | switch | Low light boost. |
+| IR cut filter reversed | switch | Only for cameras whose day/night filter works the wrong way round. |
+| **Video settings (main and sub stream)** | | |
+| Resolution | select | Only sizes the camera offers. |
+| Frame rate | number | The maximum follows the camera's encoding limit and the video standard (25 PAL / 30 NTSC). |
+| Quality | select | *Bad* ... *Best*. Higher = better picture, more data. |
+| Codec | select | H.264 / H.265 (if the camera has both). H.265 uses less data but not every player supports it. |
+| Bitrate, bitrate control, key frame interval | number/select | Advanced. The official apps don't change these. |
+| Sub stream, main / sub stream audio | switch | Turn the sub stream or the audio in a stream off. |
+| **Image** | | |
+| Flip image / Mirror image | switch | For cameras mounted upside down or reversed. |
+| Image brightness / contrast / saturation | number | Picture colors. |
+| Image hue, image style, anti-fog, wide dynamic range, prevent overexposure | number/select/switch | Fine tuning. |
+| **Detection** | | |
+| Motion detection / Human detection | switch | Turn the camera's detection on / off (this is what triggers the motion alarm). |
+| Motion sensitivity | number | 1 (low) - 6 (high). |
+| Motion tracking, tracking sensitivity, tracking return time | switch/select/number | PTZ cameras that follow people, and when they return to the start position. |
+| Tamper detection / Video loss detection | switch | Alarm when the camera is covered / loses video. |
+| **Audio** | | |
+| Speaker | media_player | Play text-to-speech or sounds on the camera speaker. |
+| Speaker volume / Microphone volume | number |  |
+| **Other** | | |
+| Status LED / Voice prompts | switch | The LED and the spoken messages of the camera ("device connected", ...). |
+| Privacy mode | switch | Blacks out the video. |
+| Sleep schedule | switch | The camera's own sleep schedule (set times in the app). |
+| Restart / Synchronize clock | button | Restart the camera / set its clock to the Home Assistant time. |
+| Siren | siren | Only on cameras with a built-in alarm siren. |
+| **Security** | | |
+| Cloud access (P2P) | switch | The XMEye/ICSee cloud connection that lets the apps reach the camera from anywhere. Turn it off if you only use it at home. |
+| Cloud push notifications | switch | Alarm messages to the phone app. |
+| Password reset by security questions / email or phone set | binary_sensor | On if someone can reset the camera password with security answers / a code sent by email or phone. |
+| Password reset by code | switch | Only on cameras that have it. |
+| Extra users | sensor | Hidden accounts the apps create on the camera. The names are in the `users` attribute. |
 
 The frame rate and resolution are checked against the camera's encoding limit before they are saved.
 
