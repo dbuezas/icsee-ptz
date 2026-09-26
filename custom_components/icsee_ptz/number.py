@@ -37,7 +37,21 @@ class ICSeeNumberEntityDescription(
     to_raw: Callable[[float], Any] = int
     # more fields that get the same raw value (e.g. right speaker volume)
     also_paths: tuple[tuple[str | int, ...], ...] = ()
-    max_fn: Callable[[ICSeeCoordinator], float] | None = None
+    max_fn: Callable[[ICSeeCoordinator, int], float] | None = None
+
+
+def _fps_max(stream: str) -> Callable[[ICSeeCoordinator, int], float]:
+    def max_fps(coordinator: ICSeeCoordinator, channel: int) -> float:
+        ntsc = encode.is_ntsc(coordinator.channel_value("General.Location", 0))
+        return encode.stream_max_fps(
+            coordinator.abilities.get("EncodeCapability") or {},
+            coordinator.channel_value("Simplify.Encode", channel) or {},
+            stream,
+            channel,
+            ntsc,
+        )
+
+    return max_fps
 
 
 def _encode(stream: str, prefix: str) -> tuple[ICSeeNumberEntityDescription, ...]:
@@ -50,7 +64,7 @@ def _encode(stream: str, prefix: str) -> tuple[ICSeeNumberEntityDescription, ...
             native_min_value=1,
             native_max_value=30,
             native_step=1,
-            max_fn=lambda c: encode.max_fps(c.channel_value("General.Location", 0)),
+            max_fn=_fps_max(stream),
             mode=NumberMode.SLIDER,
             entity_category=EntityCategory.CONFIG,
         ),
@@ -62,7 +76,7 @@ def _encode(stream: str, prefix: str) -> tuple[ICSeeNumberEntityDescription, ...
             native_min_value=16,
             native_max_value=49152,
             native_step=1,
-            max_fn=lambda c: float(
+            max_fn=lambda c, _ch: float(
                 (c.abilities.get("EncodeCapability") or {}).get("MaxBitrate") or 49152
             ),
             mode=NumberMode.BOX,
@@ -249,7 +263,7 @@ class ICSeeNumber(ICSeeConfigEntity, NumberEntity):
     def native_max_value(self) -> float:
         desc = self.entity_description
         if desc.max_fn:
-            return desc.max_fn(self.coordinator)
+            return desc.max_fn(self.coordinator, self.channel)
         return super().native_max_value
 
     async def async_set_native_value(self, value: float) -> None:

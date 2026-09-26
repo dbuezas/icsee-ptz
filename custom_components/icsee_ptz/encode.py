@@ -145,3 +145,22 @@ def fits(
 ) -> bool:
     limit = budget(capability, channel)
     return limit is None or load(encode, ntsc) <= limit
+
+
+def stream_max_fps(
+    capability: dict[str, Any],
+    encode: dict[str, Any],
+    stream: str,
+    channel: int,
+    ntsc: bool,
+) -> int:
+    """Highest FPS for a stream: the encode budget left by the other stream,
+    but never more than the video standard allows (25 PAL / 30 NTSC)."""
+    standard = 30 if ntsc else 25
+    limit = budget(capability, channel)
+    video = (encode.get(stream) or {}).get("Video") or {}
+    own = pixels(video.get("Resolution"), ntsc)
+    if limit is None or not own:
+        return standard
+    other = load({**encode, stream: {"VideoEnable": False}}, ntsc)
+    return max(1, min(standard, (limit - other) // own))

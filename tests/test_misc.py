@@ -128,3 +128,24 @@ async def test_get_config_not_supported(monkeypatch: pytest.MonkeyPatch) -> None
     for name in ("Missing", "Null"):
         with pytest.raises(ConfigNotSupported):
             await cam.get_config(name)
+
+
+def test_stream_max_fps() -> None:
+    garten = _fixture("garten")
+    g_cap, g_enc = (
+        garten["abilities"]["EncodeCapability"],
+        garten["configs"]["Simplify.Encode"][0],
+    )
+    assert encode.stream_max_fps(g_cap, g_enc, encode.MAIN, 0, ntsc=False) == 25
+    assert encode.stream_max_fps(g_cap, g_enc, encode.SUB, 0, ntsc=False) == 25
+    hiseeu = _fixture("hiseeu")
+    h_cap, h_enc = (
+        hiseeu["abilities"]["EncodeCapability"],
+        hiseeu["configs"]["Simplify.Encode"][0],
+    )
+    h_enc["MainFormat"]["Video"]["Resolution"] = "4M"
+    # 4M@25 leaves room for D1 at only 12 fps on the sub stream
+    assert encode.stream_max_fps(h_cap, h_enc, encode.SUB, 0, ntsc=False) == 12
+    # budget alone would allow 31 fps at 3M, but PAL caps it at 25
+    h_enc["MainFormat"]["Video"]["Resolution"] = "3M"
+    assert encode.stream_max_fps(h_cap, h_enc, encode.MAIN, 0, ntsc=False) == 25
