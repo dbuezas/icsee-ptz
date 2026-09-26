@@ -1,9 +1,14 @@
 [tool.black]
 line-length = 88
-target-version = ['py311', 'py312']
+target-version = ['py313']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
   | hass
 )/
 '''
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]

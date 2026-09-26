@@ -1,0 +1,1223 @@
+{
+ "system_info": {
+  "AlarmInChannel": 0,
+  "AlarmOutChannel": 0,
+  "AudioInChannel": 1,
+  "BuildTime": "2022-05-09 10:59:33",
+  "CombineSwitch": 0,
+  "DeviceModel": "IPC_GK7202V300_G4-WR_S38",
+  "DeviceRunTime": "0x0007cc16",
+  "DigChannel": 0,
+  "EncryptVersion": "Unknown",
+  "ExtraChannel": 0,
+  "HardWare": "IPC_GK7202V300_G4-WR_S38",
+  "HardWareVersion": "Unknown",
+  "SerialNo": "0123456789abcdef",
+  "SoftWareVersion": "V5.00.R02.000759LJ.10000.140d17.0000000",
+  "TalkInChannel": 1,
+  "TalkOutChannel": 1,
+  "UpdataTime": "",
+  "UpdataType": "0x00000000",
+  "VideoInChannel": 1,
+  "VideoOutChannel": 1
+ },
+ "abilities": {
+  "SystemFunction": {
+   "AlarmFunction": {
+    "AlarmConfig": true,
+    "BlindDetect": true,
+    "HumanDection": true,
+    "HumanPedDetection": true,
+    "LossDetect": true,
+    "MotionDetect": true,
+    "NetAbort": true,
+    "NetAlarm": true,
+    "NetIpConflict": true,
+    "PEAInHumanPed": true,
+    "StorageFailure": true,
+    "StorageLowSpace": true,
+    "StorageNotExist": true
+   },
+   "CommFunction": {
+    "CommRS232": true,
+    "CommRS485": true
+   },
+   "EncodeFunction": {
+    "DoubleStream": true,
+    "SnapStream": true
+   },
+   "NetServerFunction": {
+    "IPAdaptive": true,
+    "NetAlarmCenter": true,
+    "NetDDNS": true,
+    "NetDHCP": true,
+    "NetDNS": true,
+    "NetEmail": true,
+    "NetFTP": true,
+    "NetIPFilter": true,
+    "NetMutlicast": false,
+    "NetNTP": true,
+    "NetNat": true,
+    "NetPMS": true,
+    "NetPMSV2": true,
+    "NetRTSP": true,
+    "NetUPNP": true,
+    "NetWifi": true,
+    "WifiModeSwitch": true,
+    "WifiRouteSignalLevel": true
+   },
+   "OtherFunction": {
+    "SupportAdminContactInfo": true,
+    "SupportAlarmVoiceTipInterval": true,
+    "SupportAlarmVoiceTips": true,
+    "SupportAlarmVoiceTipsType": true,
+    "SupportAppBindFlag": true,
+    "SupportBT": true,
+    "SupportCamareStyle": true,
+    "SupportCfgCloudupgrade": true,
+    "SupportChangeLanguageNoReboot": true,
+    "SupportCloseVoiceTip": true,
+    "SupportCloudUpgrade": true,
+    "SupportCommDataUpload": true,
+    "SupportDetectTrack": true,
+    "SupportDimenCode": true,
+    "SupportFTPTest": true,
+    "SupportMailTest": true,
+    "SupportPCSetDoubleLight": true,
+    "SupportPTZDirectionControl": true,
+    "SupportPTZTour": true,
+    "SupportPWDSafety": true,
+    "SupportRPSVideo": true,
+    "SupportResumePtzState": true,
+    "SupportSetDetectTrackWatchPoint": true,
+    "SupportSetPTZPresetAttribute": true,
+    "SupportSetVolume": true,
+    "SupportShowH265X": true,
+    "SupportSnapV2Stream": true,
+    "SupportTextPassword": true,
+    "SupportTimeZone": true,
+    "SupportWriteLog": true
+   },
+   "PreviewFunction": {
+    "Talk": true
+   },
+   "TipShow": {
+    "NoBeepTipShow": true
+   }
+  },
+  "EncodeCapability": {
+   "ChannelMaxSetSync": 0,
+   "CombEncodeInfo": [
+    {
+     "CompressionMask": "0x00000000",
+     "Enable": true,
+     "HaveAudio": true,
+     "ResolutionMask": "0x00000000",
+     "StreamType": "MainStream"
+    },
+    {
+     "CompressionMask": "0x00000000",
+     "Enable": false,
+     "HaveAudio": true,
+     "ResolutionMask": "0x00000000",
+     "StreamType": "ExtraStream2"
+    },
+    {
+     "CompressionMask": "0x00000000",
+     "Enable": false,
+     "HaveAudio": true,
+     "ResolutionMask": "0x00000000",
+     "StreamType": "ExtraStream3"
+    },
+    {
+     "CompressionMask": "0x00000000",
+     "Enable": false,
+     "HaveAudio": true,
+     "ResolutionMask": "0x00000000",
+     "StreamType": "ExtraStream4"
+    },
+    {
+     "CompressionMask": "0x00000000",
+     "Enable": false,
+     "HaveAudio": true,
+     "ResolutionMask": "0x00000000",
+     "StreamType": "JPEGStream"
+    }
+   ],
+   "Compression": [
+    "0x00000180"
+   ],
+   "EncodeInfo": [
+    {
+     "CompressionMask": "0x00000180",
+     "Enable": true,
+     "HaveAudio": true,
+     "ResolutionMask": "0x00120000",
+     "StreamType": "MainStream"
+    },
+    {
+     "CompressionMask": "0x00000180",
+     "Enable": true,
+     "HaveAudio": true,
+     "ResolutionMask": "0x00000009",
+     "StreamType": "ExtraStream2"
+    },
+    {
+     "CompressionMask": "0x00000000",
+     "Enable": false,
+     "HaveAudio": false,
+     "ResolutionMask": "0x00000000",
+     "StreamType": "ExtraStream3"
+    },
+    {
+     "CompressionMask": "0x00000000",
+     "Enable": false,
+     "HaveAudio": false,
+     "ResolutionMask": "0x00000000",
+     "StreamType": "ExtraStream4"
+    },
+    {
+     "CompressionMask": "0x00000180",
+     "Enable": true,
+     "HaveAudio": true,
+     "ResolutionMask": "0x00000009",
+     "StreamType": "JPEGStream"
+    }
+   ],
+   "ExImageSizePerChannel": [
+    "0x00000009"
+   ],
+   "ExImageSizePerChannelEx": [
+    [
+     "0x00000008",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000009",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000009",
+     "0x00000000",
+     "0x00000000",
+     "0x00000009",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000",
+     "0x00000000"
+    ]
+   ],
+   "FourthStreamImageSize": [
+    "0x00000000"
+   ],
+   "ImageSizePerChannel": [
+    "0x00120000"
+   ],
+   "MaxBitrate": 49152,
+   "MaxEncodePower": 103680000,
+   "MaxEncodePowerPerChannel": [
+    "0x062E0800"
+   ],
+   "ThirdStreamImageSize": [
+    "0x00000000"
+   ]
+  },
+  "Camera": {
+   "Count": 8,
+   "ElecLevel": 50,
+   "IsFishLens": 0,
+   "Luminance": 0,
+   "Speeds": [
+    "0x00004E20",
+    "0x0000208D",
+    "0x00000FA0",
+    "0x000007D0",
+    "0x000003E8",
+    "0x000001F4",
+    "0x000000FA",
+    "0x00000064"
+   ],
+   "Status": 0,
+   "SupportIntellDoubleLight": 0,
+   "SupportPreventOverExpo": 1,
+   "Version": ""
+  }
+ },
+ "configs": {
+  "Camera.Param": [
+   {
+    "AeSensitivity": 5,
+    "ApertureMode": "0x00000000",
+    "BLCMode": "0x00000000",
+    "DayNightColor": "0x00000000",
+    "Day_nfLevel": 3,
+    "DncThr": 30,
+    "ElecLevel": 50,
+    "EsShutter": "0x00000002",
+    "ExposureParam": {
+     "LeastTime": "0x00000100",
+     "Level": 0,
+     "MostTime": "0x00010000"
+    },
+    "GainParam": {
+     "AutoGain": 1,
+     "Gain": 50
+    },
+    "IRCUTMode": 0,
+    "InfraredSwap": 1,
+    "IrcutSwap": 0,
+    "Night_nfLevel": 3,
+    "PictureFlip": "0x00000000",
+    "PictureMirror": "0x00000000",
+    "RejectFlicker": "0x00000000",
+    "WhiteBalance": "0x00000000"
+   }
+  ],
+  "Camera.ParamEx": [
+   {
+    "AeMeansure": 0,
+    "AutomaticAdjustment": 3,
+    "BroadTrends": {
+     "AutoGain": 0,
+     "Gain": 50
+    },
+    "CorridorMode": 0,
+    "Dis": 0,
+    "ExposureTime": "0x00000100",
+    "Ldc": 0,
+    "LightRestrainLevel": 0,
+    "LowLuxMode": 1,
+    "PreventOverExpo": 0,
+    "SoftPhotosensitivecontrol": 0,
+    "Style": "type1"
+   }
+  ],
+  "Camera.ClearFog": [
+   {
+    "enable": false,
+    "level": 50
+   }
+  ],
+  "Camera.WhiteLight": {
+   "Brightness": 50,
+   "MoveTrigLight": {
+    "Duration": 60,
+    "Level": 3
+   },
+   "WorkMode": "Auto",
+   "WorkPeriod": {
+    "EHour": 6,
+    "EMinute": 0,
+    "Enable": 1,
+    "SHour": 18,
+    "SMinute": 0
+   }
+  },
+  "Simplify.Encode": [
+   {
+    "ExtraFormat": {
+     "AudioEnable": true,
+     "Video": {
+      "BitRate": 632,
+      "BitRateControl": "VBR",
+      "Compression": "H.264",
+      "FPS": 12,
+      "GOP": 1,
+      "Quality": 3,
+      "Resolution": "D1",
+      "VirtualGOP": 1
+     },
+     "VideoEnable": true
+    },
+    "MainFormat": {
+     "AudioEnable": true,
+     "Video": {
+      "BitRate": 3072,
+      "BitRateControl": "VBR",
+      "Compression": "H.264",
+      "FPS": 25,
+      "GOP": 4,
+      "Quality": 2,
+      "Resolution": "3M",
+      "VirtualGOP": 1
+     },
+     "VideoEnable": true
+    }
+   }
+  ],
+  "AVEnc.VideoColor": [
+   [
+    {
+     "Enable": 1,
+     "TimeSection": "1 00:00:00-24:00:00",
+     "VideoColorParam": {
+      "Acutance": 3848,
+      "Brightness": 50,
+      "Contrast": 50,
+      "Gain": 0,
+      "Hue": 50,
+      "Saturation": 50,
+      "Whitebalance": 128
+     }
+    },
+    {
+     "Enable": 0,
+     "TimeSection": "0 00:00:00-00:00:00",
+     "VideoColorParam": {
+      "Acutance": 3848,
+      "Brightness": 50,
+      "Contrast": 50,
+      "Gain": 0,
+      "Hue": 50,
+      "Saturation": 50,
+      "Whitebalance": 128
+     }
+    }
+   ]
+  ],
+  "fVideo.Volume": [
+   {
+    "AudioMode": "Single",
+    "LeftVolume": 56,
+    "RightVolume": 56
+   }
+  ],
+  "Detect.MotionDetect": [
+   {
+    "AlarmType": 0,
+    "Enable": true,
+    "EventHandler": {
+     "AlarmInfo": "",
+     "AlarmOutEnable": false,
+     "AlarmOutLatch": 10,
+     "AlarmOutMask": "0x00000000",
+     "BeepEnable": false,
+     "Dejitter": 0,
+     "EventLatch": 2,
+     "FTPEnable": false,
+     "LogEnable": false,
+     "MMSEnable": false,
+     "MailEnable": false,
+     "MatrixEnable": false,
+     "MatrixMask": "0x00000000",
+     "MessageEnable": false,
+     "MsgtoNetEnable": false,
+     "MultimediaMsgEnable": false,
+     "PtzEnable": true,
+     "PtzLink": [
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ],
+      [
+       null,
+       null
+      ]
+     ],
+     "RecordEnable": true,
+     "RecordLatch": 15,
+     "RecordMask": "0x00000001",
+     "ShortMsgEnable": false,
+     "ShowInfo": false,
+     "ShowInfoMask": "0x00000000",
+     "SnapEnable": true,
+     "SnapShotMask": "0x00000001",
+     "TimeSection": [
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ]
+     ],
+     "TipEnable": false,
+     "TourEnable": false,
+     "TourMask": "0x00000000",
+     "VoiceEnable": false,
+     "VoiceTipInterval": 0,
+     "VoiceType": 24
+    },
+    "Level": 6,
+    "PIRCheckTime": 0,
+    "PirSensitive": 0,
+    "PirTimeSection": {
+     "PirTimeSectionOne": {
+      "Enable": false,
+      "WeekMask": 0
+     },
+     "PirTimeSectionTwo": {
+      "Enable": false,
+      "WeekMask": 0
+     }
+    },
+    "Region": [
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF",
+     "0xFFFFFFFF"
+    ]
+   }
+  ],
+  "Detect.HumanDetection": [
+   {
+    "Enable": false,
+    "ObjectType": 0,
+    "PedFdrAlg": 0,
+    "PedRule": [
+     {
+      "Enable": true,
+      "RuleLine": {
+       "AlarmDirect": 2,
+       "Pts": {
+        "StartX": 100,
+        "StartY": 100,
+        "StopX": 8100,
+        "StopY": 8100
+       }
+      },
+      "RuleRegion": {
+       "AlarmDirect": 2,
+       "Pts": [
+        {
+         "X": 100,
+         "Y": 100
+        },
+        {
+         "X": 8100,
+         "Y": 100
+        },
+        {
+         "X": 8100,
+         "Y": 8100
+        },
+        {
+         "X": 100,
+         "Y": 8100
+        }
+       ],
+       "PtsNum": 4
+      },
+      "RuleType": 1
+     },
+     {
+      "Enable": false,
+      "RuleLine": {
+       "AlarmDirect": 2,
+       "Pts": {
+        "StartX": 100,
+        "StartY": 100,
+        "StopX": 8100,
+        "StopY": 8100
+       }
+      },
+      "RuleRegion": {
+       "AlarmDirect": 2,
+       "Pts": [
+        {
+         "X": 100,
+         "Y": 100
+        },
+        {
+         "X": 8100,
+         "Y": 100
+        },
+        {
+         "X": 8100,
+         "Y": 8100
+        },
+        {
+         "X": 100,
+         "Y": 8100
+        }
+       ],
+       "PtsNum": 4
+      },
+      "RuleType": 1
+     },
+     {
+      "Enable": false,
+      "RuleLine": {
+       "AlarmDirect": 2,
+       "Pts": {
+        "StartX": 100,
+        "StartY": 100,
+        "StopX": 8100,
+        "StopY": 8100
+       }
+      },
+      "RuleRegion": {
+       "AlarmDirect": 2,
+       "Pts": [
+        {
+         "X": 100,
+         "Y": 100
+        },
+        {
+         "X": 8100,
+         "Y": 100
+        },
+        {
+         "X": 8100,
+         "Y": 8100
+        },
+        {
+         "X": 100,
+         "Y": 8100
+        }
+       ],
+       "PtsNum": 4
+      },
+      "RuleType": 1
+     },
+     {
+      "Enable": false,
+      "RuleLine": {
+       "AlarmDirect": 2,
+       "Pts": {
+        "StartX": 100,
+        "StartY": 100,
+        "StopX": 8100,
+        "StopY": 8100
+       }
+      },
+      "RuleRegion": {
+       "AlarmDirect": 2,
+       "Pts": [
+        {
+         "X": 100,
+         "Y": 100
+        },
+        {
+         "X": 8100,
+         "Y": 100
+        },
+        {
+         "X": 8100,
+         "Y": 8100
+        },
+        {
+         "X": 100,
+         "Y": 8100
+        }
+       ],
+       "PtsNum": 4
+      },
+      "RuleType": 1
+     }
+    ],
+    "PushInterval": 3000,
+    "Sensitivity": 1,
+    "ShowRule": false,
+    "ShowTrack": false,
+    "iShowRule": false
+   }
+  ],
+  "Detect.BlindDetect": [
+   {
+    "Enable": false,
+    "EventHandler": {
+     "AlarmInfo": "",
+     "AlarmOutEnable": false,
+     "AlarmOutLatch": 10,
+     "AlarmOutMask": "0x00000000",
+     "BeepEnable": false,
+     "Dejitter": 1,
+     "EventLatch": 2,
+     "FTPEnable": false,
+     "LogEnable": false,
+     "MMSEnable": false,
+     "MailEnable": false,
+     "MatrixEnable": false,
+     "MatrixMask": "0x00000000",
+     "MessageEnable": false,
+     "MsgtoNetEnable": false,
+     "MultimediaMsgEnable": false,
+     "PtzEnable": false,
+     "PtzLink": [
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ]
+     ],
+     "RecordEnable": false,
+     "RecordLatch": 10,
+     "RecordMask": "0x00000000",
+     "ShortMsgEnable": false,
+     "ShowInfo": false,
+     "ShowInfoMask": "0x00000000",
+     "SnapEnable": false,
+     "SnapShotMask": "0x00000000",
+     "TimeSection": [
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ]
+     ],
+     "TipEnable": true,
+     "TourEnable": false,
+     "TourMask": "0x00000000",
+     "VoiceEnable": false,
+     "VoiceTipInterval": 0,
+     "VoiceType": 520
+    },
+    "Level": 3
+   }
+  ],
+  "Detect.LossDetect": [
+   {
+    "Enable": false,
+    "EventHandler": {
+     "AlarmInfo": "",
+     "AlarmOutEnable": false,
+     "AlarmOutLatch": 10,
+     "AlarmOutMask": "0x00000000",
+     "BeepEnable": false,
+     "Dejitter": 1,
+     "EventLatch": 2,
+     "FTPEnable": false,
+     "LogEnable": false,
+     "MMSEnable": false,
+     "MailEnable": false,
+     "MatrixEnable": false,
+     "MatrixMask": "0x00000000",
+     "MessageEnable": false,
+     "MsgtoNetEnable": false,
+     "MultimediaMsgEnable": false,
+     "PtzEnable": false,
+     "PtzLink": [
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ],
+      [
+       "None",
+       0
+      ]
+     ],
+     "RecordEnable": false,
+     "RecordLatch": 10,
+     "RecordMask": "0x00000000",
+     "ShortMsgEnable": false,
+     "ShowInfo": false,
+     "ShowInfoMask": "0x00000000",
+     "SnapEnable": false,
+     "SnapShotMask": "0x00000000",
+     "TimeSection": [
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ],
+      [
+       "1 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00",
+       "0 00:00:00-24:00:00"
+      ]
+     ],
+     "TipEnable": true,
+     "TourEnable": false,
+     "TourMask": "0x00000000",
+     "VoiceEnable": false,
+     "VoiceTipInterval": 0,
+     "VoiceType": 520
+    }
+   }
+  ],
+  "Detect.DetectTrack": {
+   "Enable": 0,
+   "ReturnTime": 300,
+   "Sensitivity": 1
+  },
+  "FbExtraStateCtrl": {
+   "PlayVoiceTip": 0,
+   "ison": 1
+  },
+  "General.Location": {
+   "DSTEnd": {
+    "Day": 1,
+    "Hour": 1,
+    "Minute": 1,
+    "Month": 10,
+    "Week": 0,
+    "Year": 2026
+   },
+   "DSTRule": "Off",
+   "DSTStart": {
+    "Day": 1,
+    "Hour": 1,
+    "Minute": 1,
+    "Month": 5,
+    "Week": 0,
+    "Year": 2026
+   },
+   "DateFormat": "YYMMDD",
+   "DateSeparator": "-",
+   "IranCalendar": 0,
+   "Language": "Spanish",
+   "TimeFormat": "24",
+   "VideoFormat": "PAL",
+   "Week": null,
+   "WorkDay": 62
+  }
+ }
+}

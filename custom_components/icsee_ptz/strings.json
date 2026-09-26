@@ -1,65 +1,498 @@
 {
   "config": {
-    "abort": {
-      "already_configured": "Device is already configured"
-    },
-    "error": {
-      "cannot_connect": "Failed to connect"
-    },
+    "flow_title": "{name} ({host})",
     "step": {
       "user": {
-        "title": "Fill in your DVRIP cam information",
+        "title": "Pick a camera",
+        "description": "These cameras were found on your network. Pick one, or enter a camera by hand.",
+        "data": {
+          "device": "Camera"
+        }
+      },
+      "credentials": {
+        "title": "Camera details",
         "data": {
           "name": "Name",
-          "host": "Host or IP",
+          "host": "Host or IP address",
           "port": "Port",
-          "username": "username",
-          "password": "password"
+          "username": "Username",
+          "password": "Password"
+        },
+        "data_description": {
+          "name": "Name of the camera in Home Assistant.",
+          "host": "IP address or host name of the camera.",
+          "port": "DVRIP port. Usually 34567. Only change it if your camera uses a different one (e.g. behind port forwarding).",
+          "username": "Usually admin.",
+          "password": "The camera password (the one set in the ICSee / XMEye app). Leave empty if the camera has none."
+        }
+      },
+      "discovery_confirm": {
+        "title": "Add {name}",
+        "description": "Found a camera at {host}. Enter its login to add it.",
+        "data": {
+          "name": "Name",
+          "username": "Username",
+          "password": "Password"
+        },
+        "data_description": {
+          "name": "Name of the camera in Home Assistant.",
+          "username": "Usually admin.",
+          "password": "The camera password (the one set in the ICSee / XMEye app). Leave empty if the camera has none."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Log in again",
+        "description": "{name} rejected the login. Enter the current username and password.",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      },
+      "reconfigure": {
+        "title": "Change connection",
+        "data": {
+          "host": "Host or IP address",
+          "port": "Port",
+          "username": "Username",
+          "password": "Password"
+        },
+        "data_description": {
+          "host": "IP address or host name of the camera.",
+          "port": "DVRIP port. Usually 34567. Only change it if your camera uses a different one (e.g. behind port forwarding).",
+          "username": "Usually admin.",
+          "password": "The camera password (the one set in the ICSee / XMEye app). Leave empty if the camera has none."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "invalid_auth": "Invalid username or password"
+    },
+    "abort": {
+      "already_configured": "Device is already configured",
+      "reauth_successful": "Re-authentication was successful",
+      "reconfigure_successful": "Re-configuration was successful",
+      "wrong_device": "This is a different camera. Add it as a new device instead."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Defaults",
-        "description": "Default ptz parameters. Step means speed. Preset is only relevant for SetPreset/GotoPreset/ClearPreset. Channel is usually 0. By default, PTZ buttons are only created for the configured channel.",
+        "title": "PTZ defaults",
+        "description": "Default PTZ parameters. Step means speed. Preset is only used by SetPreset/GotoPreset/ClearPreset. Channel is usually 0. By default, PTZ buttons are only created for this channel.",
         "data": {
           "channel": "Channel",
           "step": "Step",
           "preset": "Preset",
-          "add_ptz_buttons_all_channels": "Add PTZ button entities for all channels",
-          "experimental_entities": "Enable experimental entities"
+          "add_ptz_buttons_all_channels": "Add PTZ buttons for all channels"
         }
       }
     }
   },
-  "services": {
-    "move": {
-      "description": "Move an ICSee/DVR-IP/NetSurveillance/Sofia camera",
-      "fields": {
-        "cmd": {
-          "description": "Command",
-          "name": "Command"
-        },
-        "step": {
-          "description": "Speed at which PTZ operations are performed.",
-          "name": "Step"
-        },
-        "preset": {
-          "description": "Only applicable to SetPreset, GotoPreset, and ClearPreset",
-          "name": "Preset"
+  "selector": {
+    "device": {
+      "options": {
+        "manual": "Enter manually"
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "motion_alarm": {
+        "name": "Motion alarm"
+      },
+      "password_reset_questions": {
+        "name": "Password reset by security questions"
+      },
+      "password_reset_contact": {
+        "name": "Password reset email or phone set"
+      }
+    },
+    "sensor": {
+      "extra_users": {
+        "name": "Extra users"
+      }
+    },
+    "button": {
+      "ptz_stop": {
+        "name": "PTZ stop"
+      },
+      "ptz_up": {
+        "name": "PTZ up"
+      },
+      "ptz_down": {
+        "name": "PTZ down"
+      },
+      "ptz_left": {
+        "name": "PTZ left"
+      },
+      "ptz_right": {
+        "name": "PTZ right"
+      },
+      "ptz_left_up": {
+        "name": "PTZ left up"
+      },
+      "ptz_left_down": {
+        "name": "PTZ left down"
+      },
+      "ptz_right_up": {
+        "name": "PTZ right up"
+      },
+      "ptz_right_down": {
+        "name": "PTZ right down"
+      },
+      "ptz_zoom_in": {
+        "name": "PTZ zoom in"
+      },
+      "ptz_zoom_out": {
+        "name": "PTZ zoom out"
+      },
+      "home_go_to": {
+        "name": "Home go to"
+      },
+      "home_set": {
+        "name": "Home set current position"
+      },
+      "home_clear": {
+        "name": "Home clear"
+      },
+      "sync_clock": {
+        "name": "Synchronize clock"
+      }
+    },
+    "camera": {
+      "main_stream": {
+        "name": "Main stream"
+      },
+      "sub_stream": {
+        "name": "Sub stream"
+      }
+    },
+    "media_player": {
+      "speaker": {
+        "name": "Speaker"
+      }
+    },
+    "siren": {
+      "siren": {
+        "name": "Siren"
+      }
+    },
+    "switch": {
+      "motion_detection": {
+        "name": "Motion detection"
+      },
+      "human_detection": {
+        "name": "Human detection"
+      },
+      "tamper_detection": {
+        "name": "Tamper detection"
+      },
+      "video_loss_detection": {
+        "name": "Video loss detection"
+      },
+      "vehicle_detection": {
+        "name": "Vehicle detection"
+      },
+      "motion_tracking": {
+        "name": "Motion tracking"
+      },
+      "white_light": {
+        "name": "White light"
+      },
+      "white_light_one_key": {
+        "name": "White light (manual)"
+      },
+      "night_vision": {
+        "name": "Night vision"
+      },
+      "night_enhance": {
+        "name": "Night vision enhancement"
+      },
+      "low_light_fill": {
+        "name": "Low light fill"
+      },
+      "starlight": {
+        "name": "Starlight mode"
+      },
+      "wdr": {
+        "name": "Wide dynamic range"
+      },
+      "prevent_overexposure": {
+        "name": "Prevent overexposure"
+      },
+      "picture_flip": {
+        "name": "Flip image"
+      },
+      "picture_mirror": {
+        "name": "Mirror image"
+      },
+      "ircut_reverse": {
+        "name": "IR cut filter reversed"
+      },
+      "anti_fog": {
+        "name": "Anti-fog"
+      },
+      "privacy_mode": {
+        "name": "Privacy mode"
+      },
+      "sleep_schedule": {
+        "name": "Sleep schedule"
+      },
+      "status_led": {
+        "name": "Status LED"
+      },
+      "voice_prompts": {
+        "name": "Voice prompts"
+      },
+      "cloud_access": {
+        "name": "Cloud access (P2P)"
+      },
+      "cloud_push": {
+        "name": "Cloud push notifications"
+      },
+      "password_reset_by_code": {
+        "name": "Password reset by code"
+      },
+      "sub_stream": {
+        "name": "Sub stream"
+      },
+      "main_stream_audio": {
+        "name": "Main stream audio"
+      },
+      "sub_stream_audio": {
+        "name": "Sub stream audio"
+      }
+    },
+    "select": {
+      "day_night_mode": {
+        "name": "Day/night mode",
+        "state": {
+          "auto": "Auto (infrared at night)",
+          "color": "Always color (infrared off)",
+          "black_white": "Always black & white (infrared on)",
+          "smart_alarm_light": "White light on motion",
+          "auto_white_light": "Auto, full color with white light",
+          "auto_infrared": "Auto, infrared light",
+          "license_plate": "License plate"
         }
       },
-      "name": "Move"
+      "white_light_mode": {
+        "name": "White light mode",
+        "state": {
+          "close": "Off",
+          "keep_open": "Always on",
+          "auto": "Auto (at night)",
+          "timing": "Schedule",
+          "intelligent": "On motion",
+          "atmosphere": "Ambient",
+          "glint": "Music"
+        }
+      },
+      "white_light_sensitivity": {
+        "name": "White light motion sensitivity",
+        "state": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
+      },
+      "day_night_switch": {
+        "name": "Day/night switch",
+        "state": {
+          "auto": "Automatic",
+          "day": "Day",
+          "night": "Night",
+          "scheduled": "Schedule"
+        }
+      },
+      "image_style": {
+        "name": "Image style",
+        "state": {
+          "style_1": "Style 1",
+          "style_2": "Style 2",
+          "style_3": "Style 3"
+        }
+      },
+      "tracking_sensitivity": {
+        "name": "Motion tracking sensitivity",
+        "state": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
+      },
+      "main_stream_resolution": {
+        "name": "Main stream resolution"
+      },
+      "main_stream_quality": {
+        "name": "Main stream quality",
+        "state": {
+          "bad": "Bad",
+          "poor": "Poor",
+          "general": "Normal",
+          "good": "Good",
+          "better": "Better",
+          "best": "Best"
+        }
+      },
+      "main_stream_codec": {
+        "name": "Main stream codec"
+      },
+      "main_stream_bitrate_control": {
+        "name": "Main stream bitrate control",
+        "state": {
+          "cbr": "Constant (CBR)",
+          "vbr": "Variable (VBR)"
+        }
+      },
+      "sub_stream_resolution": {
+        "name": "Sub stream resolution"
+      },
+      "sub_stream_quality": {
+        "name": "Sub stream quality",
+        "state": {
+          "bad": "Bad",
+          "poor": "Poor",
+          "general": "Normal",
+          "good": "Good",
+          "better": "Better",
+          "best": "Best"
+        }
+      },
+      "sub_stream_codec": {
+        "name": "Sub stream codec"
+      },
+      "sub_stream_bitrate_control": {
+        "name": "Sub stream bitrate control",
+        "state": {
+          "cbr": "Constant (CBR)",
+          "vbr": "Variable (VBR)"
+        }
+      }
+    },
+    "number": {
+      "main_stream_fps": {
+        "name": "Main stream frame rate"
+      },
+      "main_stream_bitrate": {
+        "name": "Main stream bitrate"
+      },
+      "main_stream_gop": {
+        "name": "Main stream key frame interval"
+      },
+      "sub_stream_fps": {
+        "name": "Sub stream frame rate"
+      },
+      "sub_stream_bitrate": {
+        "name": "Sub stream bitrate"
+      },
+      "sub_stream_gop": {
+        "name": "Sub stream key frame interval"
+      },
+      "speaker_volume": {
+        "name": "Speaker volume"
+      },
+      "microphone_volume": {
+        "name": "Microphone volume"
+      },
+      "white_light_brightness": {
+        "name": "White light brightness"
+      },
+      "white_light_duration": {
+        "name": "White light motion duration"
+      },
+      "image_brightness": {
+        "name": "Image brightness"
+      },
+      "image_contrast": {
+        "name": "Image contrast"
+      },
+      "image_saturation": {
+        "name": "Image saturation"
+      },
+      "image_hue": {
+        "name": "Image hue"
+      },
+      "anti_fog_level": {
+        "name": "Anti-fog level"
+      },
+      "motion_sensitivity": {
+        "name": "Motion sensitivity"
+      },
+      "day_night_sensitivity": {
+        "name": "Day/night switch sensitivity"
+      },
+      "soft_light_threshold": {
+        "name": "Light sensor threshold"
+      },
+      "tracking_return_time": {
+        "name": "Motion tracking return time"
+      }
+    }
+  },
+  "exceptions": {
+    "cannot_connect": {
+      "message": "Cannot connect to the camera."
+    },
+    "invalid_auth": {
+      "message": "The camera rejected the username or password."
+    },
+    "not_supported": {
+      "message": "The camera does not support {config}."
+    },
+    "command_failed": {
+      "message": "The camera refused to change {config} (error {ret})."
+    },
+    "not_applied": {
+      "message": "The camera accepted the change to {config}, but did not apply it."
+    },
+    "invalid_option": {
+      "message": "{option} is not a valid option for this camera."
+    },
+    "over_encode_budget": {
+      "message": "The camera cannot encode this. Lower the resolution or frame rate of the other stream first."
+    },
+    "audio_convert_failed": {
+      "message": "Could not convert the audio for the camera speaker."
+    }
+  },
+  "issues": {
+    "reboot_required": {
+      "title": "{name} needs a restart",
+      "description": "A setting was saved, but the camera only applies it after a restart. Press the Restart button of {name}."
+    }
+  },
+  "services": {
+    "move": {
+      "name": "Move",
+      "description": "Move an ICSee/DVR-IP/NetSurveillance/Sofia camera.",
+      "fields": {
+        "cmd": {
+          "name": "Command",
+          "description": "PTZ command."
+        },
+        "step": {
+          "name": "Step",
+          "description": "Speed at which PTZ operations are performed."
+        },
+        "preset": {
+          "name": "Preset",
+          "description": "Only used by SetPreset, GotoPreset and ClearPreset."
+        },
+        "channel": {
+          "name": "Channel",
+          "description": "Camera channel. Defaults to the channel in the options."
+        }
+      }
     },
     "synchronize_clock": {
-      "description": "Synchronize remote camera clock to the Home Assistant instance.",
-      "name": "Synchronize camera clock"
+      "name": "Synchronize camera clock",
+      "description": "Set the camera clock to the Home Assistant time."
     },
     "force_frame": {
-      "description": "Force the camera to send a new frame. Useful to speed up video start",
-      "name": "Force frame"
+      "name": "Force frame",
+      "description": "Force the camera to send a new frame. Useful to speed up video start."
     }
   }
 }

@@ -7,7 +7,7 @@
       "cannot_connect": "Не удалось подключиться"
     },
     "step": {
-      "user": {
+      "credentials": {
         "title": "Введите информацию о вашей камере DVRIP",
         "data": {
           "name": "Имя",
@@ -28,8 +28,7 @@
           "channel": "Канал",
           "step": "Шаг",
           "preset": "Предустановка",
-          "add_ptz_buttons_all_channels": "Добавить кнопки PTZ для всех каналов",
-          "experimental_entities": "Включить экспериментальные сущности"
+          "add_ptz_buttons_all_channels": "Добавить кнопки PTZ для всех каналов"
         }
       }
     }

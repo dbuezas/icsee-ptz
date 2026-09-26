@@ -13,6 +13,24 @@ class SomethingIsWrongWithCamera(Exception):
     pass
 
 
+class ConfigNotSupported(Exception):
+    """The camera does not have this config or ability."""
+
+    def __init__(self, name, ret=None):
+        super().__init__(f"{name} is not supported (Ret {ret})")
+        self.name = name
+        self.ret = ret
+
+
+class CommandFailed(Exception):
+    """The camera answered with an error code."""
+
+    def __init__(self, name, ret):
+        super().__init__(f"{name} failed with Ret {ret}")
+        self.name = name
+        self.ret = ret
+
+
 class DVRIPCam(object):
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
     CODES = {
@@ -98,6 +116,7 @@ class DVRIPCam(object):
         self.alarm_func = None
         self.timeout = 10
         self.busy = asyncio.Lock()
+        self.login_ret = None
 
     def debug(self, format=None):
         self.logger.setLevel(logging.DEBUG)
@@ -233,6 +252,7 @@ class DVRIPCam(object):
                 "UserName": self.user,
             },
         )
+        self.login_ret = None if data is None else data.get("Ret")
         if data is None or data["Ret"] not in self.OK_CODES:
             return False
         self.session = int(data["SessionID"], 16)
@@ -818,3 +838,113 @@ class DVRIPCam(object):
 
     def stop_monitor(self):
         self.monitoring = False
+
+    # ---- Helpers used by the Home Assistant integration ----
+
+    async def get_config(self, name):
+        """Read a config (cmd 1042). Raise ConfigNotSupported if the camera lacks it."""
+        return self._config_value(name, await self._request(1042, name))
+
+    async def get_ability(self, name):
+        """Read an ability (cmd 1360). Raise ConfigNotSupported if the camera lacks it."""
+        return self._config_value(name, await self._request(1360, name))
+
+    async def set_config(self, name, value):
+        """Write a whole config (cmd 1040). Return the DVRIP return code."""
+        reply = await self.send(
+            1040, {"Name": name, "SessionID": "0x%08X" % self.session, name: value}
+        )
+        if reply is None:
+            raise SomethingIsWrongWithCamera("No reply from camera")
+        ret = reply.get("Ret")
+        if ret not in self.OK_CODES and ret != 603:
+            raise CommandFailed(name, ret)
+        return ret
+
+    async def remote_ctrl(self, ctrl_type, msg):
+        """OPRemoteCtrl (cmd 4000), e.g. the manual siren."""
+        reply = await self.send(
+            4000,
+            {
+                "Name": "OPRemoteCtrl",
+                "SessionID": "0x%08X" % self.session,
+                "OPRemoteCtrl": {
+                    "Type": ctrl_type,
+                    "msg": msg,
+                    "P1": "0x00000000",
+                    "P2": "0x00000000",
+                },
+            },
+        )
+        if reply is None:
+            raise SomethingIsWrongWithCamera("No reply from camera")
+        if reply.get("Ret") not in self.OK_CODES:
+            raise CommandFailed("OPRemoteCtrl", reply.get("Ret"))
+
+    async def talk(self, alaw: bytes, packet_size=320):
+        """Play 8 kHz mono G.711 A-law audio on the camera speaker.
+
+        Protocol as in go2rtc (pkg/dvrip): OPTalk Claim (1434), Start (1430),
+        then OPTalkData (1432) packets with an 8 byte media header.
+        Use a dedicated connection: the camera keeps it busy while talking.
+        """
+        talk = {"Action": "Claim", "AudioFormat": {"EncodeType": "G711_ALAW"}}
+        reply = await self.send(
+            1434,
+            {"Name": "OPTalk", "SessionID": "0x%08X" % self.session, "OPTalk": talk},
+        )
+        if reply is None:
+            raise SomethingIsWrongWithCamera("No reply from camera")
+        if reply.get("Ret") not in self.OK_CODES:
+            raise CommandFailed("OPTalk", reply.get("Ret"))
+        talk = {**talk, "Action": "Start"}
+        await self.send(
+            1430,
+            {"Name": "OPTalk", "SessionID": "0x%08X" % self.session, "OPTalk": talk},
+            wait_response=False,
+        )
+        header = (
+            struct.pack(">I", 0x1FA) + bytes([14, 2]) + struct.pack("<H", packet_size)
+        )
+        loop = asyncio.get_running_loop()
+        start = loop.time()
+        for i, pos in enumerate(range(0, len(alaw), packet_size)):
+            chunk = alaw[pos : pos + packet_size].ljust(
+                packet_size, b"\xd5"
+            )  # A-law silence
+            self._write_raw(1432, header + chunk)
+            # pace in real time, staying up to 4 packets (160 ms) ahead
+            delay = start + (i - 4) * packet_size / 8000 - loop.time()
+            if delay > 0:
+                await asyncio.sleep(delay)
+        await asyncio.sleep(max(0, start + len(alaw) / 8000 - loop.time()))
+
+    async def _request(self, code, name):
+        reply = await self.send(
+            code, {"Name": name, "SessionID": "0x%08X" % self.session}
+        )
+        if reply is None:
+            raise SomethingIsWrongWithCamera("No reply from camera")
+        return reply
+
+    def _config_value(self, name, reply):
+        ret = reply.get("Ret")
+        if ret in (103, 607):
+            raise ConfigNotSupported(name, ret)
+        if ret not in self.OK_CODES:
+            raise CommandFailed(name, ret)
+        value = reply.get(name)
+        if value is None or value == [None]:
+            raise ConfigNotSupported(name, ret)
+        return value
+
+    def _write_raw(self, msg, payload: bytes):
+        if self.socket_writer is None:
+            raise SomethingIsWrongWithCamera("Not connected")
+        self.socket_writer.write(
+            struct.pack(
+                "BB2xII2xHI", 255, 0, self.session, self.packet_count, msg, len(payload)
+            )
+            + payload
+        )
+        self.packet_count += 1

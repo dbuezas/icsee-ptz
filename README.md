@@ -2,9 +2,17 @@
 
 # ICSee PTZ control integration for Home Assistant
 
-Home Assistant integration to send ptz commands to ICSee/XMEye/DVR-IP/NetSurveillance/Sofia cameras.
+Home Assistant integration for ICSee/XMEye/DVR-IP/NetSurveillance/Sofia cameras.
 
-It can also set presets and recall them and synchronize the camera clock.
+- Live video (main and sub stream), played by Home Assistant's built-in go2rtc
+- Motion alarm
+- PTZ: move, zoom, presets
+- Camera settings as entities: infrared / day-night mode, white light, frame rate, resolution, quality, image flip and colors, motion detection and tracking, volume, status LED, privacy mode and more
+- Camera speaker as a media player (e.g. for text-to-speech)
+- Security: cloud (P2P) access, cloud push, password reset options
+- Finds cameras on your network by itself
+
+Each camera only gets the entities it supports. Requires Home Assistant 2025.10 or newer.
 
 # Installation
 
@@ -32,7 +40,9 @@ It can also set presets and recall them and synchronize the camera clock.
 
 # Configuration
 
-Go to the integration and add an entry for each of your cameras
+Cameras on your network are found automatically and show up under
+`Settings -> Devices & services -> Discovered`. You can also add one by hand.
+You only need the camera password (the one set in the ICSee/XMEye app).
 
 The port is usually 34567. Only change it if your camera uses a different one (e.g. behind port forwarding).
 
@@ -42,7 +52,8 @@ The port is usually 34567. Only change it if your camera uses a different one (e
 
 # Usage
 
-This integration exposes services for PTZ and a motion alarm entity. 
+This integration creates a device per camera with a motion alarm, camera entities,
+PTZ buttons, settings, and the `icsee_ptz.move` action for PTZ. 
 
 ## Motion alarm
 
@@ -54,10 +65,6 @@ Then, you can use the provided entity in your automations.
 ## Pan, tilt, zoom (PTZ)
 
 icsee_ptz.move: move, zoom and set/goto preseets.
-
-Requires:
-
-- WebRTC integration v3.2.0 - 2023-07-11
 
 
 Test PTZ control from [![Developer Tools / Services.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/).
@@ -145,7 +152,13 @@ ptz:
 
 ```
 
-# Video stream from [go2rtc](https://github.com/AlexxIT/go2rtc)
+# Video
+
+Each camera gets a `camera.*_main_stream` and a `camera.*_sub_stream` entity. Home Assistant
+plays them through its built-in go2rtc; you don't need to configure anything.
+Snapshots come from the stream too.
+
+If you prefer your own go2rtc, these streams work there as well:
 
 ```yaml
 # go2rtc.yaml
@@ -157,33 +170,47 @@ streams:
   garden: # try this if the video is choppy or audio is out of synch
     - ffmpeg:garden_dvrip#audio=copy#async#video=copy#async
 ```
+
 # Entities
 
-> [!NOTE]  
-> There are some disabled entities, But you can enable them on 
->
-> `Settings -> Devices & Services -> ICSee -> Configure -> Enable experimental entities`
+Entities only appear if the camera supports them. Less common ones are disabled by default;
+enable them in the device page.
 
-| Entity                                    | Description                                                              | Enabled by default |
-| ----------------------------------------- | ------------------------------------------------------------------------ | ------------------ |
-| `binary_sensor.*_motion_alarm`            | Triggered when motion is detected.                                       | Yes                |
-| `button.*_ptz_stop`                       | Stop PTZ movement.                                                       | Yes (configured channel) |
-| `button.*_ptz_up/down/left/right`         | Move camera in a direction.                                              | Yes (configured channel) |
-| `button.*_ptz_left_up/down/right_up/down` | Move camera diagonally.                                                  | No                 |
-| `button.*_ptz_zoom_in/out`                | Zoom in/out.                                                             | No                 |
-| `button.*_home_go_to`                     | Go to home preset position.                                              | Yes (configured channel) |
-| `button.*_home_set`                       | Save current position as home preset.                                    | Yes (configured channel) |
-| `button.*_home_clear`                     | Clear the configured home preset.                                        | No                 |
-| `button.*_reboot`                         | Reboot the camera.                                                       | Yes                |
-| `switch.*_motiondetect_enabled`           |                                                                          | No                 |
-| `switch.*_blinddetect_enabled`            |                                                                          | No                 |
-| `switch.*_humandetection_enabled`         |                                                                          | No                 |
-| `switch.*_lossdetect_enabled`             |                                                                          | No                 |
-| `select.*_white_light`                    | You can control camera's lights.                                         | No                 |
+| Area | Entities |
+| --- | --- |
+| Alarm | `binary_sensor.*_motion_alarm` |
+| Video | `camera.*_main_stream`, `camera.*_sub_stream` |
+| PTZ | `button.*_ptz_*`, `button.*_home_*` (options: channel, speed, preset) |
+| Lights | `select.*_day_night_mode` (auto / always color = infrared off / always black & white = infrared on / ...), `select.*_white_light_mode`, `switch.*_white_light`, white light brightness, motion sensitivity and duration |
+| Video settings | frame rate, resolution, quality, codec, bitrate (main and sub stream) |
+| Image | flip, mirror, brightness, contrast, saturation, anti-fog, day/night sensitivity |
+| Detection | motion / human / tamper / video loss detection, motion sensitivity, motion tracking |
+| Audio | `media_player.*_speaker` (TTS and sounds), speaker volume |
+| Other | status LED, voice prompts, privacy mode, sleep schedule, `button.*_restart`, `button.*_synchronize_clock` |
+| Security | `switch.*_cloud_access_p2p`, `switch.*_cloud_push_notifications`, password reset indicators, `sensor.*_extra_users` |
+
+The frame rate and resolution are checked against the camera's encoding limit before they are saved.
+
+## Security
+
+- **Cloud access (P2P)**: the XMEye/ICSee cloud connection that lets the apps reach the camera from
+  anywhere. Turn it off if you only use the camera at home.
+- **Password reset**: the apps can reset the camera password with security questions, a code sent by
+  email/phone, or (on some cameras) a code. The indicators show if questions or an email/phone are set.
+- **Extra users**: the apps add a hidden account to the camera. This sensor shows how many exist.
+
+## Upgrading from 4.x
+
+- Entity IDs stay the same.
+- The "experimental entities" option is gone: all supported entities are created.
+- The options of the day/night and white light selects changed names (e.g. `KeepOpen` -> `keep_open`).
+  Update automations that use `select.select_option` with the old names.
+- The `move`, `synchronize_clock` and `force_frame` actions still target the motion alarm entity.
 
 # Miscelaneous
 
-With https://xmeye.org/xmeye-for-pc/ you can configure the fps and encoding params of ICSee cameras.
+Frame rate and encoding can now be set from Home Assistant. The Windows app
+https://xmeye.org/xmeye-for-pc/ can still change settings this integration does not cover.
 
 ## Recommended configuration:
 

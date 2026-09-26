@@ -7,7 +7,7 @@
       "cannot_connect": "Falha ao conectar"
     },
     "step": {
-      "user": {
+      "credentials": {
         "title": "Preencha com as informações do seu DVRIP",
         "data": {
           "name": "Nome",
@@ -28,8 +28,7 @@
           "channel": "Canal",
           "step": "Passos",
           "preset": "Predefinição",
-          "add_ptz_buttons_all_channels": "Adicionar botões PTZ para todos os canais",
-          "experimental_entities": "Ative entidades experimetais"
+          "add_ptz_buttons_all_channels": "Adicionar botões PTZ para todos os canais"
         }
       }
     }

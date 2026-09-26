@@ -1,0 +1,274 @@
+{
+  "entity": {
+    "switch": {
+      "motion_detection": {
+        "default": "mdi:motion-sensor"
+      },
+      "human_detection": {
+        "default": "mdi:account-search"
+      },
+      "tamper_detection": {
+        "default": "mdi:eye-off"
+      },
+      "video_loss_detection": {
+        "default": "mdi:video-off"
+      },
+      "vehicle_detection": {
+        "default": "mdi:car"
+      },
+      "motion_tracking": {
+        "default": "mdi:target-account"
+      },
+      "white_light": {
+        "default": "mdi:lightbulb"
+      },
+      "white_light_one_key": {
+        "default": "mdi:lightbulb-on"
+      },
+      "night_vision": {
+        "default": "mdi:weather-night"
+      },
+      "night_enhance": {
+        "default": "mdi:weather-night"
+      },
+      "low_light_fill": {
+        "default": "mdi:brightness-5"
+      },
+      "starlight": {
+        "default": "mdi:star-four-points"
+      },
+      "wdr": {
+        "default": "mdi:contrast-box"
+      },
+      "prevent_overexposure": {
+        "default": "mdi:white-balance-sunny"
+      },
+      "picture_flip": {
+        "default": "mdi:flip-vertical"
+      },
+      "picture_mirror": {
+        "default": "mdi:flip-horizontal"
+      },
+      "ircut_reverse": {
+        "default": "mdi:swap-horizontal"
+      },
+      "anti_fog": {
+        "default": "mdi:weather-fog"
+      },
+      "privacy_mode": {
+        "default": "mdi:eye-off"
+      },
+      "sleep_schedule": {
+        "default": "mdi:sleep"
+      },
+      "status_led": {
+        "default": "mdi:led-on"
+      },
+      "voice_prompts": {
+        "default": "mdi:account-voice"
+      },
+      "cloud_access": {
+        "default": "mdi:cloud-lock"
+      },
+      "cloud_push": {
+        "default": "mdi:cloud-upload"
+      },
+      "password_reset_by_code": {
+        "default": "mdi:lock-reset"
+      },
+      "sub_stream": {
+        "default": "mdi:video-outline"
+      },
+      "main_stream_audio": {
+        "default": "mdi:microphone"
+      },
+      "sub_stream_audio": {
+        "default": "mdi:microphone"
+      }
+    },
+    "select": {
+      "day_night_mode": {
+        "default": "mdi:theme-light-dark"
+      },
+      "white_light_mode": {
+        "default": "mdi:light-flood-down"
+      },
+      "white_light_sensitivity": {
+        "default": "mdi:motion-sensor"
+      },
+      "day_night_switch": {
+        "default": "mdi:theme-light-dark"
+      },
+      "image_style": {
+        "default": "mdi:palette"
+      },
+      "tracking_sensitivity": {
+        "default": "mdi:target"
+      },
+      "main_stream_resolution": {
+        "default": "mdi:aspect-ratio"
+      },
+      "sub_stream_resolution": {
+        "default": "mdi:aspect-ratio"
+      },
+      "main_stream_quality": {
+        "default": "mdi:high-definition"
+      },
+      "sub_stream_quality": {
+        "default": "mdi:high-definition"
+      },
+      "main_stream_codec": {
+        "default": "mdi:file-video"
+      },
+      "sub_stream_codec": {
+        "default": "mdi:file-video"
+      },
+      "main_stream_bitrate_control": {
+        "default": "mdi:speedometer"
+      },
+      "sub_stream_bitrate_control": {
+        "default": "mdi:speedometer"
+      }
+    },
+    "number": {
+      "main_stream_fps": {
+        "default": "mdi:filmstrip"
+      },
+      "sub_stream_fps": {
+        "default": "mdi:filmstrip"
+      },
+      "main_stream_bitrate": {
+        "default": "mdi:speedometer"
+      },
+      "sub_stream_bitrate": {
+        "default": "mdi:speedometer"
+      },
+      "main_stream_gop": {
+        "default": "mdi:key"
+      },
+      "sub_stream_gop": {
+        "default": "mdi:key"
+      },
+      "speaker_volume": {
+        "default": "mdi:volume-high"
+      },
+      "microphone_volume": {
+        "default": "mdi:microphone"
+      },
+      "white_light_brightness": {
+        "default": "mdi:brightness-6"
+      },
+      "white_light_duration": {
+        "default": "mdi:timer-outline"
+      },
+      "image_brightness": {
+        "default": "mdi:brightness-6"
+      },
+      "image_contrast": {
+        "default": "mdi:contrast-circle"
+      },
+      "image_saturation": {
+        "default": "mdi:palette"
+      },
+      "image_hue": {
+        "default": "mdi:palette-outline"
+      },
+      "anti_fog_level": {
+        "default": "mdi:weather-fog"
+      },
+      "motion_sensitivity": {
+        "default": "mdi:motion-sensor"
+      },
+      "day_night_sensitivity": {
+        "default": "mdi:theme-light-dark"
+      },
+      "soft_light_threshold": {
+        "default": "mdi:brightness-auto"
+      },
+      "tracking_return_time": {
+        "default": "mdi:timer-outline"
+      }
+    },
+    "button": {
+      "ptz_stop": {
+        "default": "mdi:stop-circle"
+      },
+      "ptz_up": {
+        "default": "mdi:arrow-up-bold-box"
+      },
+      "ptz_down": {
+        "default": "mdi:arrow-down-bold-box"
+      },
+      "ptz_left": {
+        "default": "mdi:arrow-left-bold-box"
+      },
+      "ptz_right": {
+        "default": "mdi:arrow-right-bold-box"
+      },
+      "ptz_left_up": {
+        "default": "mdi:arrow-top-left-bold-box"
+      },
+      "ptz_left_down": {
+        "default": "mdi:arrow-bottom-left-bold-box"
+      },
+      "ptz_right_up": {
+        "default": "mdi:arrow-top-right-bold-box"
+      },
+      "ptz_right_down": {
+        "default": "mdi:arrow-bottom-right-bold-box"
+      },
+      "ptz_zoom_in": {
+        "default": "mdi:magnify-plus"
+      },
+      "ptz_zoom_out": {
+        "default": "mdi:magnify-minus"
+      },
+      "home_go_to": {
+        "default": "mdi:home-import-outline"
+      },
+      "home_set": {
+        "default": "mdi:home-export-outline"
+      },
+      "home_clear": {
+        "default": "mdi:home-remove-outline"
+      },
+      "sync_clock": {
+        "default": "mdi:clock-check"
+      }
+    },
+    "media_player": {
+      "speaker": {
+        "default": "mdi:speaker"
+      }
+    },
+    "binary_sensor": {
+      "password_reset_questions": {
+        "default": "mdi:lock-question"
+      },
+      "password_reset_contact": {
+        "default": "mdi:email-lock"
+      }
+    },
+    "sensor": {
+      "extra_users": {
+        "default": "mdi:account-multiple"
+      }
+    },
+    "siren": {
+      "siren": {
+        "default": "mdi:alarm-light"
+      }
+    }
+  },
+  "services": {
+    "move": {
+      "service": "mdi:pan"
+    },
+    "synchronize_clock": {
+      "service": "mdi:clock-check"
+    },
+    "force_frame": {
+      "service": "mdi:play"
+    }
+  }
+}
