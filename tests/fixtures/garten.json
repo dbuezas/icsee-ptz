@@ -1575,6 +1575,117 @@
     "Port": 554,
     "UserName": ""
    }
-  }
+  },
+  "NetWork.DisableXmServerConn": {
+   "DisableAll": false,
+   "DisableDSS": false,
+   "DisableNAT": false,
+   "DisableRPS": false
+  },
+  "NetWork.Upnp": {
+   "Enable": false,
+   "HTTPPort": 80,
+   "MediaPort": 34567,
+   "MobilePort": 34599,
+   "State": false
+  },
+  "NetWork.OnlineUpgrade": {
+   "AutoCheck": true,
+   "AutoUpgradeImp": true,
+   "Enable": true,
+   "IgnoreAllVersion": true,
+   "IgnoreCurVersion": false,
+   "JustImpVersion": false,
+   "ServerAddr": "upgrade.example",
+   "ServerPort": 8083
+  },
+  "NetWork.DAS": {
+   "DeviceID": "fakeid",
+   "Enable": false,
+   "Password": "daspass",
+   "Port": 9400,
+   "ServerAddr": "das.example",
+   "UserName": "dasuser"
+  },
+  "NetWork.NetNTP": {
+   "Enable": true,
+   "Server": {
+    "Name": "pool.ntp.example"
+   },
+   "TimeZone": 14,
+   "UpdatePeriod": 10
+  },
+  "NetWork.CheckNetState": {
+   "Enable": true,
+   "RebootCnt": 0
+  },
+  "Ability.TelnetDebugMode": {
+   "Open": false
+  },
+  "General.AppBindFlag": {
+   "BeBinded": true
+  },
+  "General.AutoMaintain": {
+   "AutoDeleteFilesDays": 0,
+   "AutoRebootDay": "Tuesday",
+   "AutoRebootHour": 3
+  },
+  "General.ResumePtzState": {
+   "Enable": false,
+   "PtzState": [
+    {
+     "PresetState": {
+      "Enable": false,
+      "PresetID": 0
+     },
+     "TourState": {
+      "LineID": 0,
+      "Running": false
+     }
+    }
+   ]
+  },
+  "AVEnc.VideoWidget": [
+   {
+    "ChannelTitle": {
+     "Name": "Garden",
+     "SerialNo": "0"
+    },
+    "ChannelTitleAttribute": {
+     "EncodeBlend": false,
+     "PreviewBlend": true
+    },
+    "TimeTitleAttribute": {
+     "EncodeBlend": true,
+     "PreviewBlend": true
+    },
+    "Covers": [],
+    "CoversNum": 0
+   }
+  ],
+  "fVideo.OsdLogo": {
+   "BgTrans": 16,
+   "Enable": true,
+   "FgTrans": 96,
+   "Left": 80,
+   "Top": 80
+  },
+  "Uart.PTZPreset": [
+   [
+    {
+     "Id": 100,
+     "PresetName": "Door"
+    },
+    {
+     "Id": 250
+    }
+   ]
+  ],
+  "AVEnc.SystemAbnormalRebootCnt": [
+   {
+    "NoBitCnt": 1,
+    "VideoInactiveCnt": 2
+   }
+  ]
  }
 }

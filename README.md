@@ -188,6 +188,8 @@ Entities only appear if the camera supports them.
 | PTZ diagonal moves, zoom in / out | button | Move diagonally, zoom. |
 | Home go to / Home set current position | button | Go to / save the preset from the options (default 0). |
 | Home clear | button | Delete that preset. |
+| Go to preset | select | Move to one of the positions saved on the camera. |
+| Return to last position after restart | switch | After a restart the camera moves back to where it was. |
 | **Lights and night vision** | | |
 | Day/night mode | select | When the camera uses infrared (IR). **Auto**: IR at night. **Always color**: IR never turns on (dark at night). **Always black & white**: IR always on. Cameras with a white light also offer *white light on motion* and *full color at night*. |
 | White light | switch | Turn the white light on / off by hand (sets the white light mode to *Always on* / *Off*). |
@@ -212,6 +214,7 @@ Entities only appear if the camera supports them.
 | Sub stream, main / sub stream audio | switch | Turn the sub stream or the audio in a stream off. |
 | **Image** | | |
 | Flip image / Mirror image | switch | For cameras mounted upside down or reversed. |
+| Show time / name / logo on video | switch | Text and logo burned into the video. |
 | Image brightness / contrast / saturation / hue | number | Picture colors, 0-100 (default 50). |
 | Image style | select | Three color and sharpness presets of the camera. |
 | Anti-fog / Anti-fog level | switch/number | Adds contrast to hazy or foggy images. |
@@ -222,6 +225,7 @@ Entities only appear if the camera supports them.
 | Motion sensitivity | number | 1 (low) - 6 (high). |
 | Motion tracking, tracking sensitivity, tracking return time | switch/select/number | The camera turns to follow moving people, and returns to its start position after the set time. |
 | Tamper detection / Video loss detection | switch | Alarm when the camera is covered / loses video. |
+| Human detection sensitivity / Show human detection box | select/switch | How easily people are detected / draw a box around them in the video. |
 | **Audio** | | |
 | Speaker | media_player | Play text-to-speech, sounds or internet radio (also .m3u / .pls playlists) on the camera speaker. |
 | Speaker volume | number | Volume of the camera speaker (TTS, voice prompts, alarm sounds). |
@@ -231,11 +235,21 @@ Entities only appear if the camera supports them.
 | Privacy mode | switch | Blacks out the video. |
 | Sleep schedule | switch | The camera's own sleep schedule (set times in the app). |
 | Restart / Synchronize clock | button | Restart the camera / set its clock to the Home Assistant time. |
+| Automatic restart / hour | select/number | Weekly or daily restart of the camera. |
+| Restart when network is lost | switch | The camera restarts itself when the network is gone for a while. |
+| Internet time (NTP) | switch | The camera sets its own clock from the internet. |
+| Abnormal restarts | sensor | How often the camera restarted because its video stopped. |
 | Siren | siren | The camera's built-in alarm siren. |
 | **Security** | | |
 | RTSP server | switch | The camera's RTSP video server (port 554). Needed for the camera entities. |
 | Cloud access (P2P) | switch | The XMEye/ICSee cloud connection that lets the apps reach the camera from anywhere. Turn it off if you only use it at home. |
 | Cloud push notifications | switch | Alarm messages to the phone app. |
+| Block all cloud servers / Block cloud P2P, relay, streaming server | switch | Cut the camera off from the Xiongmai cloud servers (all, or one kind). The apps then only work at home. |
+| Cloud access server (DAS) | switch | Another cloud connection. |
+| UPnP port forwarding | switch | Lets the camera open ports on your router by itself. Usually best off. |
+| Online firmware updates / Install firmware updates automatically | switch | Firmware updates from the cloud. New firmware can block this integration (see issue #65), so consider turning automatic installs off. |
+| Telnet debug access | binary_sensor | On if a debug login (telnet) is open on the camera. |
+| Linked to app account | binary_sensor | On if the camera is linked to an ICSee/XMEye account. |
 | Password reset by security questions / email or phone set | binary_sensor | On if someone can reset the camera password with security answers / a code sent by email or phone. |
 | Password reset by code | switch | Allow resetting the camera password with a code from the app (QR code). |
 | Users / Logged in as | sensor | Number of camera accounts (names and groups in the `users` attribute) / the account this integration uses. |

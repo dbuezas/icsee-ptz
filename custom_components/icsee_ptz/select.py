@@ -13,9 +13,15 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import encode
-from .const import DOMAIN
+from .binary_sensor import _run
+from .const import CONF_CHANNEL_COUNT, CONF_STEP, DOMAIN
 from .coordinator import ICSeeConfigEntry, ICSeeCoordinator
-from .entity import ICSeeConfigEntity, ICSeeConfigEntityDescription, config_entities
+from .entity import (
+    ICSeeConfigEntity,
+    ICSeeConfigEntityDescription,
+    ICSeeEntity,
+    config_entities,
+)
 
 PARALLEL_UPDATES = 1
 
@@ -216,6 +222,35 @@ SELECTS: tuple[ICSeeSelectEntityDescription, ...] = (
         ability=OTHER + "SupportDetectTrack",
         entity_category=EntityCategory.CONFIG,
     ),
+    ICSeeSelectEntityDescription(
+        key="auto_restart_day",
+        translation_key="auto_restart_day",
+        config="General.AutoMaintain",
+        path=("AutoRebootDay",),
+        value_map={
+            d: d.lower()
+            for d in (
+                "Never",
+                "Everyday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            )
+        },
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSelectEntityDescription(
+        key="human_detection_sensitivity",
+        translation_key="human_detection_sensitivity",
+        config="Detect.HumanDetection",
+        path=("Sensitivity",),
+        value_map={0: "low", 1: "medium", 2: "high"},
+        entity_category=EntityCategory.CONFIG,
+    ),
     *_encode(encode.MAIN, "main_stream"),
     *_encode(encode.SUB, "sub_stream"),
 )
@@ -227,7 +262,13 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     coordinator = entry.runtime_data.coordinator
-    async_add_entities(config_entities(coordinator, SELECTS, ICSeeSelect))
+    entities: list[SelectEntity] = config_entities(coordinator, SELECTS, ICSeeSelect)
+    entities += [
+        PtzPresetSelect(coordinator, channel)
+        for channel in range(entry.data.get(CONF_CHANNEL_COUNT, 1))
+        if coordinator.channel_value("Uart.PTZPreset", channel)
+    ]
+    async_add_entities(entities)
 
 
 class ICSeeSelect(ICSeeConfigEntity, SelectEntity):
@@ -285,3 +326,35 @@ class ICSeeSelect(ICSeeConfigEntity, SelectEntity):
             raise ServiceValidationError(
                 translation_domain=DOMAIN, translation_key="over_encode_budget"
             )
+
+
+class PtzPresetSelect(ICSeeEntity, SelectEntity):
+    """Go to one of the PTZ positions saved on the camera."""
+
+    _attr_translation_key = "ptz_preset"
+    _attr_current_option = None  # an action, not a state
+
+    def __init__(self, coordinator: ICSeeCoordinator, channel: int) -> None:
+        super().__init__(coordinator, f"ptz_preset_{channel}", channel)
+
+    def _presets(self) -> dict[str, int]:
+        presets = self.coordinator.channel_value("Uart.PTZPreset", self.channel) or []
+        return {
+            p.get("PresetName") or f"Preset {p['Id']}": int(p["Id"])
+            for p in presets
+            if isinstance(p, dict) and "Id" in p
+        }
+
+    @property
+    def options(self) -> list[str]:
+        return list(self._presets())
+
+    async def async_select_option(self, option: str) -> None:
+        if (preset := self._presets().get(option)) is None:
+            raise ServiceValidationError(
+                translation_domain=DOMAIN,
+                translation_key="invalid_option",
+                translation_placeholders={"option": option},
+            )
+        step = self.coordinator.config_entry.options.get(CONF_STEP, 2)
+        await _run(self.device.async_ptz("GotoPreset", step, preset, self.channel))

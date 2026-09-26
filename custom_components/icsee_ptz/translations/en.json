@@ -106,6 +106,12 @@
       },
       "password_reset_contact": {
         "name": "Password reset email or phone set"
+      },
+      "telnet_open": {
+        "name": "Telnet debug access"
+      },
+      "app_bound": {
+        "name": "Linked to app account"
       }
     },
     "sensor": {
@@ -125,6 +131,9 @@
           "not_connected": "Not connected",
           "disabled": "Disabled"
         }
+      },
+      "abnormal_restarts": {
+        "name": "Abnormal restarts"
       },
       "storage_total": {
         "name": "SD card size"
@@ -268,6 +277,51 @@
       "rtsp_server": {
         "name": "RTSP server"
       },
+      "cloud_block_all": {
+        "name": "Block all cloud servers"
+      },
+      "cloud_block_nat": {
+        "name": "Block cloud P2P server"
+      },
+      "cloud_block_rps": {
+        "name": "Block cloud relay server"
+      },
+      "cloud_block_dss": {
+        "name": "Block cloud streaming server"
+      },
+      "cloud_das": {
+        "name": "Cloud access server (DAS)"
+      },
+      "upnp": {
+        "name": "UPnP port forwarding"
+      },
+      "firmware_online_updates": {
+        "name": "Online firmware updates"
+      },
+      "firmware_auto_install": {
+        "name": "Install firmware updates automatically"
+      },
+      "ntp": {
+        "name": "Internet time (NTP)"
+      },
+      "reboot_on_network_loss": {
+        "name": "Restart when network is lost"
+      },
+      "resume_ptz_position": {
+        "name": "Return to last position after restart"
+      },
+      "time_on_video": {
+        "name": "Show time on video"
+      },
+      "name_on_video": {
+        "name": "Show name on video"
+      },
+      "logo_on_video": {
+        "name": "Show logo on video"
+      },
+      "human_detection_box": {
+        "name": "Show human detection box"
+      },
       "cloud_access": {
         "name": "Cloud access (P2P)"
       },
@@ -344,6 +398,31 @@
           "medium": "Medium",
           "high": "High"
         }
+      },
+      "human_detection_sensitivity": {
+        "name": "Human detection sensitivity",
+        "state": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
+      },
+      "auto_restart_day": {
+        "name": "Automatic restart",
+        "state": {
+          "never": "Never",
+          "everyday": "Every day",
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday",
+          "sunday": "Sunday"
+        }
+      },
+      "ptz_preset": {
+        "name": "Go to preset"
       },
       "main_stream_resolution": {
         "name": "Main stream resolution"
@@ -451,6 +530,9 @@
       },
       "tracking_return_time": {
         "name": "Motion tracking return time"
+      },
+      "auto_restart_hour": {
+        "name": "Automatic restart hour"
       }
     }
   },

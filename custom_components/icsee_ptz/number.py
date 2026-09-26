@@ -217,6 +217,16 @@ NUMBERS: tuple[ICSeeNumberEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
     ),
     ICSeeNumberEntityDescription(
+        key="auto_restart_hour",
+        translation_key="auto_restart_hour",
+        config="General.AutoMaintain",
+        path=("AutoRebootHour",),
+        native_min_value=0,
+        native_max_value=23,
+        native_step=1,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeNumberEntityDescription(
         key="tracking_return_time",
         translation_key="tracking_return_time",
         config="Detect.DetectTrack",

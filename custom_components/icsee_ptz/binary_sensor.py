@@ -70,6 +70,22 @@ CONFIG_SENSORS: tuple[ICSeeBinarySensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     ICSeeBinarySensorEntityDescription(
+        key="telnet_open",
+        translation_key="telnet_open",
+        config="Ability.TelnetDebugMode",
+        path=("Open",),
+        is_on_fn=bool,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    ICSeeBinarySensorEntityDescription(
+        key="app_bound",
+        translation_key="app_bound",
+        config="General.AppBindFlag",
+        path=("BeBinded",),
+        is_on_fn=bool,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    ICSeeBinarySensorEntityDescription(
         key="password_reset_contact",
         translation_key="password_reset_contact",
         config="General.PwdSafety",

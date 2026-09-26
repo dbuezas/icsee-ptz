@@ -109,6 +109,21 @@ SENSORS: tuple[ICSeeSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     ICSeeSensorEntityDescription(
+        # restarts because the video encoder or input stopped working
+        key="abnormal_restarts",
+        translation_key="abnormal_restarts",
+        config="AVEnc.SystemAbnormalRebootCnt",
+        path=(),
+        value_fn=lambda v: int(v.get("NoBitCnt") or 0)
+        + int(v.get("VideoInactiveCnt") or 0),
+        attrs_fn=lambda v: {
+            "no_video_data": v.get("NoBitCnt"),
+            "video_input_inactive": v.get("VideoInactiveCnt"),
+        },
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    ICSeeSensorEntityDescription(
         key="storage_total",
         translation_key="storage_total",
         config="StorageInfo",

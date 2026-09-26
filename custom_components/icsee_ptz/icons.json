@@ -70,6 +70,51 @@
       "rtsp_server": {
         "default": "mdi:video-wireless"
       },
+      "cloud_block_all": {
+        "default": "mdi:cloud-off-outline"
+      },
+      "cloud_block_nat": {
+        "default": "mdi:cloud-off-outline"
+      },
+      "cloud_block_rps": {
+        "default": "mdi:cloud-off-outline"
+      },
+      "cloud_block_dss": {
+        "default": "mdi:cloud-off-outline"
+      },
+      "cloud_das": {
+        "default": "mdi:cloud-lock"
+      },
+      "upnp": {
+        "default": "mdi:router-network"
+      },
+      "firmware_online_updates": {
+        "default": "mdi:update"
+      },
+      "firmware_auto_install": {
+        "default": "mdi:download-lock"
+      },
+      "ntp": {
+        "default": "mdi:clock-outline"
+      },
+      "reboot_on_network_loss": {
+        "default": "mdi:restart-alert"
+      },
+      "resume_ptz_position": {
+        "default": "mdi:crosshairs-gps"
+      },
+      "time_on_video": {
+        "default": "mdi:clock-digital"
+      },
+      "name_on_video": {
+        "default": "mdi:format-text"
+      },
+      "logo_on_video": {
+        "default": "mdi:image-text"
+      },
+      "human_detection_box": {
+        "default": "mdi:account-box-outline"
+      },
       "cloud_access": {
         "default": "mdi:cloud-lock"
       },
@@ -107,6 +152,15 @@
       },
       "tracking_sensitivity": {
         "default": "mdi:target"
+      },
+      "human_detection_sensitivity": {
+        "default": "mdi:account-search"
+      },
+      "auto_restart_day": {
+        "default": "mdi:restart"
+      },
+      "ptz_preset": {
+        "default": "mdi:crosshairs-gps"
       },
       "main_stream_resolution": {
         "default": "mdi:aspect-ratio"
@@ -190,6 +244,9 @@
       },
       "tracking_return_time": {
         "default": "mdi:timer-outline"
+      },
+      "auto_restart_hour": {
+        "default": "mdi:clock-time-three-outline"
       }
     },
     "button": {
@@ -250,6 +307,12 @@
       },
       "password_reset_contact": {
         "default": "mdi:email-lock"
+      },
+      "telnet_open": {
+        "default": "mdi:console-network"
+      },
+      "app_bound": {
+        "default": "mdi:cellphone-link"
       }
     },
     "sensor": {
@@ -264,6 +327,9 @@
       },
       "cloud_status": {
         "default": "mdi:cloud"
+      },
+      "abnormal_restarts": {
+        "default": "mdi:restart-alert"
       },
       "storage_total": {
         "default": "mdi:sd"

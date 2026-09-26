@@ -41,6 +41,9 @@ TO_REDACT = {
     "Users",
     "WlanMac",
     "NaInfoCode",
+    "DeviceID",
+    "ServerAddr",
+    "UserName",
 }
 
 

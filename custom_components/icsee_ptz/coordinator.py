@@ -55,6 +55,20 @@ CONFIGS: dict[str, ConfigSpec] = {
     "NetWork.PMS": ConfigSpec(per_channel=False),  # cloud push notifications
     "NetWork.RTSP": ConfigSpec(per_channel=False),  # RTSP server (video)
     "General.PwdSafety": ConfigSpec(per_channel=False),  # password reset options
+    "NetWork.DisableXmServerConn": ConfigSpec(per_channel=False),
+    "NetWork.Upnp": ConfigSpec(per_channel=False),
+    "NetWork.OnlineUpgrade": ConfigSpec(per_channel=False),
+    "NetWork.DAS": ConfigSpec(per_channel=False),
+    "NetWork.NetNTP": ConfigSpec(per_channel=False),
+    "NetWork.CheckNetState": ConfigSpec(per_channel=False),
+    "Ability.TelnetDebugMode": ConfigSpec(per_channel=False),
+    "General.AppBindFlag": ConfigSpec(per_channel=False),
+    "General.AutoMaintain": ConfigSpec(per_channel=False),
+    "General.ResumePtzState": ConfigSpec(per_channel=False),
+    "AVEnc.VideoWidget": ConfigSpec(per_channel=True),
+    "fVideo.OsdLogo": ConfigSpec(per_channel=False),
+    "Uart.PTZPreset": ConfigSpec(per_channel=True),
+    "AVEnc.SystemAbnormalRebootCnt": ConfigSpec(per_channel=True),
     # read only status
     "Users": ConfigSpec(per_channel=False, code=1472),
     "WifiRouteInfo": ConfigSpec(per_channel=False, code=1020),

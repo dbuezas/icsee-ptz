@@ -306,3 +306,47 @@ async def test_camera_snapshots_from_stream(
 
     cam = camera.get_camera_from_entity_id(hass, "camera.garten_main_stream")
     assert cam.use_stream_for_stills is True
+
+
+async def test_more_settings(
+    hass: HomeAssistant, setup_integration, mock_device
+) -> None:
+    states = {s.entity_id: s.state for s in hass.states.async_all()}
+    assert states["switch.garten_install_firmware_updates_automatically"] == "on"
+    assert states["switch.garten_upnp_port_forwarding"] == "off"
+    assert states["switch.garten_show_time_on_video"] == "on"
+    assert states["binary_sensor.garten_telnet_debug_access"] == "off"
+    assert states["binary_sensor.garten_linked_to_app_account"] == "on"
+    assert states["select.garten_automatic_restart"] == "tuesday"
+    assert float(states["number.garten_automatic_restart_hour"]) == 3
+    assert states["sensor.garten_abnormal_restarts"] == "3"
+    await hass.services.async_call(
+        "switch",
+        "turn_off",
+        {"entity_id": "switch.garten_install_firmware_updates_automatically"},
+        blocking=True,
+    )
+    assert mock_device.writes[-1][0] == "NetWork.OnlineUpgrade"
+    assert mock_device.writes[-1][1]["AutoUpgradeImp"] is False
+    await hass.services.async_call(
+        "switch",
+        "turn_on",
+        {"entity_id": "switch.garten_show_name_on_video"},
+        blocking=True,
+    )
+    assert mock_device.writes[-1][0] == "AVEnc.VideoWidget.[0]"
+    assert mock_device.writes[-1][1]["ChannelTitleAttribute"]["EncodeBlend"] is True
+
+
+async def test_ptz_preset_select(
+    hass: HomeAssistant, setup_integration, mock_device
+) -> None:
+    state = hass.states.get("select.garten_go_to_preset")
+    assert state.attributes["options"] == ["Door", "Preset 250"]
+    await hass.services.async_call(
+        "select",
+        "select_option",
+        {"entity_id": "select.garten_go_to_preset", "option": "Preset 250"},
+        blocking=True,
+    )
+    mock_device.async_ptz.assert_awaited_with("GotoPreset", 2, 250, 0)
