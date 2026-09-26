@@ -51,7 +51,7 @@ def _encode(stream: str, prefix: str) -> tuple[ICSeeNumberEntityDescription, ...
             native_max_value=30,
             native_step=1,
             max_fn=lambda c: encode.max_fps(c.channel_value("General.Location", 0)),
-            mode=NumberMode.BOX,
+            mode=NumberMode.SLIDER,
             entity_category=EntityCategory.CONFIG,
         ),
         ICSeeNumberEntityDescription(
