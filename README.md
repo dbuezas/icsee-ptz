@@ -57,8 +57,8 @@ PTZ buttons, settings, and the `icsee_ptz.move` action for PTZ.
 
 ## Motion alarm
 
-First make sure to enable and configure motion alarms in the standard camera application (e.g ICSee or XMEye).
-Then, you can use the provided entity in your automations.
+Turn on motion or human detection with the detection switches of the camera.
+Then, you can use the motion alarm entity in your automations.
 
 <img width="350" alt="image" src="https://github.com/dbuezas/icsee-ptz/assets/777196/06ef6fd4-e04c-4c06-83e1-724db6d65b05">
 
@@ -178,11 +178,11 @@ Entities only appear if the camera supports them.
 | Entity | Type | What it does |
 | --- | --- | --- |
 | **Alarm and video** | | |
-| Motion alarm | binary_sensor | On while the camera reports an alarm (motion, human, ...). Enable alarms in the ICSee/XMEye app first. Also the target of the `icsee_ptz.move` action. |
+| Motion alarm | binary_sensor | On while the camera reports an alarm. Which events count is set with the detection switches below. Also the target of the `icsee_ptz.move` action. |
 | Main stream / Sub stream | camera | Live video in high / low quality. Played by Home Assistant's go2rtc; snapshots come from the stream. |
 | **PTZ** | | |
 | PTZ up / down / left / right / stop | button | Move the camera. Speed = the Step option. |
-| PTZ diagonal moves, zoom in / out | button | Only useful on cameras that support them. |
+| PTZ diagonal moves, zoom in / out | button | Move diagonally, zoom. |
 | Home go to / Home set current position | button | Go to / save the preset from the options (default 0). |
 | Home clear | button | Delete that preset. |
 | **Lights and night vision** | | |
@@ -191,40 +191,49 @@ Entities only appear if the camera supports them.
 | White light mode | select | *Off*, *Always on*, *Auto* (at night), *Schedule*, *On motion*. On IR + white light cameras this is also the night vision mode: *Auto* = full color, *Off* = infrared. |
 | White light brightness / motion duration / motion sensitivity | number/select | Brightness, and how long and how easily the light turns on in *On motion* mode. |
 | Day/night switch sensitivity | number | 0-10. How early the camera switches to night mode. |
-| Day/night switch | select | Newer cameras only: force day or night, or use a schedule. |
-| Night vision, night vision enhancement, low light fill, light sensor threshold | switch/number | Newer cameras only. |
-| Starlight mode | switch | Low light boost. |
-| IR cut filter reversed | switch | Only for cameras whose day/night filter works the wrong way round. |
+| Day/night switch | select | Force day or night mode, switch automatically, or use a schedule. |
+| Night vision | switch | Main switch for the night lights (IR and white light). |
+| Night vision enhancement | switch | Brighter night image. |
+| Low light fill | switch | The app's "low light control": use the fill light in low light. |
+| Light sensor threshold | number | 1-5. How dark it must get before the night lights turn on. |
+| Starlight mode | switch | Brighter image in very low light: the sensor boosts its signal and exposes each frame longer. Keeps color longer, but adds grain, blurs movement and can lower the real frame rate. |
+| IR cut filter reversed | switch | For cameras whose day/night filter works the wrong way round (pink image by day, grey by night). |
 | **Video settings (main and sub stream)** | | |
-| Resolution | select | Only sizes the camera offers. |
+| Resolution | select | Picture size, e.g. 1080P, 3M, 4M. |
 | Frame rate | number | The maximum follows the camera's encoding limit and the video standard (25 PAL / 30 NTSC). |
 | Quality | select | *Bad* ... *Best*. Higher = better picture, more data. |
-| Codec | select | H.264 / H.265 (if the camera has both). H.265 uses less data but not every player supports it. |
-| Bitrate, bitrate control, key frame interval | number/select | Advanced. The official apps don't change these. |
+| Codec | select | H.264 / H.265. H.265 uses less data but not every player supports it. |
+| Bitrate | number | Target data rate in kbit/s. |
+| Bitrate control | select | *Constant* (steady data rate) or *Variable* (more data for busy scenes). |
+| Key frame interval | number | Seconds between full frames. Lower = faster video start, more data. |
 | Sub stream, main / sub stream audio | switch | Turn the sub stream or the audio in a stream off. |
 | **Image** | | |
 | Flip image / Mirror image | switch | For cameras mounted upside down or reversed. |
-| Image brightness / contrast / saturation | number | Picture colors. |
-| Image hue, image style, anti-fog, wide dynamic range, prevent overexposure | number/select/switch | Fine tuning. |
+| Image brightness / contrast / saturation / hue | number | Picture colors, 0-100 (default 50). |
+| Image style | select | Three color and sharpness presets of the camera. |
+| Anti-fog / Anti-fog level | switch/number | Adds contrast to hazy or foggy images. |
+| Wide dynamic range | switch | Shows detail in bright and dark parts at the same time, e.g. a door with sunlight behind it. |
+| Prevent overexposure | switch | Stops close, bright objects (e.g. a face lit by IR) from turning white. |
 | **Detection** | | |
-| Motion detection / Human detection | switch | Turn the camera's detection on / off (this is what triggers the motion alarm). |
+| Motion detection / Human detection | switch | Turn the camera's detection on / off. These trigger the motion alarm. |
 | Motion sensitivity | number | 1 (low) - 6 (high). |
-| Motion tracking, tracking sensitivity, tracking return time | switch/select/number | PTZ cameras that follow people, and when they return to the start position. |
+| Motion tracking, tracking sensitivity, tracking return time | switch/select/number | The camera turns to follow moving people, and returns to its start position after the set time. |
 | Tamper detection / Video loss detection | switch | Alarm when the camera is covered / loses video. |
 | **Audio** | | |
-| Speaker | media_player | Play text-to-speech or sounds on the camera speaker. |
-| Speaker volume / Microphone volume | number |  |
+| Speaker | media_player | Play text-to-speech, sounds or internet radio (also .m3u / .pls playlists) on the camera speaker. |
+| Speaker volume | number | Volume of the camera speaker (TTS, voice prompts, alarm sounds). |
+| Microphone volume | number | Sensitivity of the camera microphone (the sound in the video). |
 | **Other** | | |
 | Status LED / Voice prompts | switch | The LED and the spoken messages of the camera ("device connected", ...). |
 | Privacy mode | switch | Blacks out the video. |
 | Sleep schedule | switch | The camera's own sleep schedule (set times in the app). |
 | Restart / Synchronize clock | button | Restart the camera / set its clock to the Home Assistant time. |
-| Siren | siren | Only on cameras with a built-in alarm siren. |
+| Siren | siren | The camera's built-in alarm siren. |
 | **Security** | | |
 | Cloud access (P2P) | switch | The XMEye/ICSee cloud connection that lets the apps reach the camera from anywhere. Turn it off if you only use it at home. |
 | Cloud push notifications | switch | Alarm messages to the phone app. |
 | Password reset by security questions / email or phone set | binary_sensor | On if someone can reset the camera password with security answers / a code sent by email or phone. |
-| Password reset by code | switch | Only on cameras that have it. |
+| Password reset by code | switch | Allow resetting the camera password with a code from the app (QR code). |
 | Users / Logged in as | sensor | Number of camera accounts (names and groups in the `users` attribute) / the account this integration uses. |
 | Cloud status | sensor | Whether the camera is connected to the XMEye/ICSee cloud right now. |
 | WiFi signal / SD card size / SD card free | sensor | WiFi strength; SD card sensors only appear when a card is inserted. |
