@@ -51,6 +51,7 @@ class FakeDevice:
         self.host, self.port = ENTRY_DATA["host"], ENTRY_DATA["port"]
         self.username, self.password = ENTRY_DATA["username"], ENTRY_DATA["password"]
         self.is_connected = True
+        self.connected = True
         self.auth_failed = False
         self.ignore_writes = False  # simulate firmware that says OK but ignores
         self.set_ret = 100

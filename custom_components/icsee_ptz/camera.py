@@ -72,6 +72,20 @@ class ICSeeCamera(ICSeeEntity, Camera):
         Camera.__init__(self)
         self._attr_translation_key = f"{stream}_stream"
         self._subtype = subtype
+        self._rtsp_on = self._rtsp_enabled()
+
+    def _rtsp_enabled(self) -> bool | None:
+        rtsp = _rtsp(self.coordinator)
+        return None if rtsp is None else bool(rtsp.get("IsServer"))
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        if (rtsp_on := self._rtsp_enabled()) != self._rtsp_on:
+            self._rtsp_on = rtsp_on
+            # Home Assistant picks the player (go2rtc) only when the camera is
+            # added; ask it again now that the stream source changed
+            self.hass.async_create_task(self.async_refresh_providers())
+        super()._handle_coordinator_update()
 
     @property
     def available(self) -> bool:

@@ -22,7 +22,12 @@ from homeassistant.const import (
 )
 from homeassistant.core import CoreState, Event, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
-from homeassistant.helpers import config_validation as cv, discovery_flow, service
+from homeassistant.helpers import (
+    config_validation as cv,
+    discovery_flow,
+    issue_registry as ir,
+    service,
+)
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.typing import ConfigType
 
@@ -161,11 +166,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ICSeeConfigEntry) -> boo
     )
 
     @callback
-    def _check_auth() -> None:
+    def _check_connection() -> None:
         if device.auth_failed:
             entry.async_start_reauth(hass)
+        if device.connected:
+            # reconnected, e.g. after the camera restarted: settings are applied now
+            ir.async_delete_issue(hass, DOMAIN, f"reboot_required_{entry.entry_id}")
 
-    entry.async_on_unload(device.add_connection_callback(_check_auth))
+    entry.async_on_unload(device.add_connection_callback(_check_connection))
     entry.async_on_unload(entry.add_update_listener(_async_reload))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True

@@ -350,3 +350,38 @@ async def test_ptz_preset_select(
         blocking=True,
     )
     mock_device.async_ptz.assert_awaited_with("GotoPreset", 2, 250, 0)
+
+
+async def test_camera_refreshes_player_when_rtsp_turns_on(
+    hass: HomeAssistant, setup_integration
+) -> None:
+    from unittest.mock import patch
+
+    from custom_components.icsee_ptz.camera import ICSeeCamera
+
+    with patch.object(ICSeeCamera, "async_refresh_providers") as refresh:
+        await hass.services.async_call(
+            "switch",
+            "turn_on",
+            {"entity_id": "switch.garten_rtsp_server"},
+            blocking=True,
+        )
+        await hass.async_block_till_done()
+    assert refresh.call_count == 2  # main and sub stream
+
+
+async def test_reboot_issue_cleared_on_reconnect(
+    hass: HomeAssistant, setup_integration, mock_device
+) -> None:
+    from homeassistant.helpers import issue_registry as ir
+
+    mock_device.set_ret = 603
+    await hass.services.async_call(
+        "switch", "turn_on", {"entity_id": "switch.garten_privacy_mode"}, blocking=True
+    )
+    issue = ("icsee_ptz", f"reboot_required_{setup_integration.entry_id}")
+    assert ir.async_get(hass).async_get_issue(*issue)
+    mock_device.connected = True
+    for cb in list(mock_device._connection_callbacks):
+        cb()
+    assert not ir.async_get(hass).async_get_issue(*issue)
