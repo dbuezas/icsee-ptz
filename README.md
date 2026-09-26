@@ -258,6 +258,15 @@ Entities only appear if the camera supports them.
 
 The frame rate and resolution are checked against the camera's encoding limit before they are saved.
 
+## Newer firmware (encrypted DVRIP)
+
+Some recent firmware versions only answer to the "encrypted" transport that the
+official apps use (older clients log in but get empty replies). This integration
+detects that during login and switches to it automatically, so those cameras work
+too. Cameras that use the plain protocol are unaffected. This uses a fixed key
+shipped in the apps for interoperability; it does not change or bypass your camera
+password.
+
 ## Security
 
 - **Cloud access (P2P)**: the XMEye/ICSee cloud connection that lets the apps reach the camera from

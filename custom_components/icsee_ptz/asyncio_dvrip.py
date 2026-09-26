@@ -1,12 +1,39 @@
 import os
 import struct
 import json
+import base64
 import hashlib
 import asyncio
 from datetime import *
 from re import compile
 import time
 import logging
+
+# --- Encrypted DVRIP support (interoperability with the official apps) ---
+# Newer XM firmware requires the "encrypted" transport the apps use by default.
+# It is AES-128-CBC with a fixed key shipped in the apps (not per-device, and it
+# does NOT replace the username/password login). Bodies are base64 + a trailing
+# NUL, and the header version byte is 1. A message is encrypted unless its id is
+# in NotEncryptMsgID, which the camera sends in the 1413 -> 1414 handshake.
+_AES_KEY = b"dashoiahfarqdasr"
+_AES_IV = b"\x00" * 16
+
+
+def _aes_encrypt_body(plaintext: bytes) -> bytes:
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
+    padded = plaintext + b"\x00" * (-len(plaintext) % 16)
+    enc = Cipher(algorithms.AES(_AES_KEY), modes.CBC(_AES_IV)).encryptor()
+    return base64.b64encode(enc.update(padded) + enc.finalize())
+
+
+def _aes_decrypt_body(b64: bytes) -> bytes:
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
+    raw = base64.b64decode(b64)
+    raw = raw[: len(raw) - (len(raw) % 16)]
+    dec = Cipher(algorithms.AES(_AES_KEY), modes.CBC(_AES_IV)).decryptor()
+    return dec.update(raw) + dec.finalize()
 
 
 class SomethingIsWrongWithCamera(Exception):
@@ -117,6 +144,8 @@ class DVRIPCam(object):
         self.timeout = 10
         self.busy = asyncio.Lock()
         self.login_ret = None
+        self.encrypt_on = False
+        self.not_encrypt: set[int] = set()
 
     def debug(self, format=None):
         self.logger.setLevel(logging.DEBUG)
@@ -205,35 +234,62 @@ class DVRIPCam(object):
     async def _send_locked(self, msg, data, wait_response):
         if hasattr(data, "__iter__"):
             data = bytes(json.dumps(data, ensure_ascii=False), "utf-8")
+        encrypt = self.encrypt_on and msg not in self.not_encrypt
+        if encrypt:
+            body = _aes_encrypt_body(data + b"\x0a\x00") + b"\x00"
+            version = 1
+        else:
+            body = data + b"\x0a\x00"
+            version = 0
         pkt = (
             struct.pack(
                 "BB2xII2xHI",
                 255,
-                0,
+                version,
                 self.session,
                 self.packet_count,
                 msg,
-                len(data) + 2,
+                len(body),
             )
-            + data
-            + b"\x0a\x00"
+            + body
         )
         self.logger.debug("=> %s", pkt)
         self.socket_send(pkt)
         if wait_response:
-            data = await self.receive_with_timeout(20)
-            if data is None:
+            head = await self.receive_with_timeout(20)
+            if head is None:
                 return None
             (
-                head,
-                version,
+                _head,
+                _version,
                 self.session,
                 sequence_number,
                 msgid,
                 len_data,
-            ) = struct.unpack("BB2xII2xHI", data)
-            reply = await self.receive_json(len_data)
+            ) = struct.unpack("BB2xII2xHI", head)
+            body = await self.receive_with_timeout(len_data) if len_data else b""
+            if body is None:
+                return None
+            reply = self._parse_body(bytes(body))
             return reply or None
+
+    def _parse_body(self, body):
+        """Return the JSON reply, decrypting an AES body if the camera sent one."""
+        stripped = body.rstrip(b"\x00").rstrip()
+        if stripped and stripped[:1] not in (b"{", b"["):
+            try:
+                body = _aes_decrypt_body(stripped)
+            except Exception:  # noqa: BLE001 - fall back to the raw bytes
+                pass
+        text = body.rstrip(b"\x00").rstrip(b"\x0a").rstrip()
+        if not text:
+            return {}
+        self.packet_count += 1
+        self.logger.debug("<= %s", text)
+        try:
+            return json.loads(text)
+        except (ValueError, UnicodeDecodeError):
+            return {}
 
     def sofia_hash(self, password=""):
         md5 = hashlib.md5(bytes(password, "utf-8")).digest()
@@ -257,8 +313,48 @@ class DVRIPCam(object):
             return False
         self.session = int(data["SessionID"], 16)
         self.alive_time = data["AliveInterval"]
+        try:
+            await self._negotiate_encryption()
+        except Exception:  # noqa: BLE001 - never break a working login over this
+            self.logger.debug("%s: encryption negotiation failed", self.ip)
+            self.encrypt_on = False
         self.keep_alive(loop)
         return data["Ret"] in self.OK_CODES
+
+    async def _negotiate_encryption(self):
+        """Ask the camera (1413 -> 1414) whether it wants the encrypted transport.
+
+        Plaintext cameras answer without encryption fields, so nothing changes for
+        them. Newer firmware answers with NotEncryptMsgID, and from then on config
+        messages are AES-encrypted. The plain login above already succeeded, so we
+        only switch the per-message encoding, we do not log in again.
+        """
+        rand_a = base64.b64encode(os.urandom(3))[:4].decode()
+        reply = await self.send(
+            1413,
+            {
+                "Name": "OPMonitor",
+                "OPMonitor": {
+                    "Action": "Claim",
+                    "Parameter": {
+                        "Channel": 0,
+                        "CombinMode": "CONNECT_ALL",
+                        "StreamType": "Main",
+                        "TransMode": "TCP",
+                    },
+                },
+                "DHParameter": {"RandomStrA": rand_a},
+                "SessionID": "0x%08X" % self.session,
+            },
+        )
+        if not isinstance(reply, dict) or "NotEncryptMsgID" not in reply:
+            return  # plaintext camera: leave encryption off
+        try:
+            self.not_encrypt = {int(m) for m in reply["NotEncryptMsgID"]}
+        except (TypeError, ValueError):
+            self.not_encrypt = set()
+        self.encrypt_on = True
+        self.logger.info("%s: using encrypted DVRIP transport", self.ip)
 
     async def getAuthorityList(self):
         data = await self.send(self.QCODES["AuthorityList"])
