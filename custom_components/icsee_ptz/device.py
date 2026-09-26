@@ -189,6 +189,9 @@ class ICSeeDevice:
     async def async_get_config(self, name: str) -> Any:
         return await self._call("get_config", name)
 
+    async def async_get_value(self, name: str, code: int) -> Any:
+        return await self._call("get_value", name, code)
+
     async def async_get_ability(self, name: str) -> Any:
         return await self._call("get_ability", name)
 

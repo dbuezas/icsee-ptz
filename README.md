@@ -9,7 +9,7 @@ Home Assistant integration for ICSee/XMEye/DVR-IP/NetSurveillance/Sofia cameras.
 - PTZ: move, zoom, presets
 - Camera settings as entities: infrared / day-night mode, white light, frame rate, resolution, quality, image flip and colors, motion detection and tracking, volume, status LED, privacy mode and more
 - Camera speaker as a media player (e.g. for text-to-speech)
-- Security: cloud (P2P) access, cloud push, password reset options
+- Security: cloud (P2P) access and status, cloud push, password reset options, camera accounts
 - Finds cameras on your network by itself
 
 Each camera only gets the entities it supports. Requires Home Assistant 2025.10 or newer.
@@ -225,7 +225,9 @@ Entities only appear if the camera supports them.
 | Cloud push notifications | switch | Alarm messages to the phone app. |
 | Password reset by security questions / email or phone set | binary_sensor | On if someone can reset the camera password with security answers / a code sent by email or phone. |
 | Password reset by code | switch | Only on cameras that have it. |
-| Extra users | sensor | Hidden accounts the apps create on the camera. The names are in the `users` attribute. |
+| Users / Logged in as | sensor | Number of camera accounts (names and groups in the `users` attribute) / the account this integration uses. |
+| Cloud status | sensor | Whether the camera is connected to the XMEye/ICSee cloud right now. |
+| WiFi signal / SD card size / SD card free | sensor | WiFi strength; SD card sensors only appear when a card is inserted. |
 
 The frame rate and resolution are checked against the camera's encoding limit before they are saved.
 
@@ -235,7 +237,7 @@ The frame rate and resolution are checked against the camera's encoding limit be
   anywhere. Turn it off if you only use the camera at home.
 - **Password reset**: the apps can reset the camera password with security questions, a code sent by
   email/phone, or (on some cameras) a code. The indicators show if questions or an email/phone are set.
-- **Extra users**: the apps add a hidden account to the camera. This sensor shows how many exist.
+- **Cloud status** shows if the camera is connected to the cloud right now.
 
 ## Upgrading from 4.x
 

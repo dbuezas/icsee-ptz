@@ -238,10 +238,15 @@ async def test_security_entities(
         hass.states.get("binary_sensor.garten_password_reset_email_or_phone_set").state
         == "off"
     )
-    extra = hass.states.get("sensor.garten_extra_users")
-    assert extra.state == "1"
-    assert extra.attributes["users"] == ["hiddenuser"]
-    assert "hiddenpass" not in str(extra.attributes)
+    users = hass.states.get("sensor.garten_users")
+    assert users.state == "1"
+    assert users.attributes["users"] == [{"name": "admin", "group": "admin"}]
+    assert "hiddenpass" not in str(users.attributes)
+    assert hass.states.get("sensor.garten_logged_in_as").state == "admin"
+    assert hass.states.get("sensor.garten_wifi_signal").state == "61"
+    assert hass.states.get("sensor.garten_cloud_status").state == "connected"
+    # no SD card inserted
+    assert hass.states.get("sensor.garten_sd_card_size") is None
     # the camera has no VerifyCodeRestorePwdType field
     assert hass.states.get("switch.garten_password_reset_by_code") is None
     await hass.services.async_call(

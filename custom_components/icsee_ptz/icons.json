@@ -250,8 +250,23 @@
       }
     },
     "sensor": {
-      "extra_users": {
+      "users": {
         "default": "mdi:account-multiple"
+      },
+      "logged_in_as": {
+        "default": "mdi:account-key"
+      },
+      "wifi_signal": {
+        "default": "mdi:wifi"
+      },
+      "cloud_status": {
+        "default": "mdi:cloud"
+      },
+      "storage_total": {
+        "default": "mdi:sd"
+      },
+      "storage_free": {
+        "default": "mdi:sd"
       }
     },
     "siren": {

@@ -845,6 +845,10 @@ class DVRIPCam(object):
         """Read a config (cmd 1042). Raise ConfigNotSupported if the camera lacks it."""
         return self._config_value(name, await self._request(1042, name))
 
+    async def get_value(self, name, code):
+        """Read a value with another command, e.g. 1020 (status) or 1472 (users)."""
+        return self._config_value(name, await self._request(code, name))
+
     async def get_ability(self, name):
         """Read an ability (cmd 1360). Raise ConfigNotSupported if the camera lacks it."""
         return self._config_value(name, await self._request(1360, name))

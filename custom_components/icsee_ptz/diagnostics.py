@@ -38,6 +38,9 @@ TO_REDACT = {
     "Addr",
     "ServName",
     "BoxID",
+    "Users",
+    "WlanMac",
+    "NaInfoCode",
 }
 
 

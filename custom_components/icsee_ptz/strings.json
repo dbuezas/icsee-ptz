@@ -109,8 +109,28 @@
       }
     },
     "sensor": {
-      "extra_users": {
-        "name": "Extra users"
+      "users": {
+        "name": "Users"
+      },
+      "logged_in_as": {
+        "name": "Logged in as"
+      },
+      "wifi_signal": {
+        "name": "WiFi signal"
+      },
+      "cloud_status": {
+        "name": "Cloud status",
+        "state": {
+          "connected": "Connected",
+          "not_connected": "Not connected",
+          "disabled": "Disabled"
+        }
+      },
+      "storage_total": {
+        "name": "SD card size"
+      },
+      "storage_free": {
+        "name": "SD card free"
       }
     },
     "button": {

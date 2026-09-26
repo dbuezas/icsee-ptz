@@ -102,6 +102,9 @@ class FakeDevice:
     async def async_get_system_info(self) -> dict[str, Any]:
         return self.system_info
 
+    async def async_get_value(self, name: str, code: int) -> Any:
+        return await self.async_get_config(name)
+
     async def async_get_ability(self, name: str) -> Any:
         if name not in self.abilities:
             raise ConfigNotSupported(name, 103)

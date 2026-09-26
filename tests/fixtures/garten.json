@@ -1527,15 +1527,39 @@
    "SecurityEmail": "",
    "TipPageHide": false
   },
-  "System.ExUserMap": {
-   "User": [
-    {
-     "Name": "hiddenuser",
-     "Password": "",
-     "PasswordV2": "hiddenpass"
-    }
-   ],
-   "UserNum": 1
-  }
+  "Users": [
+   {
+    "Group": "admin",
+    "Memo": "admin 's account",
+    "Name": "admin",
+    "Password": "hiddenpass",
+    "PasswordV2": "hiddenpass2",
+    "Reserved": true,
+    "Sharable": true
+   }
+  ],
+  "WifiRouteInfo": {
+   "Eth0Status": false,
+   "SignalLevel": 61,
+   "WlanMac": "02:00:00:00:00:01",
+   "WlanStatus": true
+  },
+  "Status.NatInfo": {
+   "NaInfoCode": "2:192.0.2.200/1/0/+111",
+   "NatStatus": "Conneted"
+  },
+  "StorageInfo": [
+   {
+    "PartNumber": 0,
+    "Partition": [
+     {
+      "RemainSpace": "0x00000000",
+      "TotalSpace": "0x00000000",
+      "Status": 0
+     }
+    ],
+    "PlysicalNo": 0
+   }
+  ]
  }
 }

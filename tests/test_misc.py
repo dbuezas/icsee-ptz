@@ -62,7 +62,8 @@ async def test_diagnostics_redacted(hass: HomeAssistant, setup_integration) -> N
     assert "secret" not in text
     assert "0123456789abcdef" not in text
     assert "192.0.2.10" not in text
-    assert "hiddenpass" not in text and "hiddenuser" not in text
+    assert "hiddenpass" not in text
+    assert "192.0.2.200" not in text
     assert "Camera.WhiteLight" in diag["configs"]
 
 

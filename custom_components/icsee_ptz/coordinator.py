@@ -28,6 +28,7 @@ class ConfigSpec:
     channel_suffix: bool = (
         True  # write one channel as "Name.[ch]" (else the whole list)
     )
+    code: int = 1042  # read command: 1042 config, 1020 status, 1472 users
 
 
 CONFIGS: dict[str, ConfigSpec] = {
@@ -53,7 +54,11 @@ CONFIGS: dict[str, ConfigSpec] = {
     "NetWork.Nat": ConfigSpec(per_channel=False),  # XMEye cloud / P2P access
     "NetWork.PMS": ConfigSpec(per_channel=False),  # cloud push notifications
     "General.PwdSafety": ConfigSpec(per_channel=False),  # password reset options
-    "System.ExUserMap": ConfigSpec(per_channel=False),  # extra (app) users
+    # read only status
+    "Users": ConfigSpec(per_channel=False, code=1472),
+    "WifiRouteInfo": ConfigSpec(per_channel=False, code=1020),
+    "Status.NatInfo": ConfigSpec(per_channel=False),  # cloud connection state
+    "StorageInfo": ConfigSpec(per_channel=False, code=1020),  # SD card
 }
 
 # Abilities (cmd 1360) read once at setup
@@ -112,7 +117,11 @@ class ICSeeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             for name in names:
                 try:
-                    data[name] = await self.device.async_get_config(name)
+                    code = CONFIGS[name].code
+                    if code == 1042:
+                        data[name] = await self.device.async_get_config(name)
+                    else:
+                        data[name] = await self.device.async_get_value(name, code)
                     supported.add(name)
                 except ConfigNotSupported:
                     data.pop(name, None)
