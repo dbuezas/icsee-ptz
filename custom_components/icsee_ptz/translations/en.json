@@ -135,6 +135,9 @@
       "abnormal_restarts": {
         "name": "Abnormal restarts"
       },
+      "video_standard": {
+        "name": "Video standard"
+      },
       "storage_total": {
         "name": "SD card size"
       },
@@ -276,6 +279,30 @@
       },
       "rtsp_server": {
         "name": "RTSP server"
+      },
+      "anti_flicker": {
+        "name": "Anti-flicker"
+      },
+      "auto_gain": {
+        "name": "Automatic gain"
+      },
+      "motion_push": {
+        "name": "Push notification on motion"
+      },
+      "motion_record": {
+        "name": "Record on motion"
+      },
+      "motion_snapshot": {
+        "name": "Snapshot on motion"
+      },
+      "motion_beep": {
+        "name": "Beep on motion"
+      },
+      "motion_warning_light": {
+        "name": "Warning light on motion"
+      },
+      "onvif_password": {
+        "name": "ONVIF password required"
       },
       "cloud_block_all": {
         "name": "Block all cloud servers"
@@ -424,6 +451,38 @@
       "ptz_preset": {
         "name": "Go to preset"
       },
+      "corridor_mode": {
+        "name": "Corridor mode",
+        "state": {
+          "rotate_0": "Normal",
+          "rotate_90": "Corridor (90°)",
+          "rotate_180": "Rotated 180°",
+          "rotate_270": "Corridor (270°)"
+        }
+      },
+      "time_format": {
+        "name": "Time format",
+        "state": {
+          "hours_24": "24 hours",
+          "hours_12": "12 hours"
+        }
+      },
+      "date_format": {
+        "name": "Date format",
+        "state": {
+          "ymd": "Year-month-day",
+          "mdy": "Month-day-year",
+          "dmy": "Day-month-year"
+        }
+      },
+      "smart_encoding": {
+        "name": "Smart encoding",
+        "state": {
+          "h264": "H.264",
+          "h264_plus": "H.264+",
+          "h265x": "H.265X"
+        }
+      },
       "main_stream_resolution": {
         "name": "Main stream resolution"
       },
@@ -533,6 +592,30 @@
       },
       "auto_restart_hour": {
         "name": "Automatic restart hour"
+      },
+      "motion_record_duration": {
+        "name": "Motion recording duration"
+      },
+      "motion_warning_light_duration": {
+        "name": "Warning light duration"
+      },
+      "motion_alarm_hold": {
+        "name": "Motion alarm hold time"
+      },
+      "pir_sensitivity": {
+        "name": "PIR sensitivity"
+      },
+      "noise_reduction_day": {
+        "name": "Noise reduction (day)"
+      },
+      "noise_reduction_night": {
+        "name": "Noise reduction (night)"
+      },
+      "gain": {
+        "name": "Gain"
+      },
+      "exposure_sensitivity": {
+        "name": "Exposure sensitivity"
       }
     }
   },

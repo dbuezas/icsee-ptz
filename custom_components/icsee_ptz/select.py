@@ -21,6 +21,7 @@ from .entity import (
     ICSeeConfigEntityDescription,
     ICSeeEntity,
     config_entities,
+    get_path,
 )
 
 PARALLEL_UPDATES = 1
@@ -223,6 +224,32 @@ SELECTS: tuple[ICSeeSelectEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
     ),
     ICSeeSelectEntityDescription(
+        # values 0..3 confirmed in the app; 1 and 3 are portrait ("corridor")
+        key="corridor_mode",
+        translation_key="corridor_mode",
+        config="Camera.ParamEx",
+        path=("CorridorMode",),
+        value_map={0: "rotate_0", 1: "rotate_90", 2: "rotate_180", 3: "rotate_270"},
+        ability=OTHER + "SupportCorridorMode",
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSelectEntityDescription(
+        key="time_format",
+        translation_key="time_format",
+        config="General.Location",
+        path=("TimeFormat",),
+        value_map={"24": "hours_24", "12": "hours_12"},
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSelectEntityDescription(
+        key="date_format",
+        translation_key="date_format",
+        config="General.Location",
+        path=("DateFormat",),
+        value_map={"YYMMDD": "ymd", "MMDDYY": "mdy", "DDMMYY": "dmy"},
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSelectEntityDescription(
         key="auto_restart_day",
         translation_key="auto_restart_day",
         config="General.AutoMaintain",
@@ -268,6 +295,7 @@ async def async_setup_entry(
         for channel in range(entry.data.get(CONF_CHANNEL_COUNT, 1))
         if coordinator.channel_value("Uart.PTZPreset", channel)
     ]
+    entities += config_entities(coordinator, (SMART_ENCODE,), SmartEncodeSelect)
     async_add_entities(entities)
 
 
@@ -358,3 +386,57 @@ class PtzPresetSelect(ICSeeEntity, SelectEntity):
             )
         step = self.coordinator.config_entry.options.get(CONF_STEP, 2)
         await _run(self.device.async_ptz("GotoPreset", step, preset, self.channel))
+
+
+def _intel264(coordinator: ICSeeCoordinator, field: str) -> bool:
+    values = (coordinator.abilities.get("Encode264ability") or {}).get(field) or []
+    return bool(values) and _hex(values[0]) not in (None, 0)
+
+
+# Main stream "smart" encoding, as in the app: H264 / H264+ / H265X
+SMART_ENCODE = ICSeeSelectEntityDescription(
+    key="smart_encoding",
+    translation_key="smart_encoding",
+    config="AVEnc.SmartH264V2",
+    path=("Smart264V2", 0, "SmartH264"),
+    exists_fn=lambda c, _v: _intel264(c, "uIntel264") or _intel264(c, "uIntel264Plus"),
+    entity_category=EntityCategory.CONFIG,
+)
+
+
+class SmartEncodeSelect(ICSeeConfigEntity, SelectEntity):
+    entity_description: ICSeeSelectEntityDescription
+
+    @property
+    def options(self) -> list[str]:
+        options = ["h264"]
+        if _intel264(self.coordinator, "uIntel264"):
+            options.append("h264_plus")
+        if _intel264(self.coordinator, "uIntel264Plus"):
+            options.append("h265x")
+        return options
+
+    @property
+    def current_option(self) -> str | None:
+        value = self.coordinator.channel_value("AVEnc.SmartH264V2", self.channel)
+        if not isinstance(value, dict):
+            return None
+        smart = get_path(value, ("Smart264V2", 0, "SmartH264"))
+        plus = get_path(value, ("Smart264PlusV2", 0, "SmartH264Plus"))
+        if not smart:
+            return "h264"
+        return "h265x" if plus else "h264_plus"
+
+    async def async_select_option(self, option: str) -> None:
+        if option not in self.options:
+            raise ServiceValidationError(
+                translation_domain=DOMAIN,
+                translation_key="invalid_option",
+                translation_placeholders={"option": option},
+            )
+        await self.async_write_fields(
+            {
+                ("Smart264V2", 0, "SmartH264"): option != "h264",
+                ("Smart264PlusV2", 0, "SmartH264Plus"): 1 if option == "h265x" else 0,
+            }
+        )

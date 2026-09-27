@@ -26,6 +26,9 @@ class ICSeeSwitchEntityDescription(
 
     on_value: Any = True
     off_value: Any = False
+    # other fields the official apps change together with this one
+    also_on: dict[tuple[str | int, ...], Any] | None = None
+    also_off: dict[tuple[str | int, ...], Any] | None = None
 
 
 def _alarm(key: str, config: str, ability: str, translation_key: str):
@@ -36,6 +39,18 @@ def _alarm(key: str, config: str, ability: str, translation_key: str):
         path=("Enable",),
         ability=f"SystemFunction.AlarmFunction.{ability}",
         entity_category=EntityCategory.CONFIG,
+    )
+
+
+def _event(key: str, field: str, **kwargs: Any):
+    """What the camera does when motion is detected (EventHandler)."""
+    return ICSeeSwitchEntityDescription(
+        key=key,
+        translation_key=key,
+        config="Detect.MotionDetect",
+        path=("EventHandler", field),
+        entity_category=EntityCategory.CONFIG,
+        **{"ability": "SystemFunction.AlarmFunction.MotionDetect", **kwargs},
     )
 
 
@@ -137,6 +152,51 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
         path=("IrcutSwap",),
         on_value=1,
         off_value=0,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSwitchEntityDescription(
+        key="anti_flicker",
+        translation_key="anti_flicker",
+        config="Camera.Param",
+        path=("RejectFlicker",),
+        on_value=HEX_ON,
+        off_value=HEX_OFF,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSwitchEntityDescription(
+        # not used by the official apps; meaning inferred from the field name
+        key="auto_gain",
+        translation_key="auto_gain",
+        config="Camera.Param",
+        path=("GainParam", "AutoGain"),
+        on_value=1,
+        off_value=0,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    _event("motion_push", "MessageEnable"),
+    _event(
+        "motion_record",
+        "RecordEnable",
+        also_on={("EventHandler", "RecordMask"): "0x00000001"},
+        also_off={("EventHandler", "RecordMask"): "0x00000000"},
+    ),
+    _event(
+        "motion_snapshot",
+        "SnapEnable",
+        also_on={("EventHandler", "SnapShotMask"): "0x00000001"},
+        also_off={("EventHandler", "SnapShotMask"): "0x00000000"},
+    ),
+    _event("motion_beep", "BeepEnable"),
+    _event(
+        "motion_warning_light",
+        "AlarmOutEnable",
+        ability="SystemFunction.OtherFunction.AlarmOutUsedAsLed",
+    ),
+    ICSeeSwitchEntityDescription(
+        key="onvif_password",
+        translation_key="onvif_password",
+        config="NetWork.OnvifPwdCheckout",
+        path=("Enable",),
         entity_category=EntityCategory.CONFIG,
     ),
     ICSeeSwitchEntityDescription(
@@ -366,7 +426,13 @@ class ICSeeSwitch(ICSeeConfigEntity, SwitchEntity):
         return value == desc.on_value
 
     async def async_turn_on(self, **kwargs: Any) -> None:
-        await self.async_write_value(self.entity_description.on_value)
+        desc = self.entity_description
+        await self.async_write_fields(
+            {desc.path: desc.on_value, **(desc.also_on or {})}
+        )
 
     async def async_turn_off(self, **kwargs: Any) -> None:
-        await self.async_write_value(self.entity_description.off_value)
+        desc = self.entity_description
+        await self.async_write_fields(
+            {desc.path: desc.off_value, **(desc.also_off or {})}
+        )

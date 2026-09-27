@@ -419,3 +419,41 @@ async def test_motion_alarm_polled(
     with patch.object(binary_sensor, "PUSH_GRACE", 0):
         await coordinator.async_refresh()
     assert hass.states.get(entity_id).state == "off"
+
+
+async def test_image_and_alarm_settings(
+    hass: HomeAssistant, setup_integration, mock_device
+) -> None:
+    states = {s.entity_id: s.state for s in hass.states.async_all()}
+    assert states["switch.garten_anti_flicker"] == "off"
+    assert states["switch.garten_push_notification_on_motion"] == "on"
+    assert states["switch.garten_warning_light_on_motion"] == "on"
+    assert float(states["number.garten_noise_reduction_night"]) == 3
+    assert float(states["number.garten_motion_alarm_hold_time"]) == 2
+    assert states["select.garten_smart_encoding"] == "h264"
+    assert states["sensor.garten_video_standard"] == "PAL"
+    # microphone: InVolume is missing, so VolumeIn is used
+    assert float(states["number.garten_microphone_volume"]) == 50
+    # the app also sets RecordMask when turning recording on
+    await hass.services.async_call(
+        "switch",
+        "turn_on",
+        {"entity_id": "switch.garten_record_on_motion"},
+        blocking=True,
+    )
+    name, value = mock_device.writes[-1]
+    assert name == "Detect.MotionDetect.[0]"
+    assert value["EventHandler"]["RecordEnable"] is True
+    assert value["EventHandler"]["RecordMask"] == "0x00000001"
+    # H.265X sets both SmartH264 and SmartH264Plus on the main stream
+    await hass.services.async_call(
+        "select",
+        "select_option",
+        {"entity_id": "select.garten_smart_encoding", "option": "h265x"},
+        blocking=True,
+    )
+    name, value = mock_device.writes[-1]
+    assert name == "AVEnc.SmartH264V2.[0]"
+    assert value["Smart264V2"][0]["SmartH264"] is True
+    assert value["Smart264PlusV2"][0]["SmartH264Plus"] == 1
+    assert hass.states.get("select.garten_smart_encoding").state == "h265x"

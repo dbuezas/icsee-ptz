@@ -99,6 +99,42 @@ def _encode(stream: str, prefix: str) -> tuple[ICSeeNumberEntityDescription, ...
     )
 
 
+def _event_seconds(
+    key: str, field: str, low: int, high: int, **kwargs: Any
+) -> ICSeeNumberEntityDescription:
+    """A duration in the motion alarm's EventHandler."""
+    return ICSeeNumberEntityDescription(
+        key=key,
+        translation_key=key,
+        config="Detect.MotionDetect",
+        path=("EventHandler", field),
+        native_min_value=low,
+        native_max_value=high,
+        native_step=1,
+        mode=NumberMode.BOX,
+        device_class=NumberDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        entity_category=EntityCategory.CONFIG,
+        **{"ability": "SystemFunction.AlarmFunction.MotionDetect", **kwargs},
+    )
+
+
+def _param(
+    key: str, field: str | tuple[str, ...], low: int, high: int
+) -> ICSeeNumberEntityDescription:
+    """An image setting in Camera.Param."""
+    return ICSeeNumberEntityDescription(
+        key=key,
+        translation_key=key,
+        config="Camera.Param",
+        path=(field,) if isinstance(field, str) else field,
+        native_min_value=low,
+        native_max_value=high,
+        native_step=1,
+        entity_category=EntityCategory.CONFIG,
+    )
+
+
 def _color(field: str, key: str) -> ICSeeNumberEntityDescription:
     return ICSeeNumberEntityDescription(
         key=key,
@@ -139,6 +175,20 @@ NUMBERS: tuple[ICSeeNumberEntityDescription, ...] = (
         native_max_value=100,
         native_step=1,
         native_unit_of_measurement=PERCENTAGE,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeNumberEntityDescription(
+        # the same microphone setting under another name on some cameras
+        key="microphone_volume_in",
+        translation_key="microphone_volume",
+        config="fVideo.VolumeIn",
+        path=("LeftVolume",),
+        also_paths=(("RightVolume",),),
+        native_min_value=1,
+        native_max_value=100,
+        native_step=1,
+        native_unit_of_measurement=PERCENTAGE,
+        exists_fn=lambda c, _v: c.channel_value("fVideo.InVolume", 0) is None,
         entity_category=EntityCategory.CONFIG,
     ),
     ICSeeNumberEntityDescription(
@@ -226,6 +276,34 @@ NUMBERS: tuple[ICSeeNumberEntityDescription, ...] = (
         native_step=1,
         entity_category=EntityCategory.CONFIG,
     ),
+    _event_seconds("motion_record_duration", "RecordLatch", 5, 300),
+    _event_seconds(
+        "motion_warning_light_duration",
+        "AlarmOutLatch",
+        1,
+        120,
+        ability=OTHER + "AlarmOutUsedAsLed",
+    ),
+    # not used by the official apps; meaning and range inferred
+    _event_seconds("motion_alarm_hold", "EventLatch", 0, 300),
+    ICSeeNumberEntityDescription(
+        key="pir_sensitivity",
+        translation_key="pir_sensitivity",
+        config="Detect.MotionDetect",
+        path=("PirSensitive",),
+        native_min_value=1,
+        native_max_value=5,
+        native_step=1,
+        ability=OTHER + "SupportPirSensitive",
+        entity_category=EntityCategory.CONFIG,
+    ),
+    # The image tuning below is not used by the official apps; the meanings and
+    # ranges are inferred from the field names. Out-of-range values are
+    # reported as "not applied" by the read-back check.
+    _param("noise_reduction_day", "Day_nfLevel", 0, 5),
+    _param("noise_reduction_night", "Night_nfLevel", 0, 5),
+    _param("gain", ("GainParam", "Gain"), 0, 100),
+    _param("exposure_sensitivity", "AeSensitivity", 1, 10),
     ICSeeNumberEntityDescription(
         key="tracking_return_time",
         translation_key="tracking_return_time",

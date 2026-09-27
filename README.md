@@ -208,6 +208,8 @@ Entities only appear if the camera supports them.
 | Frame rate | number | The maximum follows the camera's encoding limit and the video standard (25 PAL / 30 NTSC). |
 | Quality | select | *Bad* ... *Best*. Higher = better picture, more data. |
 | Codec | select | H.264 / H.265. H.265 uses less data but not every player supports it. |
+| Smart encoding | select | Main stream: H.264, H.264+ or H.265X (smarter compression, less data). |
+| Video standard | sensor | PAL (up to 25 fps) or NTSC (up to 30 fps). |
 | Bitrate | number | Target data rate in kbit/s. |
 | Bitrate control | select | *Constant* (steady data rate) or *Variable* (more data for busy scenes). |
 | Key frame interval | number | Seconds between full frames. Lower = faster video start, more data. |
@@ -217,6 +219,9 @@ Entities only appear if the camera supports them.
 | Show time / name / logo on video | switch | Text and logo burned into the video. |
 | Image brightness / contrast / saturation / hue | number | Picture colors, 0-100 (default 50). |
 | Image style | select | Three color and sharpness presets of the camera. |
+| Anti-flicker | switch | Removes flicker from lamps on 50/60 Hz power. |
+| Corridor mode | select | Turns the image to portrait, for long narrow views like hallways. |
+| Noise reduction (day / night), gain, automatic gain, exposure sensitivity | number/switch | Low-level image tuning. The official apps don't show these; the ranges are best guesses. Less gain and more noise reduction mean a cleaner night image (and fewer false motion alarms), but a darker one. |
 | Anti-fog / Anti-fog level | switch/number | Adds contrast to hazy or foggy images. |
 | Wide dynamic range | switch | Shows detail in bright and dark parts at the same time, e.g. a door with sunlight behind it. |
 | Prevent overexposure | switch | Stops close, bright objects (e.g. a face lit by IR) from turning white. |
@@ -226,6 +231,11 @@ Entities only appear if the camera supports them.
 | Motion tracking, tracking sensitivity, tracking return time | switch/select/number | The camera turns to follow moving people, and returns to its start position after the set time. |
 | Tamper detection / Video loss detection | switch | Alarm when the camera is covered / loses video. |
 | Human detection sensitivity / Show human detection box | select/switch | How easily people are detected / draw a box around them in the video. |
+| Push notification / Record / Snapshot / Beep on motion | switch | What the camera itself does when it detects motion. |
+| Warning light on motion / Warning light duration | switch/number | Turn on the camera's light when it detects motion, and for how long. |
+| Motion recording duration | number | How long the camera records after motion (needs an SD card). |
+| Motion alarm hold time | number | How long an alarm stays active after the last motion. |
+| PIR sensitivity | number | For cameras with a PIR (body heat) sensor. |
 | **Audio** | | |
 | Speaker | media_player | Play text-to-speech, sounds or internet radio (also .m3u / .pls playlists) on the camera speaker. |
 | Speaker volume | number | Volume of the camera speaker (TTS, voice prompts, alarm sounds). |
@@ -238,6 +248,7 @@ Entities only appear if the camera supports them.
 | Automatic restart / hour | select/number | Weekly or daily restart of the camera. |
 | Restart when network is lost | switch | The camera restarts itself when the network is gone for a while. |
 | Internet time (NTP) | switch | The camera sets its own clock from the internet. |
+| Time format / Date format | select | How the time and date are shown on the video. |
 | Abnormal restarts | sensor | How often the camera restarted because its video stopped. |
 | Siren | siren | The camera's built-in alarm siren. |
 | **Security** | | |
@@ -246,6 +257,7 @@ Entities only appear if the camera supports them.
 | Cloud push notifications | switch | Alarm messages to the phone app. |
 | Block all cloud servers / Block cloud P2P, relay, streaming server | switch | Cut the camera off from the Xiongmai cloud servers (all, or one kind). The apps then only work at home. |
 | Cloud access server (DAS) | switch | Another cloud connection. |
+| ONVIF password required | switch | Whether NVRs and other ONVIF clients must log in with the password. May need a camera restart. |
 | UPnP port forwarding | switch | Lets the camera open ports on your router by itself. Usually best off. |
 | Online firmware updates / Install firmware updates automatically | switch | Firmware updates from the cloud. New firmware can block this integration (see issue #65), so consider turning automatic installs off. |
 | Telnet debug access | binary_sensor | On if a debug login (telnet) is open on the camera. |

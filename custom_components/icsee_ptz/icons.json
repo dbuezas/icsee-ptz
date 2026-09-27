@@ -70,6 +70,30 @@
       "rtsp_server": {
         "default": "mdi:video-wireless"
       },
+      "anti_flicker": {
+        "default": "mdi:sine-wave"
+      },
+      "auto_gain": {
+        "default": "mdi:brightness-auto"
+      },
+      "motion_push": {
+        "default": "mdi:cellphone-message"
+      },
+      "motion_record": {
+        "default": "mdi:record-rec"
+      },
+      "motion_snapshot": {
+        "default": "mdi:camera"
+      },
+      "motion_beep": {
+        "default": "mdi:volume-high"
+      },
+      "motion_warning_light": {
+        "default": "mdi:alarm-light"
+      },
+      "onvif_password": {
+        "default": "mdi:form-textbox-password"
+      },
       "cloud_block_all": {
         "default": "mdi:cloud-off-outline"
       },
@@ -162,6 +186,18 @@
       "ptz_preset": {
         "default": "mdi:crosshairs-gps"
       },
+      "corridor_mode": {
+        "default": "mdi:phone-rotate-portrait"
+      },
+      "time_format": {
+        "default": "mdi:clock-outline"
+      },
+      "date_format": {
+        "default": "mdi:calendar"
+      },
+      "smart_encoding": {
+        "default": "mdi:file-video"
+      },
       "main_stream_resolution": {
         "default": "mdi:aspect-ratio"
       },
@@ -247,6 +283,30 @@
       },
       "auto_restart_hour": {
         "default": "mdi:clock-time-three-outline"
+      },
+      "motion_record_duration": {
+        "default": "mdi:timer-outline"
+      },
+      "motion_warning_light_duration": {
+        "default": "mdi:timer-outline"
+      },
+      "motion_alarm_hold": {
+        "default": "mdi:timer-sand"
+      },
+      "pir_sensitivity": {
+        "default": "mdi:motion-sensor"
+      },
+      "noise_reduction_day": {
+        "default": "mdi:blur"
+      },
+      "noise_reduction_night": {
+        "default": "mdi:blur"
+      },
+      "gain": {
+        "default": "mdi:tune-vertical"
+      },
+      "exposure_sensitivity": {
+        "default": "mdi:camera-iris"
       }
     },
     "button": {
@@ -330,6 +390,9 @@
       },
       "abnormal_restarts": {
         "default": "mdi:restart-alert"
+      },
+      "video_standard": {
+        "default": "mdi:television-classic"
       },
       "storage_total": {
         "default": "mdi:sd"

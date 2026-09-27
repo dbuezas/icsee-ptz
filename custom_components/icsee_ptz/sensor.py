@@ -109,6 +109,14 @@ SENSORS: tuple[ICSeeSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     ICSeeSensorEntityDescription(
+        # PAL (max 25 fps) or NTSC (max 30 fps); the apps only read it
+        key="video_standard",
+        translation_key="video_standard",
+        config="General.Location",
+        path=("VideoFormat",),
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    ICSeeSensorEntityDescription(
         # restarts because the video encoder or input stopped working
         key="abnormal_restarts",
         translation_key="abnormal_restarts",

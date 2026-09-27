@@ -268,6 +268,16 @@
    "SupportIntellDoubleLight": 0,
    "SupportPreventOverExpo": 1,
    "Version": ""
+  },
+  "Encode264ability": {
+   "uIntel264": [
+    "0x00000001",
+    "0x00000001"
+   ],
+   "uIntel264Plus": [
+    "0x00000001",
+    "0x00000001"
+   ]
   }
  },
  "configs": {
@@ -1695,6 +1705,42 @@
     "VideoLoss": "0x00000000",
     "VideoMotion": "0x00000000"
    }
+  },
+  "fVideo.VolumeIn": [
+   {
+    "AudioMode": "Single",
+    "LeftVolume": 50,
+    "RightVolume": 50
+   }
+  ],
+  "AVEnc.SmartH264V2": [
+   {
+    "Smart264PlusV2": [
+     {
+      "SmartH264Plus": 0
+     },
+     {
+      "SmartH264Plus": 0
+     },
+     {
+      "SmartH264Plus": 0
+     }
+    ],
+    "Smart264V2": [
+     {
+      "SmartH264": false
+     },
+     {
+      "SmartH264": false
+     },
+     {
+      "SmartH264": false
+     }
+    ]
+   }
+  ],
+  "NetWork.OnvifPwdCheckout": {
+   "Enable": false
   }
  }
 }

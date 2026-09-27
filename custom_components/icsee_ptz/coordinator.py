@@ -40,6 +40,9 @@ CONFIGS: dict[str, ConfigSpec] = {
     "AVEnc.VideoColor": ConfigSpec(per_channel=True),
     "fVideo.Volume": ConfigSpec(per_channel=True),
     "fVideo.InVolume": ConfigSpec(per_channel=True),
+    "fVideo.VolumeIn": ConfigSpec(per_channel=True),  # microphone on some cameras
+    "AVEnc.SmartH264V2": ConfigSpec(per_channel=True),  # H.264+ / H.265X
+    "NetWork.OnvifPwdCheckout": ConfigSpec(per_channel=False),
     "Detect.MotionDetect": ConfigSpec(per_channel=True),
     "Detect.HumanDetection": ConfigSpec(per_channel=True),
     "Detect.BlindDetect": ConfigSpec(per_channel=True),
@@ -78,7 +81,7 @@ CONFIGS: dict[str, ConfigSpec] = {
 }
 
 # Abilities (cmd 1360) read once at setup
-ABILITIES = ("SystemFunction", "EncodeCapability", "Camera")
+ABILITIES = ("SystemFunction", "EncodeCapability", "Camera", "Encode264ability")
 
 type ICSeeConfigEntry = ConfigEntry[ICSeeData]
 
