@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 import copy
 from dataclasses import dataclass
+import functools
 import logging
 from typing import Any
 
@@ -15,9 +16,19 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DOMAIN, RET_NEEDS_REBOOT, SCAN_INTERVAL
-from .device import CannotConnect, CommandFailed, ConfigNotSupported, ICSeeDevice
+from .device import (
+    AuthFailed,
+    CannotConnect,
+    CommandFailed,
+    ConfigNotSupported,
+    ICSeeDevice,
+)
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class NoAnswer(Exception):
+    """The camera did not answer a read twice (it probably does not know it)."""
 
 
 @dataclass(frozen=True)
@@ -127,13 +138,35 @@ class ICSeeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             self.system_info = await self.device.async_get_system_info() or {}
             for name in ABILITIES:
                 try:
-                    self.abilities[name] = await self.device.async_get_ability(name)
-                except (ConfigNotSupported, CommandFailed):
+                    self.abilities[name] = await self._read_retry(
+                        name, self.device.async_get_ability
+                    )
+                except (ConfigNotSupported, CommandFailed, NoAnswer):
                     self.abilities[name] = {}
-        except CannotConnect as err:
+        except (CannotConnect, AuthFailed) as err:
             raise UpdateFailed(
                 translation_domain=DOMAIN, translation_key="cannot_connect"
             ) from err
+
+    async def _read_retry(
+        self, name: str, read: Callable[[str], Awaitable[Any]]
+    ) -> Any:
+        """Read once more on a new connection if the camera does not answer.
+
+        Some cameras and recorders never answer some names. Raise NoAnswer if it
+        does not answer twice, or CannotConnect if the camera is gone.
+        """
+        try:
+            return await read(name)
+        except CannotConnect as err:
+            _LOGGER.debug("No answer for %s: %s", name, err)
+        await self.device.async_reset_commands()
+        try:
+            return await read(name)
+        except CannotConnect as err:
+            _LOGGER.debug("No answer for %s again: %s", name, err)
+        await self.device.async_reset_commands()
+        raise NoAnswer(name)
 
     async def _async_update_data(self) -> dict[str, Any]:
         data = dict(self.data or {})
@@ -142,20 +175,21 @@ class ICSeeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         supported: set[str] = set()
         try:
             for name in names:
+                code = CONFIGS[name].code
                 try:
-                    code = CONFIGS[name].code
                     if code == 1042:
-                        data[name] = await self.device.async_get_config(name)
+                        read = self.device.async_get_config
                     else:
-                        data[name] = await self.device.async_get_value(name, code)
+                        read = functools.partial(self.device.async_get_value, code=code)
+                    data[name] = await self._read_retry(name, read)
                     supported.add(name)
                 except ConfigNotSupported:
                     data.pop(name, None)
-                except CommandFailed as err:
+                except (CommandFailed, NoAnswer) as err:
                     _LOGGER.debug("Reading %s failed: %s", name, err)
                     if name in data:
                         supported.add(name)
-        except CannotConnect as err:
+        except (CannotConnect, AuthFailed) as err:
             raise UpdateFailed(
                 translation_domain=DOMAIN, translation_key="cannot_connect"
             ) from err

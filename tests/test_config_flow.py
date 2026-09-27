@@ -176,3 +176,30 @@ async def test_options(hass: HomeAssistant, setup_integration) -> None:
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert setup_integration.options["step"] == 5
+
+
+async def test_setup_skips_names_the_camera_never_answers(
+    hass: HomeAssistant, mock_device, config_entry
+) -> None:
+    """Some recorders never answer some names; that must not stop the setup (#69)."""
+    config_entry.add_to_hass(hass)
+    mock_device.no_answer = {"NetWork.DAS", "Camera.Param"}
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    assert config_entry.state is config_entries.ConfigEntryState.LOADED
+    assert mock_device.resets == 4  # two per name: before the retry and after it
+    assert hass.states.get("switch.garten_cloud_access_server_das") is None
+    assert hass.states.get("select.garten_day_night_mode") is None
+    assert hass.states.get("switch.garten_rtsp_server") is not None
+    # later refreshes do not ask for them again
+    await config_entry.runtime_data.coordinator.async_refresh()
+    assert mock_device.resets == 4
+
+
+async def test_setup_retries_when_camera_goes_away(
+    hass: HomeAssistant, mock_device, config_entry
+) -> None:
+    config_entry.add_to_hass(hass)
+    mock_device.offline = True
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    assert config_entry.state is config_entries.ConfigEntryState.SETUP_RETRY

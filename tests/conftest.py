@@ -57,6 +57,9 @@ class FakeDevice:
         self.set_ret = 100
         self.connect_error: Exception | None = None
         self.writes: list[tuple[str, Any]] = []
+        self.no_answer: set[str] = set()  # names the camera never answers
+        self.offline = False  # reconnecting fails too
+        self.resets = 0
         self.async_ptz = AsyncMock()
         self.async_set_time = AsyncMock()
         self.async_reboot = AsyncMock()
@@ -111,8 +114,15 @@ class FakeDevice:
             raise ConfigNotSupported(name, 103)
         return copy.deepcopy(self.abilities[name])
 
+    async def async_reset_commands(self) -> None:
+        self.resets += 1
+        if self.offline:
+            raise CannotConnect("gone")
+
     async def async_get_config(self, name: str) -> Any:
         base, channel = self._split(name)
+        if base in self.no_answer or self.offline:
+            raise CannotConnect("No reply from camera")
         if base not in self.configs:
             raise ConfigNotSupported(name, 607)
         value = self.configs[base]

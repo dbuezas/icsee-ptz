@@ -138,6 +138,22 @@ class ICSeeDevice:
             await self._safe(self.async_set_time())
         self._set_connected(True)
 
+    async def async_reset_commands(self) -> None:
+        """Replace the command connection, e.g. after the camera did not answer.
+
+        A late answer would otherwise be read as the answer to the next command.
+        """
+        cam = self._new_cam()
+        try:
+            await self._login(cam)
+        except (SomethingIsWrongWithCamera, CommandFailed) as err:
+            cam.close()
+            raise CannotConnect(str(err)) from err
+        async with self._lock:
+            old, self.dvrip = self.dvrip, cam
+        if old:
+            old.close()
+
     async def async_run(self) -> None:
         """Keep reconnecting. Runs as a background task until cancelled."""
         try:
