@@ -218,6 +218,7 @@ Entities only appear if the camera supports them.
 | Flip image / Mirror image | switch | For cameras mounted upside down or reversed. |
 | Show time / name / logo on video | switch | Text and logo burned into the video. |
 | Time position / Name position | select | The corner of the picture where the time / camera name is shown. |
+| Name on video | text | The camera name shown on the video (see Show name on video). |
 | Image brightness / contrast / saturation / hue | number | Picture colors, 0-100 (default 50). |
 | Image style | select | Three color and sharpness presets of the camera. |
 | Anti-flicker | switch | Removes flicker from lamps on 50/60 Hz power. |

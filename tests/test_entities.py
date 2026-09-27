@@ -553,3 +553,26 @@ def test_dst_period() -> None:
     sydney = dst_period(ZoneInfo("Australia/Sydney"), 2026)
     assert sydney == (date(2026, 10, 4), date(2027, 4, 4))
     assert dst_period(ZoneInfo("Asia/Tokyo"), 2026) is None
+
+
+async def test_video_name(hass: HomeAssistant, setup_integration, mock_device) -> None:
+    entity_id = "text.garten_name_on_video"
+    assert hass.states.get(entity_id).state == "Garden"
+    await hass.services.async_call(
+        "text",
+        "set_value",
+        {"entity_id": entity_id, "value": "Back yard"},
+        blocking=True,
+    )
+    # the camera only redraws the name after it also gets the channel titles
+    assert mock_device.writes[-2][0] == "AVEnc.VideoWidget.[0]"
+    assert mock_device.writes[-2][1]["ChannelTitle"]["Name"] == "Back yard"
+    assert mock_device.writes[-1] == ("ChannelTitle", ["Back yard"])
+    assert hass.states.get(entity_id).state == "Back yard"
+    with pytest.raises(ServiceValidationError):
+        await hass.services.async_call(
+            "text",
+            "set_value",
+            {"entity_id": entity_id, "value": "ä" * 22},
+            blocking=True,
+        )

@@ -199,6 +199,9 @@ class ICSeeDevice:
         """Write a config. Return the DVRIP code (603 = reboot needed)."""
         return await self._call("set_config", name, value)
 
+    async def async_set_channel_titles(self, titles: list[str]) -> None:
+        await self._call("channel_title", titles)
+
     async def async_get_system_info(self) -> dict[str, Any]:
         return await self._call("get_command", "SystemInfo")
 

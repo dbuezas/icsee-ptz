@@ -459,6 +459,11 @@
       "siren": {
         "default": "mdi:alarm-light"
       }
+    },
+    "text": {
+      "video_name": {
+        "default": "mdi:format-text"
+      }
     }
   },
   "services": {

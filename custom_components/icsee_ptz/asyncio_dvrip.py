@@ -498,9 +498,10 @@ class DVRIPCam(object):
         return data["Ret"] in self.OK_CODES
 
     async def channel_title(self, titles):
+        """Set the channel names; the camera then redraws the name on the video."""
         if isinstance(titles, str):
             titles = [titles]
-        await self.send(
+        reply = await self.send(
             self.QCODES["ChannelTitle"],
             {
                 "ChannelTitle": titles,
@@ -508,6 +509,10 @@ class DVRIPCam(object):
                 "SessionID": "0x%08X" % self.session,
             },
         )
+        if reply is None:
+            raise SomethingIsWrongWithCamera("No reply from camera")
+        if reply.get("Ret") not in self.OK_CODES:
+            raise CommandFailed("ChannelTitle", reply.get("Ret"))
 
     async def channel_bitmap(self, width, height, bitmap):
         header = struct.pack("HH12x", width, height)

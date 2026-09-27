@@ -122,6 +122,9 @@ class FakeDevice:
             value = value[channel]
         return copy.deepcopy(value)
 
+    async def async_set_channel_titles(self, titles: list[str]) -> None:
+        self.writes.append(("ChannelTitle", list(titles)))
+
     async def async_set_config(self, name: str, value: Any) -> int:
         if self.set_ret not in (100, 603):
             raise CommandFailed(name, self.set_ret)

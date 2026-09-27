@@ -154,6 +154,11 @@
         "name": "SD card free"
       }
     },
+    "text": {
+      "video_name": {
+        "name": "Name on video"
+      }
+    },
     "button": {
       "ptz_stop": {
         "name": "PTZ stop"
@@ -712,6 +717,9 @@
     },
     "not_supported": {
       "message": "The camera does not support {config}."
+    },
+    "invalid_video_name": {
+      "message": "The name must have 1 to {max} characters."
     },
     "no_daylight_saving": {
       "message": "The Home Assistant time zone has no daylight saving time."
