@@ -48,11 +48,11 @@ async def test_entities_created(hass: HomeAssistant, setup_integration) -> None:
         "switch.garten_white_light",
         "switch.garten_privacy_mode",
         "switch.garten_motion_tracking",
-        "switch.garten_flip_image",
+        "switch.garten_image_flip",
         "number.garten_main_stream_frame_rate",
         "number.garten_speaker_volume",
         "number.garten_white_light_brightness",
-        "button.garten_synchronize_clock",
+        "button.garten_clock_synchronize",
     ]:
         assert entity_id in states, entity_id
     # Garten has no manual siren ability
@@ -93,9 +93,9 @@ async def test_white_light_switch(
 async def test_flip_hex_values(
     hass: HomeAssistant, setup_integration, mock_device
 ) -> None:
-    assert hass.states.get("switch.garten_flip_image").state == "on"
+    assert hass.states.get("switch.garten_image_flip").state == "on"
     await hass.services.async_call(
-        "switch", "turn_off", {"entity_id": "switch.garten_flip_image"}, blocking=True
+        "switch", "turn_off", {"entity_id": "switch.garten_image_flip"}, blocking=True
     )
     assert mock_device.writes[-1][1]["PictureFlip"] == "0x00000000"
 
@@ -319,18 +319,18 @@ async def test_more_settings(
     hass: HomeAssistant, setup_integration, mock_device
 ) -> None:
     states = {s.entity_id: s.state for s in hass.states.async_all()}
-    assert states["switch.garten_install_firmware_updates_automatically"] == "on"
+    assert states["switch.garten_firmware_updates_install_automatically"] == "on"
     assert states["switch.garten_upnp_port_forwarding"] == "off"
-    assert states["switch.garten_show_time_on_video"] == "on"
+    assert states["switch.garten_video_time_shown"] == "on"
     assert states["binary_sensor.garten_telnet_debug_access"] == "off"
     assert states["binary_sensor.garten_linked_to_app_account"] == "on"
-    assert states["select.garten_automatic_restart"] == "tuesday"
-    assert float(states["number.garten_automatic_restart_hour"]) == 3
-    assert states["sensor.garten_abnormal_restarts"] == "3"
+    assert states["select.garten_restart_automatically"] == "tuesday"
+    assert float(states["number.garten_restart_automatically_hour"]) == 3
+    assert states["sensor.garten_restarts_abnormal"] == "3"
     await hass.services.async_call(
         "switch",
         "turn_off",
-        {"entity_id": "switch.garten_install_firmware_updates_automatically"},
+        {"entity_id": "switch.garten_firmware_updates_install_automatically"},
         blocking=True,
     )
     assert mock_device.writes[-1][0] == "NetWork.OnlineUpgrade"
@@ -338,7 +338,7 @@ async def test_more_settings(
     await hass.services.async_call(
         "switch",
         "turn_on",
-        {"entity_id": "switch.garten_show_name_on_video"},
+        {"entity_id": "switch.garten_video_name_shown"},
         blocking=True,
     )
     assert mock_device.writes[-1][0] == "AVEnc.VideoWidget.[0]"
@@ -348,12 +348,12 @@ async def test_more_settings(
 async def test_ptz_preset_select(
     hass: HomeAssistant, setup_integration, mock_device
 ) -> None:
-    state = hass.states.get("select.garten_go_to_preset")
+    state = hass.states.get("select.garten_ptz_go_to_preset")
     assert state.attributes["options"] == ["Door", "Preset 250"]
     await hass.services.async_call(
         "select",
         "select_option",
-        {"entity_id": "select.garten_go_to_preset", "option": "Preset 250"},
+        {"entity_id": "select.garten_ptz_go_to_preset", "option": "Preset 250"},
         blocking=True,
     )
     mock_device.async_ptz.assert_awaited_with("GotoPreset", 2, 250, 0)
@@ -430,12 +430,12 @@ async def test_image_and_alarm_settings(
     hass: HomeAssistant, setup_integration, mock_device
 ) -> None:
     states = {s.entity_id: s.state for s in hass.states.async_all()}
-    assert states["switch.garten_anti_flicker"] == "off"
-    assert states["switch.garten_push_notification_on_motion"] == "on"
-    assert states["switch.garten_warning_light_on_motion"] == "on"
-    assert float(states["number.garten_noise_reduction_night"]) == 3
+    assert states["switch.garten_image_anti_flicker"] == "off"
+    assert states["switch.garten_motion_push_notification"] == "on"
+    assert states["switch.garten_motion_warning_light"] == "on"
+    assert float(states["number.garten_image_noise_reduction_night"]) == 3
     assert float(states["number.garten_motion_alarm_hold_time"]) == 2
-    assert states["select.garten_smart_encoding"] == "h264"
+    assert states["select.garten_main_stream_smart_encoding"] == "h264"
     assert states["sensor.garten_video_standard"] == "PAL"
     # microphone: InVolume is missing, so VolumeIn is used
     assert float(states["number.garten_microphone_volume"]) == 50
@@ -443,7 +443,7 @@ async def test_image_and_alarm_settings(
     await hass.services.async_call(
         "switch",
         "turn_on",
-        {"entity_id": "switch.garten_record_on_motion"},
+        {"entity_id": "switch.garten_motion_record"},
         blocking=True,
     )
     name, value = mock_device.writes[-1]
@@ -454,20 +454,20 @@ async def test_image_and_alarm_settings(
     await hass.services.async_call(
         "select",
         "select_option",
-        {"entity_id": "select.garten_smart_encoding", "option": "h265x"},
+        {"entity_id": "select.garten_main_stream_smart_encoding", "option": "h265x"},
         blocking=True,
     )
     name, value = mock_device.writes[-1]
     assert name == "AVEnc.SmartH264V2.[0]"
     assert value["Smart264V2"][0]["SmartH264"] is True
     assert value["Smart264PlusV2"][0]["SmartH264Plus"] == 1
-    assert hass.states.get("select.garten_smart_encoding").state == "h265x"
+    assert hass.states.get("select.garten_main_stream_smart_encoding").state == "h265x"
 
 
 async def test_sdk_header_settings(hass: HomeAssistant, setup_integration) -> None:
     states = {s.entity_id: s.state for s in hass.states.async_all()}
     assert states["switch.garten_image_stabilization"] == "off"
-    assert states["switch.garten_lens_distortion_correction"] == "off"
+    assert states["switch.garten_image_lens_distortion_correction"] == "off"
     assert states["select.garten_exposure_metering"] == "average"
     assert states["select.garten_ir_filter_switching"] == "with_ir_light"
     assert float(states["sensor.garten_exposure_time"]) == 256  # 0x00000100
@@ -481,23 +481,23 @@ async def test_final_settings(
     assert states["select.garten_sd_card_recording"] == "schedule"
     assert float(states["number.garten_sd_card_pre_recording"]) == 5
     assert float(states["number.garten_sd_card_file_length"]) == 5
-    assert float(states["number.garten_push_notification_interval"]) == 10
+    assert float(states["number.garten_cloud_push_notification_interval"]) == 10
     assert float(states["number.garten_tamper_detection_sensitivity"]) == 3
-    assert float(states["number.garten_maximum_exposure_time"]) == 65.536
-    assert states["sensor.garten_network_loss_restarts"] == "0"
+    assert float(states["number.garten_exposure_time_maximum"]) == 65.536
+    assert states["sensor.garten_restarts_network_loss"] == "0"
     assert states["binary_sensor.garten_upnp_router_ports_open"] == "off"
-    assert states["switch.garten_daylight_saving_time"] == "on"
+    assert states["switch.garten_clock_daylight_saving_time"] == "on"
     # time top right, name bottom left
-    assert states["select.garten_time_position"] == "top_right"
-    assert states["select.garten_name_position"] == "bottom_left"
+    assert states["select.garten_video_time_position"] == "top_right"
+    assert states["select.garten_video_name_position"] == "bottom_left"
     # the camera says: no human sensitivity, no vehicles
     assert "select.garten_human_detection_sensitivity" not in states
-    assert "select.garten_detect" not in states
+    assert "select.garten_human_detection_targets" not in states
 
     await hass.services.async_call(
         "number",
         "set_value",
-        {"entity_id": "number.garten_maximum_exposure_time", "value": 33},
+        {"entity_id": "number.garten_exposure_time_maximum", "value": 33},
         blocking=True,
     )
     name, value = mock_device.writes[-1]
@@ -507,26 +507,26 @@ async def test_final_settings(
     await hass.services.async_call(
         "select",
         "select_option",
-        {"entity_id": "select.garten_name_position", "option": "top_left"},
+        {"entity_id": "select.garten_video_name_position", "option": "top_left"},
         blocking=True,
     )
     name, value = mock_device.writes[-1]
     assert name == "AVEnc.VideoWidget.[0]"
     assert value["ChannelTitleAttribute"]["RelativePos"] == [76, 135, 255, 24]
-    assert hass.states.get("select.garten_name_position").state == "top_left"
+    assert hass.states.get("select.garten_video_name_position").state == "top_left"
 
     # turning DST on also writes the dates of HA's time zone
     await hass.config.async_update(time_zone="Europe/Berlin")
     await hass.services.async_call(
         "switch",
         "turn_off",
-        {"entity_id": "switch.garten_daylight_saving_time"},
+        {"entity_id": "switch.garten_clock_daylight_saving_time"},
         blocking=True,
     )
     await hass.services.async_call(
         "switch",
         "turn_on",
-        {"entity_id": "switch.garten_daylight_saving_time"},
+        {"entity_id": "switch.garten_clock_daylight_saving_time"},
         blocking=True,
     )
     name, value = mock_device.writes[-1]
@@ -542,7 +542,7 @@ async def test_final_settings(
         await hass.services.async_call(
             "switch",
             "turn_on",
-            {"entity_id": "switch.garten_daylight_saving_time"},
+            {"entity_id": "switch.garten_clock_daylight_saving_time"},
             blocking=True,
         )
 
@@ -556,7 +556,7 @@ def test_dst_period() -> None:
 
 
 async def test_video_name(hass: HomeAssistant, setup_integration, mock_device) -> None:
-    entity_id = "text.garten_name_on_video"
+    entity_id = "text.garten_video_name_text"
     assert hass.states.get(entity_id).state == "Garden"
     await hass.services.async_call(
         "text",

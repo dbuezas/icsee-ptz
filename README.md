@@ -186,10 +186,10 @@ Entities only appear if the camera supports them.
 | **PTZ** | | |
 | PTZ up / down / left / right / stop | button | Move the camera. Speed = the Step option. |
 | PTZ diagonal moves, zoom in / out | button | Move diagonally, zoom. |
-| Home go to / Home set current position | button | Go to / save the preset from the options (default 0). |
-| Home clear | button | Delete that preset. |
-| Go to preset | select | Move to one of the positions saved on the camera. |
-| Return to last position after restart | switch | After a restart the camera moves back to where it was. |
+| PTZ home go to / PTZ home set current position | button | Go to / save the preset from the options (default 0). |
+| PTZ home clear | button | Delete that preset. |
+| PTZ go to preset | select | Move to one of the positions saved on the camera. |
+| Restart returns to last position | switch | After a restart the camera moves back to where it was. |
 | **Lights and night vision** | | |
 | Day/night mode | select | When the camera uses infrared (IR). **Auto**: IR at night. **Always color**: IR never turns on (dark at night). **Always black & white**: IR always on. Cameras with a white light also offer *white light on motion* and *full color at night*. |
 | White light | switch | Turn the white light on / off by hand (sets the white light mode to *Always on* / *Off*). |
@@ -202,36 +202,36 @@ Entities only appear if the camera supports them.
 | Low light fill | switch | The app's "low light control": use the fill light in low light. |
 | Light sensor threshold | number | 1-5. How dark it must get before the night lights turn on. |
 | Starlight mode | switch | Brighter image in very low light: the sensor boosts its signal and exposes each frame longer. Keeps color longer, but adds grain, blurs movement and can lower the real frame rate. |
-| IR cut filter reversed | switch | For cameras whose day/night filter works the wrong way round (pink image by day, grey by night). |
+| IR filter reversed | switch | For cameras whose day/night filter works the wrong way round (pink image by day, grey by night). |
 | **Video settings (main and sub stream)** | | |
 | Resolution | select | Picture size, e.g. 1080P, 3M, 4M. |
 | Frame rate | number | The maximum follows the camera's encoding limit and the video standard (25 PAL / 30 NTSC). |
 | Quality | select | *Bad* ... *Best*. Higher = better picture, more data. |
 | Codec | select | H.264 / H.265. H.265 uses less data but not every player supports it. |
-| Smart encoding | select | Main stream: H.264, H.264+ or H.265X (smarter compression, less data). |
+| Main stream smart encoding | select | Main stream: H.264, H.264+ or H.265X (smarter compression, less data). |
 | Video standard | sensor | PAL (up to 25 fps) or NTSC (up to 30 fps). |
 | Bitrate | number | Target data rate in kbit/s. |
 | Bitrate control | select | *Constant* (steady data rate) or *Variable* (more data for busy scenes). |
 | Key frame interval | number | Seconds between full frames. Lower = faster video start, more data. |
 | Sub stream, main / sub stream audio | switch | Turn the sub stream or the audio in a stream off. |
 | **Image** | | |
-| Flip image / Mirror image | switch | For cameras mounted upside down or reversed. |
-| Show time / name / logo on video | switch | Text and logo burned into the video. |
-| Time position / Name position | select | The corner of the picture where the time / camera name is shown. |
-| Name on video | text | The camera name shown on the video (see Show name on video). |
+| Image flip / Image mirror | switch | For cameras mounted upside down or reversed. |
+| Video time / name / logo shown | switch | Text and logo burned into the video. |
+| Video time position / Video name position | select | The corner of the picture where the time / camera name is shown. |
+| Video name text | text | The camera name shown on the video (see Video name shown). |
 | Image brightness / contrast / saturation / hue | number | Picture colors, 0-100 (default 50). |
 | Image style | select | Three color and sharpness presets of the camera. |
-| Anti-flicker | switch | Removes flicker from lamps on 50/60 Hz power. |
-| Corridor mode | select | Turns the image to portrait, for long narrow views like hallways. |
-| Noise reduction (day / night) | number | 0 = off, 1-5 = stronger filtering. More filtering gives a cleaner night image and fewer false motion alarms, but less detail. |
-| Automatic gain / Gain | switch/number | With automatic gain on, Gain is the maximum amplification; with it off, a fixed amplification. Less gain means less noise but a darker image. |
+| Image anti-flicker | switch | Removes flicker from lamps on 50/60 Hz power. |
+| Image corridor mode | select | Turns the image to portrait, for long narrow views like hallways. |
+| Image noise reduction (day / night) | number | 0 = off, 1-5 = stronger filtering. More filtering gives a cleaner night image and fewer false motion alarms, but less detail. |
+| Gain (automatic) / Gain | switch/number | With automatic gain on, Gain is the maximum amplification; with it off, a fixed amplification. Less gain means less noise but a darker image. |
 | Exposure sensitivity | number | How quickly the exposure reacts. The range is a best guess. |
 | Exposure metering | select | Measure the brightness over the whole image or only the center. |
-| Image stabilization / Lens distortion correction | switch | Electronic stabilization; straightens the curved edges of wide lenses. |
+| Image stabilization / Image lens distortion correction | switch | Electronic stabilization; straightens the curved edges of wide lenses. |
 | Wide dynamic range level | number | Strength of wide dynamic range (see the WDR switch). |
 | IR filter switching | select | Whether the IR filter switches together with the IR light, or by itself. |
 | Exposure time | sensor | The exposure time the camera uses right now. |
-| Maximum exposure time | number | The longest exposure the camera uses in the dark. Shorter gives less motion blur, but a darker and noisier image. |
+| Exposure time (maximum) | number | The longest exposure the camera uses in the dark. Shorter gives less motion blur, but a darker and noisier image. |
 | Anti-fog / Anti-fog level | switch/number | Adds contrast to hazy or foggy images. |
 | Wide dynamic range | switch | Shows detail in bright and dark parts at the same time, e.g. a door with sunlight behind it. |
 | Prevent overexposure | switch | Stops close, bright objects (e.g. a face lit by IR) from turning white. |
@@ -241,13 +241,13 @@ Entities only appear if the camera supports them.
 | Motion tracking, tracking sensitivity, tracking return time | switch/select/number | The camera turns to follow moving people, and returns to its start position after the set time. |
 | Tamper detection / Video loss detection | switch | Alarm when the camera is covered / loses video. |
 | Tamper detection sensitivity | number | 1 (low) - 6 (high). |
-| Human detection sensitivity / Show human detection box | select/switch | How easily people are detected / draw a box around them in the video. |
-| Detect | select | Detect people, vehicles or both. Only on cameras that can detect vehicles. |
-| Push notification / Record / Snapshot / Beep on motion | switch | What the camera itself does when it detects motion. |
-| Warning light on motion / Warning light duration | switch/number | Turn on the camera's light when it detects motion, and for how long. |
+| Human detection sensitivity / Human detection box | select/switch | How easily people are detected / draw a box around them in the video. |
+| Human detection targets | select | Detect people, vehicles or both. Only on cameras that can detect vehicles. |
+| Motion push notification / record / snapshot / beep | switch | What the camera itself does when it detects motion. |
+| Motion warning light / Motion warning light duration | switch/number | Turn on the camera's light when it detects motion, and for how long. |
 | Motion recording duration | number | How long the camera records after motion (needs an SD card). |
 | Motion alarm hold time | number | How long an alarm stays active after the last motion. |
-| PIR sensitivity | number | For cameras with a PIR (body heat) sensor. |
+| Motion PIR sensitivity | number | For cameras with a PIR (body heat) sensor. |
 | SD card recording / pre-recording / file length | select/number | Record always, by the schedule set in the app, or never; seconds kept from before an event; minutes per video file. |
 | **Audio** | | |
 | Speaker | media_player | Play text-to-speech, sounds or internet radio (also .m3u / .pls playlists) on the camera speaker. |
@@ -257,26 +257,26 @@ Entities only appear if the camera supports them.
 | Status LED / Voice prompts | switch | The LED and the spoken messages of the camera ("device connected", ...). |
 | Privacy mode | switch | Blacks out the video. |
 | Sleep schedule | switch | The camera's own sleep schedule (set times in the app). |
-| Restart / Synchronize clock | button | Restart the camera / set its clock to the Home Assistant time. |
-| Automatic restart / hour | select/number | Weekly or daily restart of the camera. |
+| Restart / Clock synchronize | button | Restart the camera / set its clock to the Home Assistant time. |
+| Restart automatically / Restart automatically hour | select/number | Weekly or daily restart of the camera. |
 | Restart when network is lost | switch | The camera restarts itself when the network is gone for a while. |
-| Internet time (NTP) | switch | The camera sets its own clock from the internet. |
-| Time format / Date format | select | How the time and date are shown on the video. |
-| Daylight saving time | switch | The camera changes its clock by one hour. Turning it on uses the dates of the Home Assistant time zone. |
-| Abnormal restarts | sensor | How often the camera restarted because its video stopped. |
-| Network loss restarts | sensor | How often the camera restarted because the network was lost. |
+| Clock internet time (NTP) | switch | The camera sets its own clock from the internet. |
+| Clock time format / Clock date format | select | How the time and date are shown on the video. |
+| Clock daylight saving time | switch | The camera changes its clock by one hour. Turning it on uses the dates of the Home Assistant time zone. |
+| Restarts (abnormal) | sensor | How often the camera restarted because its video stopped. |
+| Restarts (network loss) | sensor | How often the camera restarted because the network was lost. |
 | Siren | siren | The camera's built-in alarm siren. |
 | **Security** | | |
 | RTSP server | switch | The camera's RTSP video server (port 554). Needed for the camera entities. |
 | Cloud access (P2P) | switch | The XMEye/ICSee cloud connection that lets the apps reach the camera from anywhere. Turn it off if you only use it at home. |
 | Cloud push notifications | switch | Alarm messages to the phone app. |
-| Push notification interval | number | The minimum time between two alarm messages to the phone app. |
-| Block all cloud servers / Block cloud P2P, relay, streaming server | switch | Cut the camera off from the Xiongmai cloud servers (all, or one kind). The apps then only work at home. |
+| Cloud push notification interval | number | The minimum time between two alarm messages to the phone app. |
+| Cloud block all servers / Cloud block P2P, relay, streaming server | switch | Cut the camera off from the Xiongmai cloud servers (all, or one kind). The apps then only work at home. |
 | Cloud access server (DAS) | switch | Another cloud connection. |
 | ONVIF password required | switch | Whether NVRs and other ONVIF clients must log in with the password. May need a camera restart. |
 | UPnP port forwarding | switch | Lets the camera open ports on your router by itself. Usually best off. |
 | UPnP router ports open | binary_sensor | On if UPnP has opened ports on your router. |
-| Online firmware updates / Install firmware updates automatically | switch | Firmware updates from the cloud. New firmware can block this integration (see issue #65), so consider turning automatic installs off. |
+| Firmware updates online / Firmware updates install automatically | switch | Firmware updates from the cloud. New firmware can block this integration (see issue #65), so consider turning automatic installs off. |
 | Telnet debug access | binary_sensor | On if a debug login (telnet) is open on the camera. |
 | Linked to app account | binary_sensor | On if the camera is linked to an ICSee/XMEye account. |
 | Password reset by security questions / email or phone set | binary_sensor | On if someone can reset the camera password with security answers / a code sent by email or phone. |

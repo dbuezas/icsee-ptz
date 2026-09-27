@@ -136,10 +136,10 @@
         }
       },
       "abnormal_restarts": {
-        "name": "Abnormal restarts"
+        "name": "Restarts (abnormal)"
       },
       "network_loss_restarts": {
-        "name": "Network loss restarts"
+        "name": "Restarts (network loss)"
       },
       "video_standard": {
         "name": "Video standard"
@@ -156,7 +156,7 @@
     },
     "text": {
       "video_name": {
-        "name": "Name on video"
+        "name": "Video name text"
       }
     },
     "button": {
@@ -194,16 +194,16 @@
         "name": "PTZ zoom out"
       },
       "home_go_to": {
-        "name": "Home go to"
+        "name": "PTZ home go to"
       },
       "home_set": {
-        "name": "Home set current position"
+        "name": "PTZ home set current position"
       },
       "home_clear": {
-        "name": "Home clear"
+        "name": "PTZ home clear"
       },
       "sync_clock": {
-        "name": "Synchronize clock"
+        "name": "Clock synchronize"
       }
     },
     "camera": {
@@ -268,13 +268,13 @@
         "name": "Prevent overexposure"
       },
       "picture_flip": {
-        "name": "Flip image"
+        "name": "Image flip"
       },
       "picture_mirror": {
-        "name": "Mirror image"
+        "name": "Image mirror"
       },
       "ircut_reverse": {
-        "name": "IR cut filter reversed"
+        "name": "IR filter reversed"
       },
       "anti_fog": {
         "name": "Anti-fog"
@@ -295,49 +295,49 @@
         "name": "RTSP server"
       },
       "anti_flicker": {
-        "name": "Anti-flicker"
+        "name": "Image anti-flicker"
       },
       "stabilization": {
         "name": "Image stabilization"
       },
       "daylight_saving": {
-        "name": "Daylight saving time"
+        "name": "Clock daylight saving time"
       },
       "lens_correction": {
-        "name": "Lens distortion correction"
+        "name": "Image lens distortion correction"
       },
       "auto_gain": {
-        "name": "Automatic gain"
+        "name": "Gain (automatic)"
       },
       "motion_push": {
-        "name": "Push notification on motion"
+        "name": "Motion push notification"
       },
       "motion_record": {
-        "name": "Record on motion"
+        "name": "Motion record"
       },
       "motion_snapshot": {
-        "name": "Snapshot on motion"
+        "name": "Motion snapshot"
       },
       "motion_beep": {
-        "name": "Beep on motion"
+        "name": "Motion beep"
       },
       "motion_warning_light": {
-        "name": "Warning light on motion"
+        "name": "Motion warning light"
       },
       "onvif_password": {
         "name": "ONVIF password required"
       },
       "cloud_block_all": {
-        "name": "Block all cloud servers"
+        "name": "Cloud block all servers"
       },
       "cloud_block_nat": {
-        "name": "Block cloud P2P server"
+        "name": "Cloud block P2P server"
       },
       "cloud_block_rps": {
-        "name": "Block cloud relay server"
+        "name": "Cloud block relay server"
       },
       "cloud_block_dss": {
-        "name": "Block cloud streaming server"
+        "name": "Cloud block streaming server"
       },
       "cloud_das": {
         "name": "Cloud access server (DAS)"
@@ -346,31 +346,31 @@
         "name": "UPnP port forwarding"
       },
       "firmware_online_updates": {
-        "name": "Online firmware updates"
+        "name": "Firmware updates online"
       },
       "firmware_auto_install": {
-        "name": "Install firmware updates automatically"
+        "name": "Firmware updates install automatically"
       },
       "ntp": {
-        "name": "Internet time (NTP)"
+        "name": "Clock internet time (NTP)"
       },
       "reboot_on_network_loss": {
         "name": "Restart when network is lost"
       },
       "resume_ptz_position": {
-        "name": "Return to last position after restart"
+        "name": "Restart returns to last position"
       },
       "time_on_video": {
-        "name": "Show time on video"
+        "name": "Video time shown"
       },
       "name_on_video": {
-        "name": "Show name on video"
+        "name": "Video name shown"
       },
       "logo_on_video": {
-        "name": "Show logo on video"
+        "name": "Video logo shown"
       },
       "human_detection_box": {
-        "name": "Show human detection box"
+        "name": "Human detection box"
       },
       "cloud_access": {
         "name": "Cloud access (P2P)"
@@ -458,7 +458,7 @@
         }
       },
       "detection_objects": {
-        "name": "Detect",
+        "name": "Human detection targets",
         "state": {
           "people": "People",
           "vehicles": "Vehicles",
@@ -474,7 +474,7 @@
         }
       },
       "time_position": {
-        "name": "Time position",
+        "name": "Video time position",
         "state": {
           "top_left": "Top left",
           "top_right": "Top right",
@@ -483,7 +483,7 @@
         }
       },
       "name_position": {
-        "name": "Name position",
+        "name": "Video name position",
         "state": {
           "top_left": "Top left",
           "top_right": "Top right",
@@ -492,7 +492,7 @@
         }
       },
       "auto_restart_day": {
-        "name": "Automatic restart",
+        "name": "Restart automatically",
         "state": {
           "never": "Never",
           "everyday": "Every day",
@@ -506,7 +506,7 @@
         }
       },
       "ptz_preset": {
-        "name": "Go to preset"
+        "name": "PTZ go to preset"
       },
       "metering": {
         "name": "Exposure metering",
@@ -523,7 +523,7 @@
         }
       },
       "corridor_mode": {
-        "name": "Corridor mode",
+        "name": "Image corridor mode",
         "state": {
           "rotate_0": "Normal",
           "rotate_90": "Corridor (90°)",
@@ -532,14 +532,14 @@
         }
       },
       "time_format": {
-        "name": "Time format",
+        "name": "Clock time format",
         "state": {
           "hours_24": "24 hours",
           "hours_12": "12 hours"
         }
       },
       "date_format": {
-        "name": "Date format",
+        "name": "Clock date format",
         "state": {
           "ymd": "Year-month-day",
           "mdy": "Month-day-year",
@@ -547,7 +547,7 @@
         }
       },
       "smart_encoding": {
-        "name": "Smart encoding",
+        "name": "Main stream smart encoding",
         "state": {
           "h264": "H.264",
           "h264_plus": "H.264+",
@@ -662,28 +662,28 @@
         "name": "Motion tracking return time"
       },
       "auto_restart_hour": {
-        "name": "Automatic restart hour"
+        "name": "Restart automatically hour"
       },
       "motion_record_duration": {
         "name": "Motion recording duration"
       },
       "motion_warning_light_duration": {
-        "name": "Warning light duration"
+        "name": "Motion warning light duration"
       },
       "motion_alarm_hold": {
         "name": "Motion alarm hold time"
       },
       "pir_sensitivity": {
-        "name": "PIR sensitivity"
+        "name": "Motion PIR sensitivity"
       },
       "max_exposure_time": {
-        "name": "Maximum exposure time"
+        "name": "Exposure time (maximum)"
       },
       "tamper_sensitivity": {
         "name": "Tamper detection sensitivity"
       },
       "push_interval": {
-        "name": "Push notification interval"
+        "name": "Cloud push notification interval"
       },
       "pre_record": {
         "name": "SD card pre-recording"
@@ -692,10 +692,10 @@
         "name": "SD card file length"
       },
       "noise_reduction_day": {
-        "name": "Noise reduction (day)"
+        "name": "Image noise reduction (day)"
       },
       "noise_reduction_night": {
-        "name": "Noise reduction (night)"
+        "name": "Image noise reduction (night)"
       },
       "gain": {
         "name": "Gain"
