@@ -132,3 +132,5 @@ dmypy.json
 
 # Never add local testing
 /hass
+# macOS
+.DS_Store
