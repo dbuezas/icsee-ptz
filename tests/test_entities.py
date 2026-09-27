@@ -65,6 +65,8 @@ async def test_day_night_select(
     state = hass.states.get("select.garten_day_night_mode")
     assert state.state == "auto_infrared"  # 0x00000005
     assert "color" in state.attributes["options"]
+    # with a white light, "auto" does not turn on the infrared light
+    assert "auto" not in state.attributes["options"]
     await hass.services.async_call(
         "select",
         "select_option",

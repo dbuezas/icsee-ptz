@@ -65,10 +65,12 @@ def _hex(value: Any) -> int | None:
 def _day_night_options(
     coordinator: ICSeeCoordinator, channel: int, value: Any
 ) -> list[str]:
-    values = [0, 1, 2]
     has_white_light = coordinator.ability(OTHER + "SupportDoubleLightBoxCamera") or (
         coordinator.ability(OTHER + "SupportCameraWhiteLight")
     )
+    # On cameras with a white light, 0 ("auto") does not turn on the infrared
+    # light at night (seen on an XM530 R80X30); "auto_infrared" (5) does.
+    values = [1, 2] if has_white_light else [0, 1, 2]
     if coordinator.ability(OTHER + "SupportSoftPhotosensitive") or has_white_light:
         values += [4, 5]
     if coordinator.ability("Camera.SupportIntellDoubleLight") or has_white_light:
