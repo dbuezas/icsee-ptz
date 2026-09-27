@@ -27,6 +27,10 @@ PARALLEL_UPDATES = 1
 OTHER = "SystemFunction.OtherFunction."
 
 
+def _hex_int(value: Any) -> int:
+    return int(value, 16) if isinstance(value, str) else int(value)
+
+
 @dataclass(frozen=True, kw_only=True)
 class ICSeeNumberEntityDescription(
     ICSeeConfigEntityDescription, NumberEntityDescription
@@ -313,6 +317,76 @@ NUMBERS: tuple[ICSeeNumberEntityDescription, ...] = (
         native_min_value=0,
         native_max_value=100,
         native_step=1,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeNumberEntityDescription(
+        # XM SDK header: upper limit of the automatic exposure, in microseconds
+        key="max_exposure_time",
+        translation_key="max_exposure_time",
+        config="Camera.Param",
+        path=("ExposureParam", "MostTime"),
+        native_min_value=1,
+        native_max_value=500,
+        native_step=1,
+        to_value=lambda raw: _hex_int(raw) / 1000,
+        to_raw=lambda ms: f"0x{round(ms * 1000):08X}",
+        mode=NumberMode.BOX,
+        device_class=NumberDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.MILLISECONDS,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeNumberEntityDescription(
+        # XM SDK header: 1..6, like the motion sensitivity
+        key="tamper_sensitivity",
+        translation_key="tamper_sensitivity",
+        config="Detect.BlindDetect",
+        path=("Level",),
+        native_min_value=1,
+        native_max_value=6,
+        native_step=1,
+        ability="SystemFunction.AlarmFunction.BlindDetect",
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeNumberEntityDescription(
+        # how often the app gets alarm messages; the app allows 10 or 30..1800
+        key="push_interval",
+        translation_key="push_interval",
+        config="NetWork.PMS",
+        path=("PushInterval",),
+        native_min_value=10,
+        native_max_value=1800,
+        native_step=1,
+        mode=NumberMode.BOX,
+        device_class=NumberDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeNumberEntityDescription(
+        # SD card recording: seconds kept from before the recording starts
+        key="pre_record",
+        translation_key="pre_record",
+        config="Record",
+        path=("PreRecord",),
+        native_min_value=0,
+        native_max_value=30,
+        native_step=1,
+        mode=NumberMode.BOX,
+        device_class=NumberDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeNumberEntityDescription(
+        # SD card recording: length of one video file
+        key="recording_file_length",
+        translation_key="recording_file_length",
+        config="Record",
+        path=("PacketLength",),
+        native_min_value=1,
+        native_max_value=120,
+        native_step=1,
+        mode=NumberMode.BOX,
+        device_class=NumberDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.MINUTES,
         entity_category=EntityCategory.CONFIG,
     ),
     ICSeeNumberEntityDescription(

@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
+from datetime import date
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
 import pytest
 
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import entity_registry as er
+from homeassistant.util import dt as dt_util
+
+from custom_components.icsee_ptz.switch import dst_period
 
 from .conftest import SERIAL
 
@@ -467,3 +472,84 @@ async def test_sdk_header_settings(hass: HomeAssistant, setup_integration) -> No
     assert states["select.garten_ir_filter_switching"] == "with_ir_light"
     assert float(states["sensor.garten_exposure_time"]) == 256  # 0x00000100
     assert float(states["number.garten_wide_dynamic_range_level"]) == 100
+
+
+async def test_final_settings(
+    hass: HomeAssistant, setup_integration, mock_device
+) -> None:
+    states = {s.entity_id: s.state for s in hass.states.async_all()}
+    assert states["select.garten_sd_card_recording"] == "schedule"
+    assert float(states["number.garten_sd_card_pre_recording"]) == 5
+    assert float(states["number.garten_sd_card_file_length"]) == 5
+    assert float(states["number.garten_push_notification_interval"]) == 10
+    assert float(states["number.garten_tamper_detection_sensitivity"]) == 3
+    assert float(states["number.garten_maximum_exposure_time"]) == 65.536
+    assert states["sensor.garten_network_loss_restarts"] == "0"
+    assert states["binary_sensor.garten_upnp_router_ports_open"] == "off"
+    assert states["switch.garten_daylight_saving_time"] == "on"
+    # time top right, name bottom left
+    assert states["select.garten_time_position"] == "top_right"
+    assert states["select.garten_name_position"] == "bottom_left"
+    # the camera says: no human sensitivity, no vehicles
+    assert "select.garten_human_detection_sensitivity" not in states
+    assert "select.garten_detect" not in states
+
+    await hass.services.async_call(
+        "number",
+        "set_value",
+        {"entity_id": "number.garten_maximum_exposure_time", "value": 33},
+        blocking=True,
+    )
+    name, value = mock_device.writes[-1]
+    assert name == "Camera.Param.[0]"
+    assert value["ExposureParam"]["MostTime"] == "0x000080E8"  # 33000 µs
+
+    await hass.services.async_call(
+        "select",
+        "select_option",
+        {"entity_id": "select.garten_name_position", "option": "top_left"},
+        blocking=True,
+    )
+    name, value = mock_device.writes[-1]
+    assert name == "AVEnc.VideoWidget.[0]"
+    assert value["ChannelTitleAttribute"]["RelativePos"] == [76, 135, 255, 24]
+    assert hass.states.get("select.garten_name_position").state == "top_left"
+
+    # turning DST on also writes the dates of HA's time zone
+    await hass.config.async_update(time_zone="Europe/Berlin")
+    await hass.services.async_call(
+        "switch",
+        "turn_off",
+        {"entity_id": "switch.garten_daylight_saving_time"},
+        blocking=True,
+    )
+    await hass.services.async_call(
+        "switch",
+        "turn_on",
+        {"entity_id": "switch.garten_daylight_saving_time"},
+        blocking=True,
+    )
+    name, value = mock_device.writes[-1]
+    assert name == "General.Location"
+    assert value["DSTRule"] == "On"
+    year = dt_util.now().year
+    assert (value["DSTStart"]["Year"], value["DSTStart"]["Month"]) == (year, 3)
+    assert (value["DSTEnd"]["Year"], value["DSTEnd"]["Month"]) == (year, 10)
+    assert value["DSTStart"]["Week"] == 0
+
+    await hass.config.async_update(time_zone="Asia/Tokyo")
+    with pytest.raises(ServiceValidationError):
+        await hass.services.async_call(
+            "switch",
+            "turn_on",
+            {"entity_id": "switch.garten_daylight_saving_time"},
+            blocking=True,
+        )
+
+
+def test_dst_period() -> None:
+    berlin = dst_period(ZoneInfo("Europe/Berlin"), 2022)
+    assert berlin == (date(2022, 3, 27), date(2022, 10, 30))  # what the app wrote
+    sydney = dst_period(ZoneInfo("Australia/Sydney"), 2026)
+    assert sydney == (date(2026, 10, 4), date(2027, 4, 4))
+    assert dst_period(ZoneInfo("Asia/Tokyo"), 2026) is None

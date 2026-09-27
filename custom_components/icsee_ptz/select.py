@@ -294,6 +294,41 @@ SELECTS: tuple[ICSeeSelectEntityDescription, ...] = (
         config="Detect.HumanDetection",
         path=("Sensitivity",),
         value_map={0: "low", 1: "medium", 2: "high"},
+        # the app hides it when the camera says it has no sensitivity setting
+        exists_fn=lambda c, _v: (c.abilities.get("HumanRuleLimit") or {}).get(
+            "Sensitivity", True
+        )
+        is not False,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSelectEntityDescription(
+        # a bit mask: 1 = people, 2 = vehicles; 0 on old firmware means people
+        key="detection_objects",
+        translation_key="detection_objects",
+        config="Detect.HumanDetection",
+        path=("ObjectType",),
+        value_map={1: "people", 2: "vehicles", 3: "people_and_vehicles"},
+        to_option=lambda value: {0: "people", 1: "people", 2: "vehicles"}.get(
+            value, "people_and_vehicles" if value == 3 else None
+        ),
+        ability="SystemFunction.AlarmFunction.MultiAlgoCombinePed",
+        exists_fn=lambda c, _v: _hex(
+            (c.abilities.get("HumanRuleLimit") or {}).get("dwLowObjectType")
+        )
+        == 3,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSelectEntityDescription(
+        # SD card recording; the app's "on" is ConfigRecord (by the schedule)
+        key="recording_mode",
+        translation_key="recording_mode",
+        config="Record",
+        path=("RecordMode",),
+        value_map={
+            "ConfigRecord": "schedule",
+            "ManualRecord": "always",
+            "ClosedRecord": "off",
+        },
         entity_category=EntityCategory.CONFIG,
     ),
     *_encode(encode.MAIN, "main_stream"),
@@ -314,6 +349,7 @@ async def async_setup_entry(
         if coordinator.channel_value("Uart.PTZPreset", channel)
     ]
     entities += config_entities(coordinator, (SMART_ENCODE,), SmartEncodeSelect)
+    entities += config_entities(coordinator, OSD_POSITIONS, OsdPositionSelect)
     async_add_entities(entities)
 
 
@@ -458,3 +494,79 @@ class SmartEncodeSelect(ICSeeConfigEntity, SelectEntity):
                 ("Smart264PlusV2", 0, "SmartH264Plus"): 1 if option == "h265x" else 0,
             }
         )
+
+
+# ---- Position of the time and the camera name on the video -------------------
+
+# RelativePos is [x, y, ?, ?] with x and y in 0..8191 of the picture size. The
+# app puts the text 10 px (of a 16:9 phone preview) from the corner.
+OSD_SCALE = 8191
+OSD_MARGIN_X = 76
+OSD_MARGIN_Y = 135
+OSD_CHAR_WIDTH = 100  # about one character, in 0..8191 units
+OSD_BOTTOM_Y = 7552  # top of the text when it is at the bottom
+OSD_TIME_CHARS = 20  # "2026-01-31 12:00:00" and a little more
+
+
+@dataclass(frozen=True, kw_only=True)
+class OsdPositionEntityDescription(ICSeeSelectEntityDescription):
+    text_chars: Callable[[Any], int]
+
+
+OSD_POSITIONS: tuple[OsdPositionEntityDescription, ...] = (
+    OsdPositionEntityDescription(
+        key="time_position",
+        translation_key="time_position",
+        config="AVEnc.VideoWidget",
+        path=("TimeTitleAttribute", "RelativePos"),
+        text_chars=lambda _widget: OSD_TIME_CHARS,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    OsdPositionEntityDescription(
+        key="name_position",
+        translation_key="name_position",
+        config="AVEnc.VideoWidget",
+        path=("ChannelTitleAttribute", "RelativePos"),
+        text_chars=lambda widget: len(
+            get_path(widget, ("ChannelTitle", "Name")) or "camera"
+        ),
+        entity_category=EntityCategory.CONFIG,
+    ),
+)
+
+
+class OsdPositionSelect(ICSeeConfigEntity, SelectEntity):
+    """Put the text in one corner of the picture."""
+
+    entity_description: OsdPositionEntityDescription
+    _attr_options = ["top_left", "top_right", "bottom_left", "bottom_right"]
+
+    @property
+    def current_option(self) -> str | None:
+        pos = self.config_value
+        if not isinstance(pos, list) or len(pos) < 2:
+            return None
+        top = "top" if pos[1] < OSD_SCALE / 2 else "bottom"
+        left = "left" if pos[0] < OSD_SCALE / 2 else "right"
+        return f"{top}_{left}"
+
+    async def async_select_option(self, option: str) -> None:
+        if option not in self.options:
+            raise ServiceValidationError(
+                translation_domain=DOMAIN,
+                translation_key="invalid_option",
+                translation_placeholders={"option": option},
+            )
+        widget = self.coordinator.channel_value(
+            self.entity_description.config, self.channel
+        )
+        width = self.entity_description.text_chars(widget) * OSD_CHAR_WIDTH
+        x = (
+            OSD_MARGIN_X
+            if option.endswith("left")
+            else OSD_SCALE - OSD_MARGIN_X - width
+        )
+        y = OSD_MARGIN_Y if option.startswith("top") else OSD_BOTTOM_Y
+        pos = list(self.config_value)
+        pos[0], pos[1] = max(0, x), y
+        await self.async_write_value(pos)

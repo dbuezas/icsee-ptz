@@ -76,6 +76,9 @@
       "stabilization": {
         "default": "mdi:vibrate-off"
       },
+      "daylight_saving": {
+        "default": "mdi:sun-clock"
+      },
       "lens_correction": {
         "default": "mdi:camera-metering-matrix"
       },
@@ -185,6 +188,18 @@
       },
       "human_detection_sensitivity": {
         "default": "mdi:account-search"
+      },
+      "detection_objects": {
+        "default": "mdi:car-search"
+      },
+      "recording_mode": {
+        "default": "mdi:record-rec"
+      },
+      "time_position": {
+        "default": "mdi:clock-edit-outline"
+      },
+      "name_position": {
+        "default": "mdi:format-text"
       },
       "auto_restart_day": {
         "default": "mdi:restart"
@@ -308,6 +323,21 @@
       "pir_sensitivity": {
         "default": "mdi:motion-sensor"
       },
+      "max_exposure_time": {
+        "default": "mdi:camera-timer"
+      },
+      "tamper_sensitivity": {
+        "default": "mdi:cctv-off"
+      },
+      "push_interval": {
+        "default": "mdi:bell-cog"
+      },
+      "pre_record": {
+        "default": "mdi:history"
+      },
+      "recording_file_length": {
+        "default": "mdi:file-clock"
+      },
       "noise_reduction_day": {
         "default": "mdi:blur"
       },
@@ -388,6 +418,9 @@
       },
       "app_bound": {
         "default": "mdi:cellphone-link"
+      },
+      "upnp_ports_open": {
+        "default": "mdi:router-network"
       }
     },
     "sensor": {
@@ -405,6 +438,9 @@
       },
       "abnormal_restarts": {
         "default": "mdi:restart-alert"
+      },
+      "network_loss_restarts": {
+        "default": "mdi:wifi-refresh"
       },
       "video_standard": {
         "default": "mdi:television-classic"

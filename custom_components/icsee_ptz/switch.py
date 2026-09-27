@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date, datetime, time, timedelta, tzinfo
 from typing import Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.util import dt as dt_util
 
+from .const import DOMAIN
 from .coordinator import ICSeeConfigEntry
 from .entity import ICSeeConfigEntity, ICSeeConfigEntityDescription, config_entities
 
@@ -406,7 +410,9 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     coordinator = entry.runtime_data.coordinator
-    async_add_entities(config_entities(coordinator, SWITCHES, ICSeeSwitch))
+    entities = config_entities(coordinator, SWITCHES, ICSeeSwitch)
+    entities += config_entities(coordinator, (DST,), DaylightSavingSwitch)
+    async_add_entities(entities)
 
 
 class ICSeeSwitch(ICSeeConfigEntity, SwitchEntity):
@@ -438,4 +444,61 @@ class ICSeeSwitch(ICSeeConfigEntity, SwitchEntity):
         desc = self.entity_description
         await self.async_write_fields(
             {desc.path: desc.off_value, **(desc.also_off or {})}
+        )
+
+
+# ---- Daylight saving time ------------------------------------------------------
+
+DST = ICSeeSwitchEntityDescription(
+    key="daylight_saving",
+    translation_key="daylight_saving",
+    config="General.Location",
+    path=("DSTRule",),
+    on_value="On",
+    off_value="Off",
+    entity_category=EntityCategory.CONFIG,
+)
+
+
+def dst_period(tz: tzinfo, year: int) -> tuple[date, date] | None:
+    """First day with daylight saving time and first day after it, like the app."""
+
+    def is_dst(day: date) -> bool:
+        return bool(datetime.combine(day, time(12), tz).dst())
+
+    days = [date(year, 1, 1) + timedelta(days=i) for i in range(2 * 366)]
+    starts = [d for d, p in zip(days[1:], days) if is_dst(d) and not is_dst(p)]
+    if not starts or starts[0].year != year:
+        return None
+    end = next(d for d in days if d > starts[0] and not is_dst(d))
+    return starts[0], end
+
+
+class DaylightSavingSwitch(ICSeeSwitch):
+    """The camera changes its clock by one hour on the dates of HA's time zone."""
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        tz = dt_util.get_default_time_zone()
+        period = dst_period(tz, dt_util.now().year)
+        if period is None:
+            raise ServiceValidationError(
+                translation_domain=DOMAIN, translation_key="no_daylight_saving"
+            )
+
+        def point(day: date) -> dict[str, int]:
+            return {
+                "Year": day.year,
+                "Month": day.month,
+                "Day": day.day,
+                "Week": 0,  # 0: use the date, not a week of the month
+                "Hour": 0,
+                "Minute": 0,
+            }
+
+        await self.async_write_fields(
+            {
+                ("DSTRule",): "On",
+                ("DSTStart",): point(period[0]),
+                ("DSTEnd",): point(period[1]),
+            }
         )

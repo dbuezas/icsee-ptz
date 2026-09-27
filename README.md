@@ -217,6 +217,7 @@ Entities only appear if the camera supports them.
 | **Image** | | |
 | Flip image / Mirror image | switch | For cameras mounted upside down or reversed. |
 | Show time / name / logo on video | switch | Text and logo burned into the video. |
+| Time position / Name position | select | The corner of the picture where the time / camera name is shown. |
 | Image brightness / contrast / saturation / hue | number | Picture colors, 0-100 (default 50). |
 | Image style | select | Three color and sharpness presets of the camera. |
 | Anti-flicker | switch | Removes flicker from lamps on 50/60 Hz power. |
@@ -229,6 +230,7 @@ Entities only appear if the camera supports them.
 | Wide dynamic range level | number | Strength of wide dynamic range (see the WDR switch). |
 | IR filter switching | select | Whether the IR filter switches together with the IR light, or by itself. |
 | Exposure time | sensor | The exposure time the camera uses right now. |
+| Maximum exposure time | number | The longest exposure the camera uses in the dark. Shorter gives less motion blur, but a darker and noisier image. |
 | Anti-fog / Anti-fog level | switch/number | Adds contrast to hazy or foggy images. |
 | Wide dynamic range | switch | Shows detail in bright and dark parts at the same time, e.g. a door with sunlight behind it. |
 | Prevent overexposure | switch | Stops close, bright objects (e.g. a face lit by IR) from turning white. |
@@ -237,12 +239,15 @@ Entities only appear if the camera supports them.
 | Motion sensitivity | number | 1 (low) - 6 (high). |
 | Motion tracking, tracking sensitivity, tracking return time | switch/select/number | The camera turns to follow moving people, and returns to its start position after the set time. |
 | Tamper detection / Video loss detection | switch | Alarm when the camera is covered / loses video. |
+| Tamper detection sensitivity | number | 1 (low) - 6 (high). |
 | Human detection sensitivity / Show human detection box | select/switch | How easily people are detected / draw a box around them in the video. |
+| Detect | select | Detect people, vehicles or both. Only on cameras that can detect vehicles. |
 | Push notification / Record / Snapshot / Beep on motion | switch | What the camera itself does when it detects motion. |
 | Warning light on motion / Warning light duration | switch/number | Turn on the camera's light when it detects motion, and for how long. |
 | Motion recording duration | number | How long the camera records after motion (needs an SD card). |
 | Motion alarm hold time | number | How long an alarm stays active after the last motion. |
 | PIR sensitivity | number | For cameras with a PIR (body heat) sensor. |
+| SD card recording / pre-recording / file length | select/number | Record always, by the schedule set in the app, or never; seconds kept from before an event; minutes per video file. |
 | **Audio** | | |
 | Speaker | media_player | Play text-to-speech, sounds or internet radio (also .m3u / .pls playlists) on the camera speaker. |
 | Speaker volume | number | Volume of the camera speaker (TTS, voice prompts, alarm sounds). |
@@ -256,16 +261,20 @@ Entities only appear if the camera supports them.
 | Restart when network is lost | switch | The camera restarts itself when the network is gone for a while. |
 | Internet time (NTP) | switch | The camera sets its own clock from the internet. |
 | Time format / Date format | select | How the time and date are shown on the video. |
+| Daylight saving time | switch | The camera changes its clock by one hour. Turning it on uses the dates of the Home Assistant time zone. |
 | Abnormal restarts | sensor | How often the camera restarted because its video stopped. |
+| Network loss restarts | sensor | How often the camera restarted because the network was lost. |
 | Siren | siren | The camera's built-in alarm siren. |
 | **Security** | | |
 | RTSP server | switch | The camera's RTSP video server (port 554). Needed for the camera entities. |
 | Cloud access (P2P) | switch | The XMEye/ICSee cloud connection that lets the apps reach the camera from anywhere. Turn it off if you only use it at home. |
 | Cloud push notifications | switch | Alarm messages to the phone app. |
+| Push notification interval | number | The minimum time between two alarm messages to the phone app. |
 | Block all cloud servers / Block cloud P2P, relay, streaming server | switch | Cut the camera off from the Xiongmai cloud servers (all, or one kind). The apps then only work at home. |
 | Cloud access server (DAS) | switch | Another cloud connection. |
 | ONVIF password required | switch | Whether NVRs and other ONVIF clients must log in with the password. May need a camera restart. |
 | UPnP port forwarding | switch | Lets the camera open ports on your router by itself. Usually best off. |
+| UPnP router ports open | binary_sensor | On if UPnP has opened ports on your router. |
 | Online firmware updates / Install firmware updates automatically | switch | Firmware updates from the cloud. New firmware can block this integration (see issue #65), so consider turning automatic installs off. |
 | Telnet debug access | binary_sensor | On if a debug login (telnet) is open on the camera. |
 | Linked to app account | binary_sensor | On if the camera is linked to an ICSee/XMEye account. |

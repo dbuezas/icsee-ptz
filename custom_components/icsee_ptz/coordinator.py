@@ -72,6 +72,7 @@ CONFIGS: dict[str, ConfigSpec] = {
     "fVideo.OsdLogo": ConfigSpec(per_channel=False),
     "Uart.PTZPreset": ConfigSpec(per_channel=True),
     "AVEnc.SystemAbnormalRebootCnt": ConfigSpec(per_channel=True),
+    "Record": ConfigSpec(per_channel=True),  # SD card recording
     # read only status
     "Users": ConfigSpec(per_channel=False, code=1472),
     "WifiRouteInfo": ConfigSpec(per_channel=False, code=1020),
@@ -81,7 +82,13 @@ CONFIGS: dict[str, ConfigSpec] = {
 }
 
 # Abilities (cmd 1360) read once at setup
-ABILITIES = ("SystemFunction", "EncodeCapability", "Camera", "Encode264ability")
+ABILITIES = (
+    "SystemFunction",
+    "EncodeCapability",
+    "Camera",
+    "Encode264ability",
+    "HumanRuleLimit",  # human and vehicle detection options
+)
 
 type ICSeeConfigEntry = ConfigEntry[ICSeeData]
 

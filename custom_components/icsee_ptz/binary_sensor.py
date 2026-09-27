@@ -95,6 +95,15 @@ CONFIG_SENSORS: tuple[ICSeeBinarySensorEntityDescription, ...] = (
         is_on_fn=_any_set("SecurityEmail", "SecurityPhone"),
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
+    ICSeeBinarySensorEntityDescription(
+        # UPnP has opened ports on the router
+        key="upnp_ports_open",
+        translation_key="upnp_ports_open",
+        config="NetWork.Upnp",
+        path=("State",),
+        is_on_fn=bool,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
 )
 
 

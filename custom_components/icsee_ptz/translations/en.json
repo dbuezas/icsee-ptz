@@ -112,6 +112,9 @@
       },
       "app_bound": {
         "name": "Linked to app account"
+      },
+      "upnp_ports_open": {
+        "name": "UPnP router ports open"
       }
     },
     "sensor": {
@@ -134,6 +137,9 @@
       },
       "abnormal_restarts": {
         "name": "Abnormal restarts"
+      },
+      "network_loss_restarts": {
+        "name": "Network loss restarts"
       },
       "video_standard": {
         "name": "Video standard"
@@ -289,6 +295,9 @@
       "stabilization": {
         "name": "Image stabilization"
       },
+      "daylight_saving": {
+        "name": "Daylight saving time"
+      },
       "lens_correction": {
         "name": "Lens distortion correction"
       },
@@ -441,6 +450,40 @@
           "low": "Low",
           "medium": "Medium",
           "high": "High"
+        }
+      },
+      "detection_objects": {
+        "name": "Detect",
+        "state": {
+          "people": "People",
+          "vehicles": "Vehicles",
+          "people_and_vehicles": "People and vehicles"
+        }
+      },
+      "recording_mode": {
+        "name": "SD card recording",
+        "state": {
+          "schedule": "By schedule",
+          "always": "Always",
+          "off": "Off"
+        }
+      },
+      "time_position": {
+        "name": "Time position",
+        "state": {
+          "top_left": "Top left",
+          "top_right": "Top right",
+          "bottom_left": "Bottom left",
+          "bottom_right": "Bottom right"
+        }
+      },
+      "name_position": {
+        "name": "Name position",
+        "state": {
+          "top_left": "Top left",
+          "top_right": "Top right",
+          "bottom_left": "Bottom left",
+          "bottom_right": "Bottom right"
         }
       },
       "auto_restart_day": {
@@ -628,6 +671,21 @@
       "pir_sensitivity": {
         "name": "PIR sensitivity"
       },
+      "max_exposure_time": {
+        "name": "Maximum exposure time"
+      },
+      "tamper_sensitivity": {
+        "name": "Tamper detection sensitivity"
+      },
+      "push_interval": {
+        "name": "Push notification interval"
+      },
+      "pre_record": {
+        "name": "SD card pre-recording"
+      },
+      "recording_file_length": {
+        "name": "SD card file length"
+      },
       "noise_reduction_day": {
         "name": "Noise reduction (day)"
       },
@@ -654,6 +712,9 @@
     },
     "not_supported": {
       "message": "The camera does not support {config}."
+    },
+    "no_daylight_saving": {
+      "message": "The Home Assistant time zone has no daylight saving time."
     },
     "command_failed": {
       "message": "The camera refused to change {config} (error {ret})."

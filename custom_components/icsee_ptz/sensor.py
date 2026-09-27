@@ -145,6 +145,16 @@ SENSORS: tuple[ICSeeSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     ICSeeSensorEntityDescription(
+        # restarts by "restart when the network is lost"
+        key="network_loss_restarts",
+        translation_key="network_loss_restarts",
+        config="NetWork.CheckNetState",
+        path=("RebootCnt",),
+        value_fn=int,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    ICSeeSensorEntityDescription(
         key="storage_total",
         translation_key="storage_total",
         config="StorageInfo",
