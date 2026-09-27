@@ -400,13 +400,22 @@ async def test_motion_alarm_polled(
     mock_device.fire_alarm({"Channel": 0, "Status": "Start"})
     await coordinator.async_refresh()
     assert hass.states.get(entity_id).state == "on"
-    # missed "stop" event: the poll corrects it once the push is old
     from custom_components.icsee_ptz import binary_sensor
 
+    # camera that never reports motion in WorkState (like the tested Hiseeu):
+    # a polled "off" must not end an ongoing alarm
     with patch.object(binary_sensor, "PUSH_GRACE", 0):
         await coordinator.async_refresh()
-    assert hass.states.get(entity_id).state == "off"
+    assert hass.states.get(entity_id).state == "on"
+    mock_device.fire_alarm({"Channel": 0, "Status": "Stop"})
+    await hass.async_block_till_done()
+    # camera that does report it: the poll is trusted in both directions,
+    # e.g. to correct a missed "stop" event
     mock_device.configs["WorkState"]["AlarmState"]["VideoMotion"] = "0x00000001"
     with patch.object(binary_sensor, "PUSH_GRACE", 0):
         await coordinator.async_refresh()
     assert hass.states.get(entity_id).state == "on"
+    mock_device.configs["WorkState"]["AlarmState"]["VideoMotion"] = "0x00000000"
+    with patch.object(binary_sensor, "PUSH_GRACE", 0):
+        await coordinator.async_refresh()
+    assert hass.states.get(entity_id).state == "off"

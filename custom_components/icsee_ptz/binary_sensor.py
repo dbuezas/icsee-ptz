@@ -116,6 +116,9 @@ class MotionAlarm(ICSeeEntity, BinarySensorEntity):
     def __init__(self, coordinator: ICSeeCoordinator, channel: int) -> None:
         super().__init__(coordinator, f"alarm_{channel}", channel)  # legacy unique id
         self._last_push = 0.0
+        # Some cameras never set VideoMotion in WorkState, even during an alarm.
+        # Only trust a polled "off" once the camera has shown a polled "on".
+        self._poll_reports_motion = False
         self._attr_is_on = self._polled()
 
     def _polled(self) -> bool | None:
@@ -132,10 +135,19 @@ class MotionAlarm(ICSeeEntity, BinarySensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         polled = self._polled()
-        # Use the polled state at start, and when an event was missed (e.g. the
-        # "motion ended" event during a connection drop)
+        if polled:
+            self._poll_reports_motion = True
+        # Use the polled state when an event was missed (e.g. the "motion ended"
+        # event during a connection drop). A polled "off" only counts on cameras
+        # that are known to report motion in WorkState.
         recent_push = time.monotonic() - self._last_push < PUSH_GRACE
-        if polled is not None and polled != self._attr_is_on and not recent_push:
+        trusted = polled or self._poll_reports_motion
+        if (
+            polled is not None
+            and polled != self._attr_is_on
+            and not recent_push
+            and trusted
+        ):
             self._attr_is_on = polled
         super()._handle_coordinator_update()
 
