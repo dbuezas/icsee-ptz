@@ -396,6 +396,7 @@
         "name": "Day/night mode",
         "state": {
           "auto": "Auto (infrared at night)",
+          "starlight_infrared": "Starlight infrared",
           "color": "Always color (infrared off)",
           "black_white": "Always black & white (infrared on)",
           "smart_alarm_light": "White light on motion",

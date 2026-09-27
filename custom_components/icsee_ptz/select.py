@@ -40,6 +40,10 @@ class ICSeeSelectEntityDescription(
     # options for this camera; default: all of value_map
     options_fn: Callable[[ICSeeCoordinator, int, Any], list[str]] | None = None
     to_option: Callable[[Any], str | None] | None = None
+    # like to_option, for options whose name depends on the camera
+    camera_option: Callable[[ICSeeCoordinator, Any], str | None] | None = None
+    # more option names for camera values (camera-specific names)
+    aliases: dict[str, Any] | None = None
 
 
 # ---- Day/night (image + infrared) mode ------------------------------------
@@ -62,22 +66,32 @@ def _hex(value: Any) -> int | None:
         return None
 
 
+def _has_white_light(coordinator: ICSeeCoordinator) -> bool:
+    return coordinator.ability(OTHER + "SupportDoubleLightBoxCamera") or (
+        coordinator.ability(OTHER + "SupportCameraWhiteLight")
+    )
+
+
+def _day_night_name(coordinator: ICSeeCoordinator, value: int | None) -> str | None:
+    # On cameras with a white light the app calls 0 "Star Light Infrared": it does
+    # not turn on the infrared light at night (seen on an XM530 R80X30).
+    if value == 0 and _has_white_light(coordinator):
+        return "starlight_infrared"
+    return DAY_NIGHT.get(value)  # type: ignore[arg-type]
+
+
 def _day_night_options(
     coordinator: ICSeeCoordinator, channel: int, value: Any
 ) -> list[str]:
-    has_white_light = coordinator.ability(OTHER + "SupportDoubleLightBoxCamera") or (
-        coordinator.ability(OTHER + "SupportCameraWhiteLight")
-    )
-    # On cameras with a white light, 0 ("auto") does not turn on the infrared
-    # light at night (seen on an XM530 R80X30); "auto_infrared" (5) does.
-    values = [1, 2] if has_white_light else [0, 1, 2]
+    has_white_light = _has_white_light(coordinator)
+    values = [0, 1, 2]
     if coordinator.ability(OTHER + "SupportSoftPhotosensitive") or has_white_light:
         values += [4, 5]
     if coordinator.ability("Camera.SupportIntellDoubleLight") or has_white_light:
         values.append(3)
     if (current := _hex(value)) in DAY_NIGHT and current not in values:
         values.append(current)
-    return [DAY_NIGHT[v] for v in sorted(values)]
+    return [_day_night_name(coordinator, v) or "" for v in sorted(values)]
 
 
 # ---- White light -----------------------------------------------------------
@@ -179,7 +193,10 @@ SELECTS: tuple[ICSeeSelectEntityDescription, ...] = (
         path=("DayNightColor",),
         value_map={f"0x{k:08X}": v for k, v in DAY_NIGHT.items()},
         options_fn=_day_night_options,
-        to_option=lambda value: DAY_NIGHT.get(_hex(value)),  # type: ignore[arg-type]
+        camera_option=lambda coordinator, value: _day_night_name(
+            coordinator, _hex(value)
+        ),
+        aliases={"starlight_infrared": "0x00000000"},
     ),
     ICSeeSelectEntityDescription(
         key="WhiteLightSelect",  # legacy unique id
@@ -371,6 +388,8 @@ class ICSeeSelect(ICSeeConfigEntity, SelectEntity):
         value = self.config_value
         if value is None:
             return None
+        if desc.camera_option:
+            return desc.camera_option(self.coordinator, value)
         if desc.to_option:
             return desc.to_option(value)
         if desc.value_map is None:
@@ -383,6 +402,8 @@ class ICSeeSelect(ICSeeConfigEntity, SelectEntity):
             value: Any = option
         else:
             value = next((k for k, v in desc.value_map.items() if v == option), None)
+            if value is None and desc.aliases:
+                value = desc.aliases.get(option)
         if value is None or option not in self.options:
             raise ServiceValidationError(
                 translation_domain=DOMAIN,

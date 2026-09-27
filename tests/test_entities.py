@@ -65,8 +65,17 @@ async def test_day_night_select(
     state = hass.states.get("select.garten_day_night_mode")
     assert state.state == "auto_infrared"  # 0x00000005
     assert "color" in state.attributes["options"]
-    # with a white light, "auto" does not turn on the infrared light
+    # with a white light, 0 is "starlight infrared" (the app's name), not "auto"
     assert "auto" not in state.attributes["options"]
+    assert "starlight_infrared" in state.attributes["options"]
+    await hass.services.async_call(
+        "select",
+        "select_option",
+        {"entity_id": "select.garten_day_night_mode", "option": "starlight_infrared"},
+        blocking=True,
+    )
+    assert mock_device.writes[-1][1]["DayNightColor"] == "0x00000000"
+    assert hass.states.get("select.garten_day_night_mode").state == "starlight_infrared"
     await hass.services.async_call(
         "select",
         "select_option",

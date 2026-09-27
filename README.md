@@ -191,7 +191,7 @@ Entities only appear if the camera supports them.
 | PTZ go to preset | select | Move to one of the positions saved on the camera. |
 | Restart returns to last position | switch | After a restart the camera moves back to where it was. |
 | **Lights and night vision** | | |
-| Day/night mode | select | When the camera uses infrared (IR). **Auto**: IR at night. **Always color**: IR never turns on (dark at night). **Always black & white**: IR always on. Cameras with a white light also offer *white light on motion* and *full color at night*. |
+| Day/night mode | select | When the camera uses infrared (IR). **Auto**: IR at night. **Always color**: IR never turns on (dark at night). **Always black & white**: IR always on. Cameras with a white light also offer *white light on motion*, *full color at night* and *auto, infrared light*; on these, *Starlight infrared* replaces *Auto* and does not turn on the IR light. |
 | White light | switch | Turn the white light on / off by hand (sets the white light mode to *Always on* / *Off*). |
 | White light mode | select | *Off*, *Always on*, *Auto* (at night), *Schedule*, *On motion*. On IR + white light cameras this is also the night vision mode: *Auto* = full color, *Off* = infrared. |
 | White light brightness / motion duration / motion sensitivity | number/select | Brightness, and how long and how easily the light turns on in *On motion* mode. |
