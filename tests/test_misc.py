@@ -264,3 +264,28 @@ async def test_send_plain_when_encryption_off(monkeypatch: pytest.MonkeyPatch) -
     assert out == {"Ret": 100}
     assert writer.sent[1] == 0  # version byte 0
     assert writer.sent[20:].endswith(b"\x0a\x00")  # plain body, no base64
+
+
+@pytest.mark.parametrize(
+    ("plain_reply", "negotiates"), [({"Ret": 100}, False), (None, True)]
+)
+async def test_encryption_only_negotiated_without_plain_answer(
+    plain_reply, negotiates
+) -> None:
+    """The negotiation claims a video stream, which blocks talking (OPTalk Ret 103)."""
+    cam = DVRIPCam("192.0.2.1")
+    cam.socket_writer = object()
+    sent = []
+
+    async def send(msg, data={}, wait_response=True):
+        sent.append(msg)
+        if msg == 1000:
+            return {"Ret": 100, "SessionID": "0x00000001", "AliveInterval": 20}
+        if msg == 1020:
+            return plain_reply
+        return {"Ret": 100}
+
+    cam.send = send
+    cam.keep_alive = lambda loop: None
+    assert await cam.login(asyncio.get_running_loop())
+    assert (1413 in sent) is negotiates

@@ -313,13 +313,27 @@ class DVRIPCam(object):
             return False
         self.session = int(data["SessionID"], 16)
         self.alive_time = data["AliveInterval"]
-        try:
-            await self._negotiate_encryption()
-        except Exception:  # noqa: BLE001 - never break a working login over this
-            self.logger.debug("%s: encryption negotiation failed", self.ip)
-            self.encrypt_on = False
+        # Only negotiate when plain requests get no answer: the negotiation claims
+        # a video stream on this connection, and then the camera refuses to talk
+        # (OPTalk Ret 103) on plaintext cameras.
+        if not await self._plain_answers():
+            try:
+                await self._negotiate_encryption()
+            except Exception:  # noqa: BLE001 - never break a working login over this
+                self.logger.debug("%s: encryption negotiation failed", self.ip)
+                self.encrypt_on = False
         self.keep_alive(loop)
         return data["Ret"] in self.OK_CODES
+
+    async def _plain_answers(self):
+        """True if the camera answers a plain request (older, plaintext firmware)."""
+        try:
+            reply = await self.send(
+                1020, {"Name": "SystemInfo", "SessionID": "0x%08X" % self.session}
+            )
+        except Exception:  # noqa: BLE001 - treat any failure as "no answer"
+            return False
+        return isinstance(reply, dict) and reply.get("Ret") in self.OK_CODES
 
     async def _negotiate_encryption(self):
         """Ask the camera (1413 -> 1414) whether it wants the encrypted transport.
