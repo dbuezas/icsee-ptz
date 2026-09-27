@@ -225,11 +225,14 @@ class DVRIPCam(object):
         reply = json.loads(data[:-2])
         return reply
 
-    async def send(self, msg, data={}, wait_response=True):
+    async def send(self, msg, data={}, wait_response=True, keep_empty=False):
+        """Send and return the reply: None if none came, {} if it was empty (only
+        with keep_empty, else None too)."""
         if self.socket_writer is None:
             return {"Ret": 101}
         async with self.busy:
-            return await self._send_locked(msg, data, wait_response)
+            reply = await self._send_locked(msg, data, wait_response)
+        return reply if keep_empty else (reply or None)
 
     async def _send_locked(self, msg, data, wait_response):
         if hasattr(data, "__iter__"):
@@ -270,8 +273,7 @@ class DVRIPCam(object):
             body = await self.receive_with_timeout(len_data) if len_data else b""
             if body is None:
                 return None
-            reply = self._parse_body(bytes(body))
-            return reply or None
+            return self._parse_body(bytes(body))
 
     def _parse_body(self, body):
         """Return the JSON reply, decrypting an AES body if the camera sent one."""
@@ -313,10 +315,10 @@ class DVRIPCam(object):
             return False
         self.session = int(data["SessionID"], 16)
         self.alive_time = data["AliveInterval"]
-        # Only negotiate when plain requests get no answer: the negotiation claims
-        # a video stream on this connection, and then the camera refuses to talk
-        # (OPTalk Ret 103) on plaintext cameras.
-        if not await self._plain_answers():
+        # Only negotiate when the camera answers plain requests with an empty body,
+        # like newer firmware does. The negotiation claims a video stream on this
+        # connection, and then plaintext cameras refuse to talk (OPTalk Ret 103).
+        if await self._plain_reply_is_empty():
             try:
                 await self._negotiate_encryption()
             except Exception:  # noqa: BLE001 - never break a working login over this
@@ -325,15 +327,21 @@ class DVRIPCam(object):
         self.keep_alive(loop)
         return data["Ret"] in self.OK_CODES
 
-    async def _plain_answers(self):
-        """True if the camera answers a plain request (older, plaintext firmware)."""
+    async def _plain_reply_is_empty(self):
+        """True if the camera answers a plain request with an empty body.
+
+        Newer firmware does that until the transport is encrypted. No answer at
+        all means the camera is busy or frozen, not that it wants encryption.
+        """
         try:
             reply = await self.send(
-                1020, {"Name": "SystemInfo", "SessionID": "0x%08X" % self.session}
+                1020,
+                {"Name": "SystemInfo", "SessionID": "0x%08X" % self.session},
+                keep_empty=True,
             )
-        except Exception:  # noqa: BLE001 - treat any failure as "no answer"
+        except Exception:  # noqa: BLE001 - never break a working login over this
             return False
-        return isinstance(reply, dict) and reply.get("Ret") in self.OK_CODES
+        return reply == {}
 
     async def _negotiate_encryption(self):
         """Ask the camera (1413 -> 1414) whether it wants the encrypted transport.

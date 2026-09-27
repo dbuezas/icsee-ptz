@@ -267,17 +267,21 @@ async def test_send_plain_when_encryption_off(monkeypatch: pytest.MonkeyPatch) -
 
 
 @pytest.mark.parametrize(
-    ("plain_reply", "negotiates"), [({"Ret": 100}, False), (None, True)]
+    ("plain_reply", "negotiates"),
+    [({"Ret": 100}, False), ({}, True), (None, False)],
 )
-async def test_encryption_only_negotiated_without_plain_answer(
+async def test_encryption_only_negotiated_on_empty_answer(
     plain_reply, negotiates
 ) -> None:
-    """The negotiation claims a video stream, which blocks talking (OPTalk Ret 103)."""
+    """Only an empty answer means "wants encryption"; no answer means "busy".
+
+    The negotiation claims a video stream, which blocks talking (OPTalk Ret 103).
+    """
     cam = DVRIPCam("192.0.2.1")
     cam.socket_writer = object()
     sent = []
 
-    async def send(msg, data={}, wait_response=True):
+    async def send(msg, data={}, wait_response=True, keep_empty=False):
         sent.append(msg)
         if msg == 1000:
             return {"Ret": 100, "SessionID": "0x00000001", "AliveInterval": 20}
