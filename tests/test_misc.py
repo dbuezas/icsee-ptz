@@ -293,3 +293,20 @@ async def test_encryption_only_negotiated_on_empty_answer(
     cam.keep_alive = lambda loop: None
     assert await cam.login(asyncio.get_running_loop())
     assert (1413 in sent) is negotiates
+
+
+@pytest.mark.parametrize(
+    "login_reply",
+    [{"SessionID": "0x00000001"}, {"Ret": 100}, {"Ret": 100, "SessionID": "not-hex"}],
+)
+async def test_login_without_ret_or_session_fails_cleanly(login_reply) -> None:
+    """Some cameras answer the login without "Ret" or "SessionID"."""
+    cam = DVRIPCam("192.0.2.1")
+    cam.socket_writer = object()
+
+    async def send(msg, data={}, wait_response=True, keep_empty=False):
+        return login_reply
+
+    cam.send = send
+    cam.keep_alive = lambda loop: None
+    assert await cam.login(asyncio.get_running_loop()) is False

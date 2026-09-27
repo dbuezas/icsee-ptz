@@ -311,10 +311,14 @@ class DVRIPCam(object):
             },
         )
         self.login_ret = None if data is None else data.get("Ret")
-        if data is None or data["Ret"] not in self.OK_CODES:
+        # some cameras answer without "Ret" or "SessionID": treat that as a failed login
+        if data is None or data.get("Ret") not in self.OK_CODES:
             return False
-        self.session = int(data["SessionID"], 16)
-        self.alive_time = data["AliveInterval"]
+        try:
+            self.session = int(data["SessionID"], 16)
+        except (KeyError, TypeError, ValueError):
+            return False
+        self.alive_time = data.get("AliveInterval") or 20
         # Only negotiate when the camera answers plain requests with an empty body,
         # like newer firmware does. The negotiation claims a video stream on this
         # connection, and then plaintext cameras refuse to talk (OPTalk Ret 103).
@@ -325,7 +329,7 @@ class DVRIPCam(object):
                 self.logger.debug("%s: encryption negotiation failed", self.ip)
                 self.encrypt_on = False
         self.keep_alive(loop)
-        return data["Ret"] in self.OK_CODES
+        return True
 
     async def _plain_reply_is_empty(self):
         """True if the camera answers a plain request with an empty body.
@@ -702,7 +706,7 @@ class DVRIPCam(object):
         )
         if data is None:
             raise SomethingIsWrongWithCamera("No reply from camera")
-        if data["Ret"] in self.OK_CODES and command in data:
+        if data.get("Ret") in self.OK_CODES and command in data:
             return data[command]
         else:
             return data
@@ -941,7 +945,7 @@ class DVRIPCam(object):
         data = await self.set_command(
             "OPMonitor", {"Action": "Claim", "Parameter": params}
         )
-        if data["Ret"] not in self.OK_CODES:
+        if not data or data.get("Ret") not in self.OK_CODES:
             return data
 
         await self.send(
