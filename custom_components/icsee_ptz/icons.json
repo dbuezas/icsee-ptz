@@ -73,6 +73,12 @@
       "anti_flicker": {
         "default": "mdi:sine-wave"
       },
+      "stabilization": {
+        "default": "mdi:vibrate-off"
+      },
+      "lens_correction": {
+        "default": "mdi:camera-metering-matrix"
+      },
       "auto_gain": {
         "default": "mdi:brightness-auto"
       },
@@ -188,6 +194,12 @@
       },
       "corridor_mode": {
         "default": "mdi:phone-rotate-portrait"
+      },
+      "metering": {
+        "default": "mdi:camera-metering-center"
+      },
+      "ircut_switching": {
+        "default": "mdi:swap-horizontal"
       },
       "time_format": {
         "default": "mdi:clock-outline"
@@ -307,6 +319,9 @@
       },
       "exposure_sensitivity": {
         "default": "mdi:camera-iris"
+      },
+      "wdr_level": {
+        "default": "mdi:contrast-box"
       }
     },
     "button": {
@@ -393,6 +408,9 @@
       },
       "video_standard": {
         "default": "mdi:television-classic"
+      },
+      "exposure_time": {
+        "default": "mdi:timer-outline"
       },
       "storage_total": {
         "default": "mdi:sd"

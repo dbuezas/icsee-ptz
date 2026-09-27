@@ -221,7 +221,14 @@ Entities only appear if the camera supports them.
 | Image style | select | Three color and sharpness presets of the camera. |
 | Anti-flicker | switch | Removes flicker from lamps on 50/60 Hz power. |
 | Corridor mode | select | Turns the image to portrait, for long narrow views like hallways. |
-| Noise reduction (day / night), gain, automatic gain, exposure sensitivity | number/switch | Low-level image tuning. The official apps don't show these; the ranges are best guesses. Less gain and more noise reduction mean a cleaner night image (and fewer false motion alarms), but a darker one. |
+| Noise reduction (day / night) | number | 0 = off, 1-5 = stronger filtering. More filtering gives a cleaner night image and fewer false motion alarms, but less detail. |
+| Automatic gain / Gain | switch/number | With automatic gain on, Gain is the maximum amplification; with it off, a fixed amplification. Less gain means less noise but a darker image. |
+| Exposure sensitivity | number | How quickly the exposure reacts. The range is a best guess. |
+| Exposure metering | select | Measure the brightness over the whole image or only the center. |
+| Image stabilization / Lens distortion correction | switch | Electronic stabilization; straightens the curved edges of wide lenses. |
+| Wide dynamic range level | number | Strength of wide dynamic range (see the WDR switch). |
+| IR filter switching | select | Whether the IR filter switches together with the IR light, or by itself. |
+| Exposure time | sensor | The exposure time the camera uses right now. |
 | Anti-fog / Anti-fog level | switch/number | Adds contrast to hazy or foggy images. |
 | Wide dynamic range | switch | Shows detail in bright and dark parts at the same time, e.g. a door with sunlight behind it. |
 | Prevent overexposure | switch | Stops close, bright objects (e.g. a face lit by IR) from turning white. |

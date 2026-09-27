@@ -122,6 +122,9 @@ SWITCHES: tuple[ICSeeSwitchEntityDescription, ...] = (
     _param_ex("low_light_fill", "MicroFillLight"),
     _param_ex("starlight", "LowLuxMode"),
     _param_ex("wdr", ("BroadTrends", "AutoGain")),
+    # meanings from the XM SDK header (netsdk.h, SDK_CameraParamEx)
+    _param_ex("stabilization", "Dis"),
+    _param_ex("lens_correction", "Ldc"),
     _param_ex(
         "prevent_overexposure",
         "PreventOverExpo",

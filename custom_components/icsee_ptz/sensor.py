@@ -17,6 +17,7 @@ from homeassistant.const import (
     PERCENTAGE,
     EntityCategory,
     UnitOfInformation,
+    UnitOfTime,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -106,6 +107,18 @@ SENSORS: tuple[ICSeeSensorEntityDescription, ...] = (
         value_fn=lambda status: CLOUD_STATES.get(status, "not_connected"),
         device_class=SensorDeviceClass.ENUM,
         options=["connected", "not_connected", "disabled"],
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    ICSeeSensorEntityDescription(
+        # XM SDK header: the exposure time currently in use, in microseconds
+        key="exposure_time",
+        translation_key="exposure_time",
+        config="Camera.ParamEx",
+        path=("ExposureTime",),
+        value_fn=_hex,
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.MICROSECONDS,
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     ICSeeSensorEntityDescription(

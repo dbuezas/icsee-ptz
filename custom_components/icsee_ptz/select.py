@@ -207,6 +207,24 @@ SELECTS: tuple[ICSeeSelectEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
     ),
     ICSeeSelectEntityDescription(
+        # XM SDK header: 0 = average metering, 1 = center metering
+        key="metering",
+        translation_key="metering",
+        config="Camera.ParamEx",
+        path=("AeMeansure",),
+        value_map={0: "average", 1: "center"},
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSelectEntityDescription(
+        # XM SDK header: 0 = IR-cut switches with the IR light, 1 = switches by itself
+        key="ircut_switching",
+        translation_key="ircut_switching",
+        config="Camera.Param",
+        path=("IRCUTMode",),
+        value_map={0: "with_ir_light", 1: "automatic"},
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeSelectEntityDescription(
         key="image_style",
         translation_key="image_style",
         config="Camera.ParamEx",

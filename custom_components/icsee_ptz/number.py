@@ -305,6 +305,17 @@ NUMBERS: tuple[ICSeeNumberEntityDescription, ...] = (
     _param("gain", ("GainParam", "Gain"), 0, 100),
     _param("exposure_sensitivity", "AeSensitivity", 1, 10),
     ICSeeNumberEntityDescription(
+        # XM SDK header: BroadTrends = wide dynamic range {AutoGain, Gain}
+        key="wdr_level",
+        translation_key="wdr_level",
+        config="Camera.ParamEx",
+        path=("BroadTrends", "Gain"),
+        native_min_value=0,
+        native_max_value=100,
+        native_step=1,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    ICSeeNumberEntityDescription(
         key="tracking_return_time",
         translation_key="tracking_return_time",
         config="Detect.DetectTrack",

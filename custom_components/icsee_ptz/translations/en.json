@@ -138,6 +138,9 @@
       "video_standard": {
         "name": "Video standard"
       },
+      "exposure_time": {
+        "name": "Exposure time"
+      },
       "storage_total": {
         "name": "SD card size"
       },
@@ -282,6 +285,12 @@
       },
       "anti_flicker": {
         "name": "Anti-flicker"
+      },
+      "stabilization": {
+        "name": "Image stabilization"
+      },
+      "lens_correction": {
+        "name": "Lens distortion correction"
       },
       "auto_gain": {
         "name": "Automatic gain"
@@ -451,6 +460,20 @@
       "ptz_preset": {
         "name": "Go to preset"
       },
+      "metering": {
+        "name": "Exposure metering",
+        "state": {
+          "average": "Average",
+          "center": "Center"
+        }
+      },
+      "ircut_switching": {
+        "name": "IR filter switching",
+        "state": {
+          "with_ir_light": "Together with the IR light",
+          "automatic": "By itself"
+        }
+      },
       "corridor_mode": {
         "name": "Corridor mode",
         "state": {
@@ -616,6 +639,9 @@
       },
       "exposure_sensitivity": {
         "name": "Exposure sensitivity"
+      },
+      "wdr_level": {
+        "name": "Wide dynamic range level"
       }
     }
   },

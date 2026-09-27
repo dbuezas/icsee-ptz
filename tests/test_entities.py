@@ -457,3 +457,13 @@ async def test_image_and_alarm_settings(
     assert value["Smart264V2"][0]["SmartH264"] is True
     assert value["Smart264PlusV2"][0]["SmartH264Plus"] == 1
     assert hass.states.get("select.garten_smart_encoding").state == "h265x"
+
+
+async def test_sdk_header_settings(hass: HomeAssistant, setup_integration) -> None:
+    states = {s.entity_id: s.state for s in hass.states.async_all()}
+    assert states["switch.garten_image_stabilization"] == "off"
+    assert states["switch.garten_lens_distortion_correction"] == "off"
+    assert states["select.garten_exposure_metering"] == "average"
+    assert states["select.garten_ir_filter_switching"] == "with_ir_light"
+    assert float(states["sensor.garten_exposure_time"]) == 256  # 0x00000100
+    assert float(states["number.garten_wide_dynamic_range_level"]) == 100
