@@ -1,0 +1,786 @@
+{
+  "config": {
+    "flow_title": "{name} ({host})",
+    "step": {
+      "user": {
+        "title": "Elige una cámara",
+        "description": "Se encontraron estas cámaras en tu red. Elige una o introduce una cámara a mano.",
+        "data": {
+          "device": "Cámara"
+        }
+      },
+      "credentials": {
+        "title": "Datos de la cámara",
+        "data": {
+          "name": "Nombre",
+          "host": "Host o dirección IP",
+          "port": "Puerto",
+          "username": "Usuario",
+          "password": "Contraseña"
+        },
+        "data_description": {
+          "name": "Nombre de la cámara en Home Assistant.",
+          "host": "Dirección IP o nombre de host de la cámara.",
+          "port": "Puerto DVRIP. Normalmente 34567. Cámbialo solo si tu cámara usa otro (p. ej. detrás de una redirección de puertos).",
+          "username": "Normalmente admin.",
+          "password": "La contraseña de la cámara (la de la app ICSee / XMEye). Déjala vacía si la cámara no tiene."
+        }
+      },
+      "discovery_confirm": {
+        "title": "Añadir {name}",
+        "description": "Se encontró una cámara en {host}. Introduce sus credenciales para añadirla.",
+        "data": {
+          "name": "Nombre",
+          "username": "Usuario",
+          "password": "Contraseña"
+        },
+        "data_description": {
+          "name": "Nombre de la cámara en Home Assistant.",
+          "username": "Normalmente admin.",
+          "password": "La contraseña de la cámara (la de la app ICSee / XMEye). Déjala vacía si la cámara no tiene."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Iniciar sesión de nuevo",
+        "description": "{name} rechazó el inicio de sesión. Introduce el usuario y la contraseña actuales.",
+        "data": {
+          "username": "Usuario",
+          "password": "Contraseña"
+        }
+      },
+      "reconfigure": {
+        "title": "Cambiar la conexión",
+        "data": {
+          "host": "Host o dirección IP",
+          "port": "Puerto",
+          "username": "Usuario",
+          "password": "Contraseña"
+        },
+        "data_description": {
+          "host": "Dirección IP o nombre de host de la cámara.",
+          "port": "Puerto DVRIP. Normalmente 34567. Cámbialo solo si tu cámara usa otro (p. ej. detrás de una redirección de puertos).",
+          "username": "Normalmente admin.",
+          "password": "La contraseña de la cámara (la de la app ICSee / XMEye). Déjala vacía si la cámara no tiene."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No se pudo conectar",
+      "invalid_auth": "Usuario o contraseña no válidos"
+    },
+    "abort": {
+      "already_configured": "El dispositivo ya está configurado",
+      "reauth_successful": "La nueva autenticación se realizó correctamente",
+      "reconfigure_successful": "La reconfiguración se realizó correctamente",
+      "wrong_device": "Es otra cámara. Añádela como un dispositivo nuevo."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Valores PTZ predeterminados",
+        "description": "Parámetros PTZ predeterminados. Paso significa velocidad. El preset solo lo usan SetPreset/GotoPreset/ClearPreset. El canal suele ser 0. Por defecto, los botones PTZ solo se crean para este canal.",
+        "data": {
+          "channel": "Canal",
+          "step": "Paso",
+          "preset": "Preset",
+          "add_ptz_buttons_all_channels": "Añadir botones PTZ para todos los canales"
+        }
+      }
+    }
+  },
+  "selector": {
+    "device": {
+      "options": {
+        "manual": "Introducir a mano"
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "motion_alarm": {
+        "name": "Movimiento: alarma"
+      },
+      "password_reset_questions": {
+        "name": "Restablecer contraseña: con preguntas de seguridad"
+      },
+      "password_reset_contact": {
+        "name": "Restablecer contraseña: correo o teléfono configurado"
+      },
+      "telnet_open": {
+        "name": "Acceso de depuración Telnet"
+      },
+      "app_bound": {
+        "name": "Vinculada a una cuenta de la app"
+      },
+      "upnp_ports_open": {
+        "name": "UPnP: puertos del router abiertos"
+      }
+    },
+    "sensor": {
+      "users": {
+        "name": "Usuarios"
+      },
+      "logged_in_as": {
+        "name": "Sesión iniciada como"
+      },
+      "wifi_signal": {
+        "name": "Señal WiFi"
+      },
+      "cloud_status": {
+        "name": "Nube: estado",
+        "state": {
+          "connected": "Conectada",
+          "not_connected": "No conectada",
+          "disabled": "Desactivada"
+        }
+      },
+      "abnormal_restarts": {
+        "name": "Reinicios (fallo)"
+      },
+      "network_loss_restarts": {
+        "name": "Reinicios (pérdida de red)"
+      },
+      "video_standard": {
+        "name": "Vídeo: norma"
+      },
+      "exposure_time": {
+        "name": "Exposición: tiempo"
+      },
+      "storage_total": {
+        "name": "Tarjeta SD: tamaño"
+      },
+      "storage_free": {
+        "name": "Tarjeta SD: libre"
+      }
+    },
+    "text": {
+      "video_name": {
+        "name": "Vídeo: nombre (texto)"
+      }
+    },
+    "button": {
+      "ptz_stop": {
+        "name": "PTZ: parar"
+      },
+      "ptz_up": {
+        "name": "PTZ: arriba"
+      },
+      "ptz_down": {
+        "name": "PTZ: abajo"
+      },
+      "ptz_left": {
+        "name": "PTZ: izquierda"
+      },
+      "ptz_right": {
+        "name": "PTZ: derecha"
+      },
+      "ptz_left_up": {
+        "name": "PTZ: izquierda arriba"
+      },
+      "ptz_left_down": {
+        "name": "PTZ: izquierda abajo"
+      },
+      "ptz_right_up": {
+        "name": "PTZ: derecha arriba"
+      },
+      "ptz_right_down": {
+        "name": "PTZ: derecha abajo"
+      },
+      "ptz_zoom_in": {
+        "name": "PTZ: acercar"
+      },
+      "ptz_zoom_out": {
+        "name": "PTZ: alejar"
+      },
+      "home_go_to": {
+        "name": "PTZ: ir a la posición inicial"
+      },
+      "home_set": {
+        "name": "PTZ: guardar posición actual como inicial"
+      },
+      "home_clear": {
+        "name": "PTZ: borrar posición inicial"
+      },
+      "sync_clock": {
+        "name": "Reloj: sincronizar"
+      }
+    },
+    "camera": {
+      "main_stream": {
+        "name": "Flujo principal"
+      },
+      "sub_stream": {
+        "name": "Flujo secundario"
+      }
+    },
+    "media_player": {
+      "speaker": {
+        "name": "Altavoz"
+      }
+    },
+    "siren": {
+      "siren": {
+        "name": "Sirena"
+      }
+    },
+    "switch": {
+      "motion_detection": {
+        "name": "Movimiento: detección"
+      },
+      "human_detection": {
+        "name": "Detección de personas"
+      },
+      "tamper_detection": {
+        "name": "Detección de sabotaje"
+      },
+      "video_loss_detection": {
+        "name": "Vídeo: detección de pérdida"
+      },
+      "vehicle_detection": {
+        "name": "Detección de vehículos"
+      },
+      "motion_tracking": {
+        "name": "Movimiento: seguimiento"
+      },
+      "white_light": {
+        "name": "Luz blanca"
+      },
+      "white_light_one_key": {
+        "name": "Luz blanca (manual)"
+      },
+      "night_vision": {
+        "name": "Visión nocturna"
+      },
+      "night_enhance": {
+        "name": "Visión nocturna: mejora"
+      },
+      "low_light_fill": {
+        "name": "Relleno con poca luz"
+      },
+      "starlight": {
+        "name": "Modo Starlight"
+      },
+      "wdr": {
+        "name": "WDR (amplio rango dinámico)"
+      },
+      "prevent_overexposure": {
+        "name": "Evitar sobreexposición"
+      },
+      "picture_flip": {
+        "name": "Imagen: voltear vertical"
+      },
+      "picture_mirror": {
+        "name": "Imagen: espejo horizontal"
+      },
+      "ircut_reverse": {
+        "name": "Filtro IR: invertido"
+      },
+      "anti_fog": {
+        "name": "Antiniebla"
+      },
+      "privacy_mode": {
+        "name": "Modo privacidad"
+      },
+      "sleep_schedule": {
+        "name": "Horario de reposo"
+      },
+      "status_led": {
+        "name": "LED de estado"
+      },
+      "voice_prompts": {
+        "name": "Mensajes de voz"
+      },
+      "rtsp_server": {
+        "name": "Servidor RTSP"
+      },
+      "anti_flicker": {
+        "name": "Imagen: antiparpadeo"
+      },
+      "stabilization": {
+        "name": "Imagen: estabilización"
+      },
+      "daylight_saving": {
+        "name": "Reloj: horario de verano"
+      },
+      "lens_correction": {
+        "name": "Imagen: corrección de distorsión"
+      },
+      "auto_gain": {
+        "name": "Ganancia (automática)"
+      },
+      "motion_push": {
+        "name": "Movimiento: notificación push"
+      },
+      "motion_record": {
+        "name": "Movimiento: grabar"
+      },
+      "motion_snapshot": {
+        "name": "Movimiento: captura"
+      },
+      "motion_beep": {
+        "name": "Movimiento: pitido"
+      },
+      "motion_warning_light": {
+        "name": "Movimiento: luz de aviso"
+      },
+      "onvif_password": {
+        "name": "ONVIF: contraseña obligatoria"
+      },
+      "cloud_block_all": {
+        "name": "Nube: bloquear todos los servidores"
+      },
+      "cloud_block_nat": {
+        "name": "Nube: bloquear servidor P2P"
+      },
+      "cloud_block_rps": {
+        "name": "Nube: bloquear servidor de retransmisión"
+      },
+      "cloud_block_dss": {
+        "name": "Nube: bloquear servidor de streaming"
+      },
+      "cloud_das": {
+        "name": "Nube: servidor de acceso (DAS)"
+      },
+      "upnp": {
+        "name": "UPnP: redirección de puertos"
+      },
+      "firmware_online_updates": {
+        "name": "Actualizaciones de firmware: en línea"
+      },
+      "firmware_auto_install": {
+        "name": "Actualizaciones de firmware: instalar automáticamente"
+      },
+      "ntp": {
+        "name": "Reloj: hora de internet (NTP)"
+      },
+      "reboot_on_network_loss": {
+        "name": "Reiniciar al perder la red"
+      },
+      "resume_ptz_position": {
+        "name": "Reiniciar: volver a la última posición"
+      },
+      "time_on_video": {
+        "name": "Vídeo: mostrar hora"
+      },
+      "name_on_video": {
+        "name": "Vídeo: mostrar nombre"
+      },
+      "logo_on_video": {
+        "name": "Vídeo: mostrar logo"
+      },
+      "human_detection_box": {
+        "name": "Detección de personas: recuadro"
+      },
+      "cloud_access": {
+        "name": "Nube: acceso (P2P)"
+      },
+      "cloud_push": {
+        "name": "Nube: notificaciones push"
+      },
+      "password_reset_by_code": {
+        "name": "Restablecer contraseña: con código"
+      },
+      "sub_stream": {
+        "name": "Flujo secundario"
+      },
+      "main_stream_audio": {
+        "name": "Flujo principal: audio"
+      },
+      "sub_stream_audio": {
+        "name": "Flujo secundario: audio"
+      }
+    },
+    "select": {
+      "day_night_mode": {
+        "name": "Día/noche: modo",
+        "state": {
+          "auto": "Auto (infrarrojo de noche)",
+          "starlight_infrared": "Infrarrojo Starlight",
+          "color": "Siempre color (infrarrojo apagado)",
+          "black_white": "Siempre blanco y negro (infrarrojo encendido)",
+          "smart_alarm_light": "Luz blanca con movimiento",
+          "auto_white_light": "Auto, color completo con luz blanca",
+          "auto_infrared": "Auto, luz infrarroja",
+          "license_plate": "Matrículas"
+        }
+      },
+      "white_light_mode": {
+        "name": "Luz blanca: modo",
+        "state": {
+          "close": "Apagado",
+          "keep_open": "Siempre encendida",
+          "auto": "Auto (de noche)",
+          "timing": "Horario",
+          "intelligent": "Con movimiento",
+          "atmosphere": "Ambiente",
+          "glint": "Música"
+        }
+      },
+      "white_light_sensitivity": {
+        "name": "Luz blanca: sensibilidad al movimiento",
+        "state": {
+          "low": "Baja",
+          "medium": "Media",
+          "high": "Alta"
+        }
+      },
+      "day_night_switch": {
+        "name": "Día/noche: cambio",
+        "state": {
+          "auto": "Automático",
+          "day": "Día",
+          "night": "Noche",
+          "scheduled": "Horario"
+        }
+      },
+      "image_style": {
+        "name": "Imagen: estilo",
+        "state": {
+          "style_1": "Estilo 1",
+          "style_2": "Estilo 2",
+          "style_3": "Estilo 3"
+        }
+      },
+      "tracking_sensitivity": {
+        "name": "Movimiento: sensibilidad de seguimiento",
+        "state": {
+          "low": "Baja",
+          "medium": "Media",
+          "high": "Alta"
+        }
+      },
+      "human_detection_sensitivity": {
+        "name": "Detección de personas: sensibilidad",
+        "state": {
+          "low": "Baja",
+          "medium": "Media",
+          "high": "Alta"
+        }
+      },
+      "detection_objects": {
+        "name": "Detección de personas: objetivos",
+        "state": {
+          "people": "Personas",
+          "vehicles": "Vehículos",
+          "people_and_vehicles": "Personas y vehículos"
+        }
+      },
+      "recording_mode": {
+        "name": "Tarjeta SD: grabación",
+        "state": {
+          "schedule": "Según horario",
+          "always": "Siempre",
+          "off": "Apagado"
+        }
+      },
+      "time_position": {
+        "name": "Vídeo: posición de la hora",
+        "state": {
+          "top_left": "Arriba a la izquierda",
+          "top_right": "Arriba a la derecha",
+          "bottom_left": "Abajo a la izquierda",
+          "bottom_right": "Abajo a la derecha"
+        }
+      },
+      "name_position": {
+        "name": "Vídeo: posición del nombre",
+        "state": {
+          "top_left": "Arriba a la izquierda",
+          "top_right": "Arriba a la derecha",
+          "bottom_left": "Abajo a la izquierda",
+          "bottom_right": "Abajo a la derecha"
+        }
+      },
+      "auto_restart_day": {
+        "name": "Reiniciar: automáticamente",
+        "state": {
+          "never": "Nunca",
+          "everyday": "Cada día",
+          "monday": "Lunes",
+          "tuesday": "Martes",
+          "wednesday": "Miércoles",
+          "thursday": "Jueves",
+          "friday": "Viernes",
+          "saturday": "Sábado",
+          "sunday": "Domingo"
+        }
+      },
+      "ptz_preset": {
+        "name": "PTZ: ir al preset"
+      },
+      "metering": {
+        "name": "Exposición: medición",
+        "state": {
+          "average": "Promedio",
+          "center": "Centro"
+        }
+      },
+      "ircut_switching": {
+        "name": "Filtro IR: cambio",
+        "state": {
+          "with_ir_light": "Junto con la luz IR",
+          "automatic": "Por sí solo"
+        }
+      },
+      "corridor_mode": {
+        "name": "Imagen: modo pasillo",
+        "state": {
+          "rotate_0": "Normal",
+          "rotate_90": "Pasillo (90°)",
+          "rotate_180": "Girada 180°",
+          "rotate_270": "Pasillo (270°)"
+        }
+      },
+      "time_format": {
+        "name": "Reloj: formato de hora",
+        "state": {
+          "hours_24": "24 horas",
+          "hours_12": "12 horas"
+        }
+      },
+      "date_format": {
+        "name": "Reloj: formato de fecha",
+        "state": {
+          "ymd": "Año-mes-día",
+          "mdy": "Mes-día-año",
+          "dmy": "Día-mes-año"
+        }
+      },
+      "smart_encoding": {
+        "name": "Flujo principal: codificación inteligente",
+        "state": {
+          "h264": "H.264",
+          "h264_plus": "H.264+",
+          "h265x": "H.265X"
+        }
+      },
+      "main_stream_resolution": {
+        "name": "Flujo principal: resolución"
+      },
+      "main_stream_quality": {
+        "name": "Flujo principal: calidad",
+        "state": {
+          "bad": "Mala",
+          "poor": "Pobre",
+          "general": "Normal",
+          "good": "Buena",
+          "better": "Mejor",
+          "best": "Óptima"
+        }
+      },
+      "main_stream_codec": {
+        "name": "Flujo principal: códec"
+      },
+      "main_stream_bitrate_control": {
+        "name": "Flujo principal: control de tasa de bits",
+        "state": {
+          "cbr": "Constante (CBR)",
+          "vbr": "Variable (VBR)"
+        }
+      },
+      "sub_stream_resolution": {
+        "name": "Flujo secundario: resolución"
+      },
+      "sub_stream_quality": {
+        "name": "Flujo secundario: calidad",
+        "state": {
+          "bad": "Mala",
+          "poor": "Pobre",
+          "general": "Normal",
+          "good": "Buena",
+          "better": "Mejor",
+          "best": "Óptima"
+        }
+      },
+      "sub_stream_codec": {
+        "name": "Flujo secundario: códec"
+      },
+      "sub_stream_bitrate_control": {
+        "name": "Flujo secundario: control de tasa de bits",
+        "state": {
+          "cbr": "Constante (CBR)",
+          "vbr": "Variable (VBR)"
+        }
+      }
+    },
+    "number": {
+      "main_stream_fps": {
+        "name": "Flujo principal: fotogramas por segundo"
+      },
+      "main_stream_bitrate": {
+        "name": "Flujo principal: tasa de bits"
+      },
+      "main_stream_gop": {
+        "name": "Flujo principal: intervalo de fotogramas clave"
+      },
+      "sub_stream_fps": {
+        "name": "Flujo secundario: fotogramas por segundo"
+      },
+      "sub_stream_bitrate": {
+        "name": "Flujo secundario: tasa de bits"
+      },
+      "sub_stream_gop": {
+        "name": "Flujo secundario: intervalo de fotogramas clave"
+      },
+      "speaker_volume": {
+        "name": "Altavoz: volumen"
+      },
+      "microphone_volume": {
+        "name": "Micrófono: volumen"
+      },
+      "white_light_brightness": {
+        "name": "Luz blanca: brillo"
+      },
+      "white_light_duration": {
+        "name": "Luz blanca: duración con movimiento"
+      },
+      "image_brightness": {
+        "name": "Imagen: brillo"
+      },
+      "image_contrast": {
+        "name": "Imagen: contraste"
+      },
+      "image_saturation": {
+        "name": "Imagen: saturación"
+      },
+      "image_hue": {
+        "name": "Imagen: tono"
+      },
+      "anti_fog_level": {
+        "name": "Antiniebla: nivel"
+      },
+      "motion_sensitivity": {
+        "name": "Movimiento: sensibilidad"
+      },
+      "day_night_sensitivity": {
+        "name": "Día/noche: sensibilidad del cambio"
+      },
+      "soft_light_threshold": {
+        "name": "Sensor de luz: umbral"
+      },
+      "tracking_return_time": {
+        "name": "Movimiento: tiempo de retorno del seguimiento"
+      },
+      "auto_restart_hour": {
+        "name": "Reiniciar: automáticamente a la hora"
+      },
+      "motion_record_duration": {
+        "name": "Movimiento: duración de la grabación"
+      },
+      "motion_warning_light_duration": {
+        "name": "Movimiento: duración de la luz de aviso"
+      },
+      "motion_alarm_hold": {
+        "name": "Movimiento: tiempo de espera de la alarma"
+      },
+      "pir_sensitivity": {
+        "name": "Movimiento: sensibilidad PIR"
+      },
+      "max_exposure_time": {
+        "name": "Exposición: tiempo (máximo)"
+      },
+      "tamper_sensitivity": {
+        "name": "Detección de sabotaje: sensibilidad"
+      },
+      "push_interval": {
+        "name": "Nube: intervalo de notificaciones push"
+      },
+      "pre_record": {
+        "name": "Tarjeta SD: pregrabación"
+      },
+      "recording_file_length": {
+        "name": "Tarjeta SD: duración del archivo"
+      },
+      "noise_reduction_day": {
+        "name": "Imagen: reducción de ruido (día)"
+      },
+      "noise_reduction_night": {
+        "name": "Imagen: reducción de ruido (noche)"
+      },
+      "gain": {
+        "name": "Ganancia"
+      },
+      "exposure_sensitivity": {
+        "name": "Exposición: sensibilidad"
+      },
+      "wdr_level": {
+        "name": "WDR: nivel"
+      }
+    }
+  },
+  "exceptions": {
+    "cannot_connect": {
+      "message": "No se puede conectar con la cámara."
+    },
+    "invalid_auth": {
+      "message": "La cámara rechazó el usuario o la contraseña."
+    },
+    "not_supported": {
+      "message": "La cámara no admite {config}."
+    },
+    "invalid_video_name": {
+      "message": "El nombre debe tener entre 1 y {max} caracteres."
+    },
+    "no_daylight_saving": {
+      "message": "La zona horaria de Home Assistant no tiene horario de verano."
+    },
+    "command_failed": {
+      "message": "La cámara rechazó el cambio de {config} (error {ret})."
+    },
+    "not_applied": {
+      "message": "La cámara aceptó el cambio de {config}, pero no lo aplicó."
+    },
+    "invalid_option": {
+      "message": "{option} no es una opción válida para esta cámara."
+    },
+    "over_encode_budget": {
+      "message": "La cámara no puede codificar esto. Baja primero la resolución o los fotogramas por segundo del otro flujo."
+    },
+    "audio_convert_failed": {
+      "message": "No se pudo convertir el audio para el altavoz de la cámara."
+    }
+  },
+  "issues": {
+    "rtsp_disabled": {
+      "title": "{name}: activa el servidor RTSP para el vídeo",
+      "description": "Home Assistant reproduce el vídeo de la cámara por RTSP, pero el servidor RTSP de {name} está apagado. Activa su interruptor **Servidor RTSP** para ver el vídeo."
+    },
+    "reboot_required": {
+      "title": "{name} necesita reiniciarse",
+      "description": "Se guardó un ajuste, pero la cámara solo lo aplica tras reiniciarse. Pulsa el botón Reiniciar de {name}."
+    }
+  },
+  "services": {
+    "move": {
+      "name": "Mover",
+      "description": "Mueve una cámara ICSee/DVR-IP/NetSurveillance/Sofia.",
+      "fields": {
+        "cmd": {
+          "name": "Comando",
+          "description": "Comando PTZ."
+        },
+        "step": {
+          "name": "Paso",
+          "description": "Velocidad de los movimientos PTZ."
+        },
+        "preset": {
+          "name": "Preset",
+          "description": "Solo lo usan SetPreset, GotoPreset y ClearPreset."
+        },
+        "channel": {
+          "name": "Canal",
+          "description": "Canal de la cámara. Por defecto, el canal de las opciones."
+        }
+      }
+    },
+    "synchronize_clock": {
+      "name": "Sincronizar el reloj de la cámara",
+      "description": "Pone el reloj de la cámara a la hora de Home Assistant."
+    },
+    "force_frame": {
+      "name": "Forzar fotograma",
+      "description": "Hace que la cámara envíe un fotograma nuevo. Sirve para que el vídeo empiece antes."
+    }
+  }
+}
