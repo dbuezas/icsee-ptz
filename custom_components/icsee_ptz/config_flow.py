@@ -245,7 +245,8 @@ class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
             CONF_PASSWORD: data[CONF_PASSWORD],
             CONF_UNIQUE_ID: serial,
             CONF_MAC: format_mac(mac) if mac else None,
-            CONF_CHANNEL_COUNT: max(
+            CONF_CHANNEL_COUNT: info.get("_channels")
+            or max(
                 1,
                 int(info.get("VideoInChannel") or 0) + int(info.get("DigChannel") or 0),
             ),

@@ -11,7 +11,12 @@ import pytest
 from homeassistant.core import HomeAssistant
 
 from custom_components.icsee_ptz import encode
-from custom_components.icsee_ptz.asyncio_dvrip import ConfigNotSupported, DVRIPCam
+from custom_components.icsee_ptz.asyncio_dvrip import (
+    ConfigNotSupported,
+    DVRIPCam,
+    SomethingIsWrongWithCamera,
+)
+from custom_components.icsee_ptz.device import ICSeeDevice
 from custom_components.icsee_ptz.diagnostics import async_get_config_entry_diagnostics
 
 from .conftest import FIXTURES
@@ -310,3 +315,39 @@ async def test_login_without_ret_or_session_fails_cleanly(login_reply) -> None:
     cam.send = send
     cam.keep_alive = lambda loop: None
     assert await cam.login(asyncio.get_running_loop()) is False
+
+
+class _FakeCam:
+    """Minimal stand-in for DVRIPCam for _detect_channels."""
+
+    def __init__(self, motion=None, err=None) -> None:
+        self._motion = motion
+        self._err = err
+
+    async def get_config(self, name):
+        assert name == "Detect.MotionDetect"
+        if self._err:
+            raise self._err
+        return self._motion
+
+
+async def test_detect_channels_from_motiondetect_length() -> None:
+    """A DVR's channel count is the length of the per-channel MotionDetect list."""
+    dev = ICSeeDevice("h", 34567, "u", "p")
+    cam = _FakeCam(motion=[{} for _ in range(8)])
+    # SystemInfo says 1, but the MotionDetect list (8) wins (regression #70)
+    assert await dev._detect_channels(cam, {"VideoInChannel": 1}) == 8
+
+
+async def test_detect_channels_falls_back_to_systeminfo() -> None:
+    dev = ICSeeDevice("h", 34567, "u", "p")
+    missing = _FakeCam(err=ConfigNotSupported("Detect.MotionDetect"))
+    assert (
+        await dev._detect_channels(missing, {"VideoInChannel": 4, "DigChannel": 0}) == 4
+    )
+    broken = _FakeCam(err=SomethingIsWrongWithCamera("x"))
+    assert (
+        await dev._detect_channels(broken, {"VideoInChannel": 8, "DigChannel": 8}) == 16
+    )
+    # empty list is not a real answer, and nothing else is known -> at least 1
+    assert await dev._detect_channels(_FakeCam(motion=[]), {}) == 1

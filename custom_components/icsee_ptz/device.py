@@ -70,16 +70,38 @@ class ICSeeDevice:
             raise AuthFailed(f"Login rejected (Ret {cam.login_ret})")
 
     async def async_check(self) -> dict[str, Any]:
-        """Log in once and return SystemInfo. Used by the config flow."""
+        """Log in once and return SystemInfo. Used by the config flow.
+
+        The detected channel count is added under the synthetic key "_channels".
+        """
         cam = self._new_cam()
         try:
             await self._login(cam)
             try:
-                return await cam.get_command("SystemInfo")
+                info = await cam.get_command("SystemInfo")
+                info = dict(info) if isinstance(info, dict) else {}
+                info["_channels"] = await self._detect_channels(cam, info)
+                return info
             except SomethingIsWrongWithCamera as err:
                 raise CannotConnect(str(err)) from err
         finally:
             cam.close()
+
+    async def _detect_channels(self, cam: DVRIPCam, info: dict[str, Any]) -> int:
+        """How many camera channels this device has.
+
+        The per-channel Detect.MotionDetect list has one entry per channel and is
+        reliable across DVRs/NVRs (SystemInfo's VideoInChannel/DigChannel are not,
+        which left DVRs with only channel 0 in v5). Fall back to those fields.
+        """
+        try:
+            motion = await cam.get_config("Detect.MotionDetect")
+            if isinstance(motion, list) and motion:
+                return len(motion)
+        except (SomethingIsWrongWithCamera, CommandFailed, ConfigNotSupported):
+            pass
+        fields = int(info.get("VideoInChannel") or 0) + int(info.get("DigChannel") or 0)
+        return max(1, fields)
 
     # ---- connection loop -------------------------------------------------
 

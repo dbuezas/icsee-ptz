@@ -51,6 +51,19 @@ async def test_manual(hass: HomeAssistant, mock_device) -> None:
     assert result["data"]["channel_count"] == 1
 
 
+async def test_channel_count_from_device(hass: HomeAssistant, mock_device) -> None:
+    """A DVR's detected channel count (async_check) is stored (regression #70)."""
+    mock_device.system_info = {**mock_device.system_info, "_channels": 8}
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {**LOGIN, "host": "192.0.2.10", "port": 34567}
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert result["data"]["channel_count"] == 8
+
+
 async def test_pick_discovered(hass: HomeAssistant, mock_device) -> None:
     with patch(
         "custom_components.icsee_ptz.config_flow.async_discover", return_value=[CAMERA]
