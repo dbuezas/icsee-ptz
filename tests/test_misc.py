@@ -17,6 +17,7 @@ from custom_components.icsee_ptz.asyncio_dvrip import (
     SomethingIsWrongWithCamera,
 )
 from custom_components.icsee_ptz.device import ICSeeDevice
+from custom_components.icsee_ptz.const import DOMAIN
 from custom_components.icsee_ptz.diagnostics import async_get_config_entry_diagnostics
 
 from .conftest import FIXTURES
@@ -351,3 +352,24 @@ async def test_detect_channels_falls_back_to_systeminfo() -> None:
     )
     # empty list is not a real answer, and nothing else is known -> at least 1
     assert await dev._detect_channels(_FakeCam(motion=[]), {}) == 1
+
+
+def test_channel_subdevice_has_no_via_device() -> None:
+    """Channel sub-devices must not use via_device (it breaks camera add on newer HA, #70)."""
+    from types import SimpleNamespace
+
+    from homeassistant.const import CONF_MAC, CONF_UNIQUE_ID
+    from custom_components.icsee_ptz.const import CONF_CHANNEL_COUNT
+    from custom_components.icsee_ptz.entity import ICSeeEntity
+
+    entry = SimpleNamespace(
+        data={CONF_UNIQUE_ID: "abc", CONF_CHANNEL_COUNT: 4},
+        title="Garten",
+    )
+    coordinator = SimpleNamespace(config_entry=entry, system_info={}, device=object())
+    entity = ICSeeEntity(coordinator, "camera_main_1", channel=1)
+    assert entity._attr_device_info is not None
+    assert "via_device" not in entity._attr_device_info
+    # channel 0 stays the main device
+    main = ICSeeEntity(coordinator, "camera_main_0", channel=0)
+    assert (DOMAIN, "abc") in main._attr_device_info["identifiers"]

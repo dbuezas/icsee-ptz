@@ -31,10 +31,13 @@ class ICSeeEntity(CoordinatorEntity[ICSeeCoordinator]):
         self._attr_unique_id = f"{serial}_{unique_key}"
         info = coordinator.system_info
         if channel and entry.data.get(CONF_CHANNEL_COUNT, 1) > 1:
+            # One sub-device per channel. We intentionally do NOT set via_device:
+            # on newer Home Assistant, adding a camera entity whose device uses the
+            # (now deprecated) via_device parameter raises and the video-stream
+            # entities never get created, so DVR channels 1+ showed no camera (#70).
             self._attr_device_info = DeviceInfo(
                 identifiers={(DOMAIN, f"{serial}_{channel}")},
                 name=f"{entry.title} {channel}",
-                via_device=(DOMAIN, serial),
             )
         else:
             self._attr_device_info = DeviceInfo(
