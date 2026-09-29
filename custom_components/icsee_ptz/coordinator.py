@@ -26,6 +26,12 @@ from .device import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# Most settings only change when the user writes them (and the write reads itself
+# back). Re-reading all ~50 configs takes ~200ms each = ~10s of camera work, which
+# starves the video encoder and PTZ. So read the whole set only once at startup;
+# after that read only the "live" ones each poll. The "Refresh settings" button
+# forces a full re-read on demand (e.g. after changing something in the phone app).
+
 
 class NoAnswer(Exception):
     """The camera did not answer a read twice (it probably does not know it)."""
@@ -40,6 +46,7 @@ class ConfigSpec:
         True  # write one channel as "Name.[ch]" (else the whole list)
     )
     code: int = 1042  # read command: 1042 config, 1020 status, 1472 users
+    live: bool = False  # re-read every poll (changes on its own); else read rarely
 
 
 CONFIGS: dict[str, ConfigSpec] = {
@@ -86,10 +93,10 @@ CONFIGS: dict[str, ConfigSpec] = {
     "Record": ConfigSpec(per_channel=True),  # SD card recording
     # read only status
     "Users": ConfigSpec(per_channel=False, code=1472),
-    "WifiRouteInfo": ConfigSpec(per_channel=False, code=1020),
-    "Status.NatInfo": ConfigSpec(per_channel=False),  # cloud connection state
-    "StorageInfo": ConfigSpec(per_channel=False, code=1020),  # SD card
-    "WorkState": ConfigSpec(per_channel=False, code=1020),  # current alarm state
+    "WifiRouteInfo": ConfigSpec(per_channel=False, code=1020, live=True),
+    "Status.NatInfo": ConfigSpec(per_channel=False, live=True),  # cloud connection
+    "StorageInfo": ConfigSpec(per_channel=False, code=1020, live=True),  # SD card
+    "WorkState": ConfigSpec(per_channel=False, code=1020, live=True),  # alarm state
 }
 
 # Abilities (cmd 1360) read once at setup
@@ -131,6 +138,7 @@ class ICSeeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.abilities: dict[str, Any] = {}
         self.system_info: dict[str, Any] = {}
         self.supported: set[str] | None = None  # None until the first refresh
+        self._force_full = False  # set by the Refresh button to re-read everything
 
     async def _async_setup(self) -> None:
         """Read the device info and abilities once."""
@@ -171,7 +179,15 @@ class ICSeeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         data = dict(self.data or {})
         first = self.supported is None
-        names = list(CONFIGS) if first else sorted(self.supported or ())
+        full = first or self._force_full
+        self._force_full = False
+        if first:
+            names = list(CONFIGS)  # discover which configs the camera supports
+        elif full:
+            names = sorted(self.supported or ())  # on-demand full re-read
+        else:
+            # the common case: only the handful that change on their own
+            names = sorted(n for n in (self.supported or ()) if CONFIGS[n].live)
         supported: set[str] = set()
         try:
             for name in names:
@@ -196,6 +212,11 @@ class ICSeeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if first:
             self.supported = supported
         return data
+
+    async def async_refresh_all(self) -> None:
+        """Re-read every setting once now (the Refresh settings button)."""
+        self._force_full = True
+        await self.async_request_refresh()
 
     # ---- helpers for entities ---------------------------------------------
 

@@ -75,7 +75,11 @@ async def async_setup_entry(
         for description in PTZ_BUTTONS
         for channel in channels
     ]
-    entities += [RebootButton(coordinator), SyncClockButton(coordinator)]
+    entities += [
+        RebootButton(coordinator),
+        SyncClockButton(coordinator),
+        RefreshSettingsButton(coordinator),
+    ]
     async_add_entities(entities)
 
 
@@ -138,3 +142,21 @@ class SyncClockButton(ICSeeEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         await _run(self.device.async_set_time())
+
+
+class RefreshSettingsButton(ICSeeEntity, ButtonEntity):
+    """Re-read every setting from the camera once (normally only 'live' ones poll)."""
+
+    _attr_translation_key = "refresh_settings"
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_icon = "mdi:refresh"
+
+    def __init__(self, coordinator: ICSeeCoordinator) -> None:
+        super().__init__(coordinator, "refresh_settings")
+
+    @property
+    def available(self) -> bool:
+        return self.device.is_connected
+
+    async def async_press(self) -> None:
+        await _run(self.coordinator.async_refresh_all())

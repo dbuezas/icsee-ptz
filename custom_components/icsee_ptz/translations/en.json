@@ -204,6 +204,9 @@
       },
       "sync_clock": {
         "name": "Clock synchronize"
+      },
+      "refresh_settings": {
+        "name": "Refresh settings"
       }
     },
     "camera": {

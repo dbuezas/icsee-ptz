@@ -45,9 +45,11 @@ class ICSeeDevice:
         self.password = password
         self.dvrip: DVRIPCam | None = None
         self.dvrip_alarm: DVRIPCam | None = None
+        self.dvrip_ptz: DVRIPCam | None = None  # PTZ on its own link, never waits
         self.connected = False
         self.auth_failed = False
         self._lock = asyncio.Lock()
+        self._ptz_lock = asyncio.Lock()
         self._alarm_callbacks: list[Callable[[dict[str, Any]], None]] = []
         self._connection_callbacks: list[Callable[[], None]] = []
 
@@ -112,27 +114,35 @@ class ICSeeDevice:
         """Open both connections once. Raise CannotConnect or AuthFailed."""
         dvrip = self._new_cam()
         dvrip_alarm = self._new_cam()
+        dvrip_ptz = self._new_cam()
         try:
             await self._login(dvrip)
             await self._login(dvrip_alarm)
+            await self._login(dvrip_ptz)
             dvrip_alarm.setAlarm(self._on_alarm)
             await dvrip_alarm.alarmStart(asyncio.get_running_loop())
         except (SomethingIsWrongWithCamera, CommandFailed) as err:
             dvrip.close()
             dvrip_alarm.close()
+            dvrip_ptz.close()
             raise CannotConnect(str(err)) from err
         except BaseException:
             dvrip.close()
             dvrip_alarm.close()
+            dvrip_ptz.close()
             raise
         # Open the new connections before dropping the old ones, so no alarm is lost
         async with self._lock:
             old, old_alarm = self.dvrip, self.dvrip_alarm
             self.dvrip, self.dvrip_alarm = dvrip, dvrip_alarm
+        async with self._ptz_lock:
+            old_ptz, self.dvrip_ptz = self.dvrip_ptz, dvrip_ptz
         if old:
             old.close()
         if old_alarm:
             old_alarm.close()
+        if old_ptz:
+            old_ptz.close()
         self.auth_failed = False
         if not self.connected:
             await self._safe(self.async_set_time())
@@ -179,10 +189,10 @@ class ICSeeDevice:
             self.close()
 
     def close(self) -> None:
-        for cam in (self.dvrip, self.dvrip_alarm):
+        for cam in (self.dvrip, self.dvrip_alarm, self.dvrip_ptz):
             if cam:
                 cam.close()
-        self.dvrip = self.dvrip_alarm = None
+        self.dvrip = self.dvrip_alarm = self.dvrip_ptz = None
         self.connected = False
 
     async def _safe(self, coro) -> None:
@@ -199,6 +209,16 @@ class ICSeeDevice:
                 raise CannotConnect("Not connected")
             try:
                 return await getattr(self.dvrip, method)(*args)
+            except SomethingIsWrongWithCamera as err:
+                raise CannotConnect(str(err)) from err
+
+    async def _call_ptz(self, method: str, *args: Any) -> Any:
+        """Like _call, but on the dedicated PTZ link so it never waits for a poll."""
+        async with self._ptz_lock:
+            if not self.dvrip_ptz or not self.dvrip_ptz.socket_writer:
+                raise CannotConnect("Not connected")
+            try:
+                return await getattr(self.dvrip_ptz, method)(*args)
             except SomethingIsWrongWithCamera as err:
                 raise CannotConnect(str(err)) from err
 
@@ -224,9 +244,9 @@ class ICSeeDevice:
     async def async_ptz(self, cmd: str, step: int, preset: int, channel: int) -> None:
         if cmd == "Stop":
             # The camera stops when it gets a move command with preset -1
-            await self._call("ptz", "DirectionUp", 5, -1, channel)
+            await self._call_ptz("ptz", "DirectionUp", 5, -1, channel)
         else:
-            await self._call("ptz", cmd, step, preset, channel)
+            await self._call_ptz("ptz", cmd, step, preset, channel)
 
     async def async_set_time(self) -> None:
         await self._call("set_time")
