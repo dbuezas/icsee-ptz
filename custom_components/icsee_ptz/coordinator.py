@@ -32,6 +32,12 @@ _LOGGER = logging.getLogger(__name__)
 # after that read only the "live" ones each poll. The "Refresh settings" button
 # forces a full re-read on demand (e.g. after changing something in the phone app).
 
+# A config that does not answer at startup (e.g. the camera was busy or still
+# booting) used to be dropped forever, which left the camera on an unplayable
+# fallback stream until a restart. Instead, keep retrying such a config on the next
+# few polls, then give up so a genuinely silent config does not waste CPU/network.
+RETRY_BUDGET = 3
+
 
 class NoAnswer(Exception):
     """The camera did not answer a read twice (it probably does not know it)."""
@@ -139,6 +145,9 @@ class ICSeeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.system_info: dict[str, Any] = {}
         self.supported: set[str] | None = None  # None until the first refresh
         self._force_full = False  # set by the Refresh button to re-read everything
+        self._retry: dict[str, int] = (
+            {}
+        )  # configs that have not answered yet -> tries left
 
     async def _async_setup(self) -> None:
         """Read the device info and abilities once."""
@@ -179,38 +188,46 @@ class ICSeeCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         data = dict(self.data or {})
         first = self.supported is None
-        full = first or self._force_full
+        rediscover = first or self._force_full  # startup or the Refresh button
         self._force_full = False
-        if first:
-            names = list(CONFIGS)  # discover which configs the camera supports
-        elif full:
-            names = sorted(self.supported or ())  # on-demand full re-read
+        supported = set(self.supported or ())
+        if rediscover:
+            names = list(CONFIGS)  # try every config
         else:
-            # the common case: only the handful that change on their own
-            names = sorted(n for n in (self.supported or ()) if CONFIGS[n].live)
-        supported: set[str] = set()
+            # normal poll: the values that change on their own, plus any config
+            # that has not answered yet and still has retries left
+            names = sorted({n for n in supported if CONFIGS[n].live} | set(self._retry))
         try:
             for name in names:
                 code = CONFIGS[name].code
+                if code == 1042:
+                    read = self.device.async_get_config
+                else:
+                    read = functools.partial(self.device.async_get_value, code=code)
                 try:
-                    if code == 1042:
-                        read = self.device.async_get_config
-                    else:
-                        read = functools.partial(self.device.async_get_value, code=code)
                     data[name] = await self._read_retry(name, read)
                     supported.add(name)
+                    self._retry.pop(name, None)
                 except ConfigNotSupported:
-                    data.pop(name, None)
+                    data.pop(name, None)  # the camera really lacks it: stop asking
+                    supported.discard(name)
+                    self._retry.pop(name, None)
                 except (CommandFailed, NoAnswer) as err:
                     _LOGGER.debug("Reading %s failed: %s", name, err)
-                    if name in data:
-                        supported.add(name)
+                    if name not in supported:
+                        # unknown config (e.g. camera busy at boot): retry a few
+                        # more polls, then give up so we don't waste CPU/network
+                        left = self._retry.get(name, RETRY_BUDGET) - 1
+                        if left > 0:
+                            self._retry[name] = left
+                        else:
+                            self._retry.pop(name, None)
+                    # a config we have seen before keeps its last known value
         except (CannotConnect, AuthFailed) as err:
             raise UpdateFailed(
                 translation_domain=DOMAIN, translation_key="cannot_connect"
             ) from err
-        if first:
-            self.supported = supported
+        self.supported = supported
         return data
 
     async def async_refresh_all(self) -> None:

@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.icsee_ptz.const import DOMAIN
+from custom_components.icsee_ptz.coordinator import RETRY_BUDGET
 from custom_components.icsee_ptz.device import AuthFailed, CannotConnect
 from custom_components.icsee_ptz.discovery import DiscoveredCamera
 
@@ -204,9 +205,34 @@ async def test_setup_skips_names_the_camera_never_answers(
     assert hass.states.get("switch.garten_cloud_access_server_das") is None
     assert hass.states.get("select.garten_day_night_mode") is None
     assert hass.states.get("switch.garten_rtsp_server") is not None
-    # later refreshes do not ask for them again
-    await config_entry.runtime_data.coordinator.async_refresh()
-    assert mock_device.resets == 4
+    # A never-answering name is retried on the next few polls (so a camera that
+    # was merely busy at boot self-heals), then dropped so it is not asked forever.
+    coordinator = config_entry.runtime_data.coordinator
+    for _ in range(RETRY_BUDGET + 2):
+        await coordinator.async_refresh()
+    settled = mock_device.resets
+    assert settled > 4  # it did retry
+    for _ in range(3):
+        await coordinator.async_refresh()
+    assert mock_device.resets == settled  # but not forever
+
+
+async def test_missing_config_recovers_without_restart(
+    hass: HomeAssistant, mock_device, config_entry
+) -> None:
+    """A config the busy camera missed at boot is re-read on a later poll (#70).
+
+    This is what left DVRs on an unplayable fallback stream until a restart.
+    """
+    config_entry.add_to_hass(hass)
+    mock_device.no_answer = {"NetWork.RTSP"}
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    coordinator = config_entry.runtime_data.coordinator
+    assert coordinator.data.get("NetWork.RTSP") is None  # missed at boot
+    mock_device.no_answer = set()  # camera answers now
+    await coordinator.async_refresh()
+    assert coordinator.data.get("NetWork.RTSP") is not None  # recovered, no restart
 
 
 async def test_setup_retries_when_camera_goes_away(
