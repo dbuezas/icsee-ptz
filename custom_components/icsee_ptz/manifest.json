@@ -15,7 +15,7 @@
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/dbuezas/icsee-ptz/issues",
   "requirements": [
-    "getmac==0.9.5"
+    "getmac>=0.9.5"
   ],
   "version": "5.1.5"
 }
