@@ -1,0 +1,42 @@
+name: Release zip
+
+# HACS installs this zip (hacs.json: zip_release), so GitHub counts downloads.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to attach the zip to"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - name: Check the manifest version
+        if: github.event_name == 'release'
+        run: |
+          version=$(jq -r .version custom_components/icsee_ptz/manifest.json)
+          # tag v5.1.0-rc1 matches version 5.1.0rc1
+          tag=$(echo "$TAG" | sed 's/^v//; s/-//g')
+          if [ "$version" != "$tag" ]; then
+            echo "manifest.json version $version does not match tag $TAG"
+            exit 1
+          fi
+      - name: Zip the integration
+        run: |
+          cd custom_components/icsee_ptz
+          zip -r "$GITHUB_WORKSPACE/icsee_ptz.zip" . -x '*__pycache__*' '*.DS_Store'
+      - name: Attach to the release
+        run: gh release upload "$TAG" icsee_ptz.zip --clobber
