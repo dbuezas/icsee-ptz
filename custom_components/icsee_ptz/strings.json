@@ -78,13 +78,15 @@
   "options": {
     "step": {
       "init": {
-        "title": "PTZ defaults",
-        "description": "Default PTZ parameters. Step means speed. Preset is only used by SetPreset/GotoPreset/ClearPreset. Channel is usually 0. By default, PTZ buttons are only created for this channel.",
+        "title": "Options",
+        "description": "Default PTZ parameters. Step means speed. Preset is only used by SetPreset/GotoPreset/ClearPreset. Channel is usually 0. By default, PTZ buttons are only created for this channel. Motion: an alarm must last the minimum time to turn the motion sensor on, and the sensor stays on for the stick time after the alarm stops. This filters out very short false alarms.",
         "data": {
           "channel": "Channel",
           "step": "Step",
           "preset": "Preset",
-          "add_ptz_buttons_all_channels": "Add PTZ buttons for all channels"
+          "add_ptz_buttons_all_channels": "Add PTZ buttons for all channels",
+          "motion_min_ms": "Minimum motion time (ms)",
+          "motion_stick_ms": "Motion stick time (ms)"
         }
       }
     }

@@ -10,6 +10,12 @@ CONF_PRESET = "preset"
 CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS = "add_ptz_buttons_all_channels"
 CONF_CHANNEL_COUNT = "channel_count"
 CONF_SYSTEM_CAPABILITIES = "system_capabilities"
+# Motion debounce: a raw alarm must last min_ms to count, and the sensor stays
+# on for stick_ms after the last raw stop. Some cameras send many ~100 ms blips.
+CONF_MOTION_MIN_MS = "motion_min_ms"
+CONF_MOTION_STICK_MS = "motion_stick_ms"
+DEFAULT_MOTION_MIN_MS = 150
+DEFAULT_MOTION_STICK_MS = 0
 # Legacy option (<= 4.x): gated the old experimental entities. Ignored now.
 CONF_EXPERIMENTAL_ENTITIES = "experimental_entities"
 

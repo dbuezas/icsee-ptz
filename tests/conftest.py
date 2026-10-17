@@ -182,7 +182,8 @@ def config_entry() -> MockConfigEntry:
         unique_id=SERIAL,
         version=4,
         data=dict(ENTRY_DATA),
-        options={"channel": 0, "step": 2, "preset": 0},
+        # no motion debounce, so pushed alarms show at once (tested on its own)
+        options={"channel": 0, "step": 2, "preset": 0, "motion_min_ms": 0},
     )
 
 

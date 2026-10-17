@@ -40,8 +40,12 @@ from .const import (
     CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS,
     CONF_CHANNEL,
     CONF_CHANNEL_COUNT,
+    CONF_MOTION_MIN_MS,
+    CONF_MOTION_STICK_MS,
     CONF_PRESET,
     CONF_STEP,
+    DEFAULT_MOTION_MIN_MS,
+    DEFAULT_MOTION_STICK_MS,
     DEFAULT_PORT,
     DEFAULT_USERNAME,
     DOMAIN,
@@ -321,7 +325,7 @@ class ICSeePTZConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class OptionsFlowHandler(OptionsFlow):
-    """PTZ defaults."""
+    """PTZ defaults and motion debounce."""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -346,6 +350,16 @@ class OptionsFlowHandler(OptionsFlow):
                         CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS,
                         default=options.get(CONF_ADD_PTZ_BUTTONS_ALL_CHANNELS, False),
                     ): cv.boolean,
+                    vol.Optional(
+                        CONF_MOTION_MIN_MS,
+                        default=options.get(CONF_MOTION_MIN_MS, DEFAULT_MOTION_MIN_MS),
+                    ): cv.positive_int,
+                    vol.Optional(
+                        CONF_MOTION_STICK_MS,
+                        default=options.get(
+                            CONF_MOTION_STICK_MS, DEFAULT_MOTION_STICK_MS
+                        ),
+                    ): cv.positive_int,
                 }
             ),
         )

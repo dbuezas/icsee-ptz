@@ -14,11 +14,22 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 from homeassistant.const import EntityCategory
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.event import async_call_later
 
-from .const import CONF_CHANNEL, CONF_CHANNEL_COUNT, CONF_PRESET, CONF_STEP, DOMAIN
+from .const import (
+    CONF_CHANNEL,
+    CONF_CHANNEL_COUNT,
+    CONF_MOTION_MIN_MS,
+    CONF_MOTION_STICK_MS,
+    CONF_PRESET,
+    CONF_STEP,
+    DEFAULT_MOTION_MIN_MS,
+    DEFAULT_MOTION_STICK_MS,
+    DOMAIN,
+)
 from .coordinator import ICSeeConfigEntry, ICSeeCoordinator
 from .device import CannotConnect, CommandFailed
 from .entity import (
@@ -129,6 +140,12 @@ class MotionAlarm(ICSeeEntity, BinarySensorEntity):
         # Only trust a polled "off" once the camera has shown a polled "on".
         self._poll_reports_motion = False
         self._attr_is_on = self._polled()
+        options = coordinator.config_entry.options
+        self._min_s = options.get(CONF_MOTION_MIN_MS, DEFAULT_MOTION_MIN_MS) / 1000
+        self._stick_s = (
+            options.get(CONF_MOTION_STICK_MS, DEFAULT_MOTION_STICK_MS) / 1000
+        )
+        self._pending: CALLBACK_TYPE | None = None  # delayed on or off
 
     def _polled(self) -> bool | None:
         """Current alarm state from WorkState (one bit per channel)."""
@@ -157,6 +174,7 @@ class MotionAlarm(ICSeeEntity, BinarySensorEntity):
             and not recent_push
             and trusted
         ):
+            self._cancel_pending()
             self._attr_is_on = polled
         super()._handle_coordinator_update()
 
@@ -168,15 +186,43 @@ class MotionAlarm(ICSeeEntity, BinarySensorEntity):
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
         self.async_on_remove(self.device.add_alarm_callback(self._on_alarm))
+        self.async_on_remove(self._cancel_pending)
 
     @callback
     def _on_alarm(self, what: dict[str, Any]) -> None:
         if what.get("Channel") != self.channel:
             return
         self._last_push = time.monotonic()
-        self._attr_is_on = what.get("Status") == "Start"
         self._attr_extra_state_attributes = what
+        raw = what.get("Status") == "Start"
+        if raw == bool(self._attr_is_on):
+            # a stop before min_ms, or a start during the stick time
+            self._cancel_pending()
+            return
+        if self._pending:
+            return  # repeated event, the timer already runs
+        delay = self._min_s if raw else self._stick_s
+        if delay <= 0:
+            self._set(raw)
+            return
+
+        @callback
+        def _fire(_now: Any) -> None:
+            self._pending = None
+            self._set(raw)
+
+        self._pending = async_call_later(self.hass, delay, _fire)
+
+    @callback
+    def _set(self, is_on: bool) -> None:
+        self._attr_is_on = is_on
         self.async_write_ha_state()
+
+    @callback
+    def _cancel_pending(self) -> None:
+        if self._pending:
+            self._pending()
+            self._pending = None
 
     # ---- entity actions (registered in __init__.async_setup) ---------------
 

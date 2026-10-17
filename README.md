@@ -181,7 +181,7 @@ Entities only appear if the camera supports them.
 | Entity | Type | What it does |
 | --- | --- | --- |
 | **Alarm and video** | | |
-| Motion alarm | binary_sensor | On while the camera reports an alarm. Motion or human detection must be enabled on the camera, e.g. with the detection switches below. Also the target of the `icsee_ptz.move` action. |
+| Motion alarm | binary_sensor | On while the camera reports an alarm. Motion or human detection must be enabled on the camera, e.g. with the detection switches below. Also the target of the `icsee_ptz.move` action. Alarms shorter than the *minimum motion time* option (default 150 ms) are ignored, and the *motion stick time* option (default 0) keeps it on after the alarm stops. |
 | Main stream / Sub stream | camera | Live video in high / low quality. Played by Home Assistant's go2rtc; snapshots come from the stream. Needs the RTSP server switch on. |
 | **PTZ** | | |
 | PTZ up / down / left / right / stop | button | Move the camera. Speed = the Step option. |

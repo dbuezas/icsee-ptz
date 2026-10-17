@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
@@ -12,6 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import entity_registry as er
 from homeassistant.util import dt as dt_util
+from pytest_homeassistant_custom_component.common import async_fire_time_changed_exact
 
 from custom_components.icsee_ptz.switch import dst_period
 
@@ -200,6 +201,46 @@ async def test_motion_alarm_push(
     mock_device.fire_alarm({"Channel": 0, "Status": "Stop", "Event": "HumanDetect"})
     await hass.async_block_till_done()
     assert hass.states.get("binary_sensor.garten_motion_alarm").state == "off"
+
+
+async def test_motion_alarm_debounce(
+    hass: HomeAssistant, mock_device, config_entry, freezer
+) -> None:
+    config_entry.add_to_hass(hass)
+    hass.config_entries.async_update_entry(
+        config_entry, options={"motion_min_ms": 150, "motion_stick_ms": 2000}
+    )
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    entity_id = "binary_sensor.garten_motion_alarm"
+    start = {"Channel": 0, "Status": "Start"}
+    stop = {"Channel": 0, "Status": "Stop"}
+
+    async def after(seconds: float) -> str:
+        """State once `seconds` more have passed."""
+        freezer.tick(timedelta(seconds=seconds))
+        async_fire_time_changed_exact(hass)
+        await hass.async_block_till_done()
+        return hass.states.get(entity_id).state
+
+    # a 100 ms blip is ignored
+    mock_device.fire_alarm(start)
+    assert await after(0.1) == "off"
+    mock_device.fire_alarm(stop)
+    assert await after(1) == "off"
+    # a longer alarm turns on after min_ms
+    mock_device.fire_alarm(start)
+    assert await after(0.1) == "off"
+    assert await after(0.1) == "on"
+    # it sticks after the stop, and a new start in that time keeps it on
+    mock_device.fire_alarm(stop)
+    assert await after(1) == "on"
+    mock_device.fire_alarm(start)
+    mock_device.fire_alarm(stop)
+    assert await after(1) == "on"
+    mock_device.fire_alarm(stop)  # a repeated stop keeps the running timer
+    assert await after(0.9) == "on"
+    assert await after(0.2) == "off"
 
 
 async def test_move_action(hass: HomeAssistant, setup_integration, mock_device) -> None:
