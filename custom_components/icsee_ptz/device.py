@@ -267,6 +267,20 @@ class ICSeeDevice:
         if cmd == "Stop":
             # The camera stops when it gets a move command with preset -1
             await self._call_ptz("ptz", "DirectionUp", 5, -1, channel)
+        elif cmd.startswith("Direction") or cmd in {
+            "ZoomTile",
+            "ZoomWide",
+            "FocusNear",
+            "FocusFar",
+            "IrisSmall",
+            "IrisLarge",
+        }:
+            # FunSDK starts a PTZ move with preset 65535, regardless of any
+            # preset the user has configured for "goto preset" buttons. Some
+            # firmware accepts the configured preset (e.g. 0) with Ret=100 but
+            # never actually moves, since 0 is a real preset slot there, not a
+            # "just start moving" sentinel.
+            await self._call_ptz("ptz", cmd, step, 65535, channel)
         else:
             await self._call_ptz("ptz", cmd, step, preset, channel)
 
