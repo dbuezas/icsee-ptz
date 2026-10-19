@@ -17,6 +17,27 @@ from .asyncio_dvrip import (
 _LOGGER = logging.getLogger(__name__)
 
 RECONNECT_INTERVAL = 20  # seconds; the camera keepalive is unreliable, so we re-login
+# PTZ commands that start a continuous move (the app sends them with preset 65535)
+MOVE_CMDS = frozenset(
+    {
+        "DirectionUp",
+        "DirectionDown",
+        "DirectionLeft",
+        "DirectionRight",
+        "DirectionLeftUp",
+        "DirectionLeftDown",
+        "DirectionRightUp",
+        "DirectionRightDown",
+        "ZoomTile",
+        "ZoomWide",
+        "FocusNear",
+        "FocusFar",
+        "IrisSmall",
+        "IrisLarge",
+    }
+)
+PRESET_MOVE = 65535
+PRESET_STOP = -1
 
 __all__ = [
     "AuthFailed",
@@ -266,21 +287,14 @@ class ICSeeDevice:
     async def async_ptz(self, cmd: str, step: int, preset: int, channel: int) -> None:
         if cmd == "Stop":
             # The camera stops when it gets a move command with preset -1
-            await self._call_ptz("ptz", "DirectionUp", 5, -1, channel)
-        elif cmd.startswith("Direction") or cmd in {
-            "ZoomTile",
-            "ZoomWide",
-            "FocusNear",
-            "FocusFar",
-            "IrisSmall",
-            "IrisLarge",
-        }:
+            await self._call_ptz("ptz", "DirectionUp", 5, PRESET_STOP, channel)
+        elif cmd in MOVE_CMDS:
             # FunSDK starts a PTZ move with preset 65535, regardless of any
             # preset the user has configured for "goto preset" buttons. Some
             # firmware accepts the configured preset (e.g. 0) with Ret=100 but
             # never actually moves, since 0 is a real preset slot there, not a
             # "just start moving" sentinel.
-            await self._call_ptz("ptz", cmd, step, 65535, channel)
+            await self._call_ptz("ptz", cmd, step, PRESET_MOVE, channel)
         else:
             await self._call_ptz("ptz", cmd, step, preset, channel)
 
