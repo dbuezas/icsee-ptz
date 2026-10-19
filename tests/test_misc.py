@@ -354,6 +354,27 @@ async def test_detect_channels_falls_back_to_systeminfo() -> None:
     assert await dev._detect_channels(_FakeCam(motion=[]), {}) == 1
 
 
+async def test_ptz_presets_like_the_app() -> None:
+    """Moves start with preset 65535 and stop with -1, as in the app's FunSDK."""
+    dev = ICSeeDevice("h", 34567, "u", "p")
+    sent = []
+
+    async def call_ptz(*args):
+        sent.append(args)
+
+    dev._call_ptz = call_ptz
+    await dev.async_ptz("DirectionLeft", 2, 0, 3)
+    await dev.async_ptz("ZoomTile", 2, 0, 3)
+    await dev.async_ptz("Stop", 2, 0, 3)
+    await dev.async_ptz("GotoPreset", 2, 7, 3)
+    assert sent == [
+        ("ptz", "DirectionLeft", 2, 65535, 3),
+        ("ptz", "ZoomTile", 2, 65535, 3),
+        ("ptz", "DirectionUp", 5, -1, 3),
+        ("ptz", "GotoPreset", 2, 7, 3),  # real presets keep the given number
+    ]
+
+
 def test_channel_subdevice_has_no_via_device() -> None:
     """Channel sub-devices must not use via_device (it breaks camera add on newer HA, #70)."""
     from types import SimpleNamespace
