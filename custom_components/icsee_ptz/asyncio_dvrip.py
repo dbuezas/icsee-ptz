@@ -36,6 +36,19 @@ def _aes_decrypt_body(b64: bytes) -> bytes:
     return dec.update(raw) + dec.finalize()
 
 
+# Debug logs get pasted into issues, so hide secrets: the login hash (PassWord),
+# the user list hashes (Password, PasswordV2) and the password reset answers.
+_SECRET_RE = compile(
+    rb'("(?:[^"]*[Pp]ass[Ww]ord[^"]*|QuestionAnswer|SecurityEmail|SecurityPhone)"'
+    rb'\s*:\s*)("(?:[^"\\]|\\.)*"|\[[^\]]*\])'
+)
+
+
+def _redact(data) -> bytes:
+    """Return the JSON bytes with secret values replaced by "***"."""
+    return _SECRET_RE.sub(rb'\1"***"', bytes(data))
+
+
 class SomethingIsWrongWithCamera(Exception):
     pass
 
@@ -221,7 +234,7 @@ class DVRIPCam(object):
             return {}
 
         self.packet_count += 1
-        self.logger.debug("<= %s", data)
+        self.logger.debug("<= %s", _redact(data))
         reply = json.loads(data[:-2])
         return reply
 
@@ -256,7 +269,8 @@ class DVRIPCam(object):
             )
             + body
         )
-        self.logger.debug("=> %s", pkt)
+        # Log the plain JSON, not the packet: it can be encrypted, and is redacted
+        self.logger.debug("=> %d %s", msg, _redact(data))
         self.socket_send(pkt)
         if wait_response:
             head = await self.receive_with_timeout(20)
@@ -287,7 +301,7 @@ class DVRIPCam(object):
         if not text:
             return {}
         self.packet_count += 1
-        self.logger.debug("<= %s", text)
+        self.logger.debug("<= %s", _redact(text))
         try:
             return json.loads(text)
         except (ValueError, UnicodeDecodeError):

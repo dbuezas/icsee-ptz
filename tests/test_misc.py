@@ -394,3 +394,27 @@ def test_channel_subdevice_has_no_via_device() -> None:
     # channel 0 stays the main device
     main = ICSeeEntity(coordinator, "camera_main_0", channel=0)
     assert (DOMAIN, "abc") in main._attr_device_info["identifiers"]
+
+
+async def test_debug_log_hides_passwords(caplog) -> None:
+    """Login hashes and the user list hashes never reach the debug log."""
+    cam = DVRIPCam("1.2.3.4", user="admin", password="secret")
+    sent = []
+    cam.socket_writer = object()
+    cam.socket_send = sent.append
+    caplog.set_level("DEBUG", logger="custom_components.icsee_ptz.asyncio_dvrip")
+    await cam.send(1000, {"PassWord": cam.hash_pass, "UserName": "admin"}, False)
+    cam._parse_body(
+        json.dumps(
+            {
+                "Users": [{"Name": "admin", "Password": "abc", "PasswordV2": 'x"y'}],
+                "QuestionAnswer": ["a", "b"],
+            }
+        ).encode()
+    )
+    assert cam.hash_pass in sent[0].decode(errors="ignore")  # still sent
+    log = caplog.text
+    for secret in (cam.hash_pass, '"abc"', 'x\\"y', '"a"'):
+        assert secret not in log
+    assert '"PassWord": "***"' in log and '"PasswordV2": "***"' in log
+    assert '"Name": "admin"' in log
