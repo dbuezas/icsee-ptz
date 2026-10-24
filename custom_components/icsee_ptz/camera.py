@@ -99,11 +99,11 @@ class ICSeeCamera(ICSeeEntity, Camera):
 
     async def stream_source(self) -> str | None:
         device = self.device
-        user = quote(device.username, safe="")
-        password = quote(device.password, safe="")
         rtsp = _rtsp(self.coordinator)
         if rtsp is None:
             # Camera without an RTSP config: only an external go2rtc can play this
+            user = quote(device.username, safe="")
+            password = quote(device.password, safe="")
             return (
                 f"dvrip://{user}:{password}@{device.host}:{device.port}"
                 f"?channel={self.channel}&subtype={self._subtype}"
@@ -111,9 +111,11 @@ class ICSeeCamera(ICSeeEntity, Camera):
         if not rtsp.get("IsServer"):
             return None
         port = (rtsp.get("Server") or {}).get("Port") or 554
-        # XM RTSP path; channels start at 1 here
+        # XM RTSP path; channels start at 1 here. The camera does not decode
+        # %XX here, so the login goes in as is (#73)
         return (
-            f"rtsp://{device.host}:{port}/user={user}&password={password}"
+            f"rtsp://{device.host}:{port}/user={device.username}"
+            f"&password={device.password}"
             f"&channel={self.channel + 1}&stream={self._subtype}.sdp?real_stream"
         )
 

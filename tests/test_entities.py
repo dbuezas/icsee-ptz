@@ -279,6 +279,11 @@ async def test_camera_needs_rtsp(
     assert await async_get_stream_source(hass, "camera.garten_sub_stream") == (
         "rtsp://192.0.2.10:554/user=admin&password=secret&channel=1&stream=1.sdp?real_stream"
     )
+    # The camera does not decode %XX in the path, so the password goes in as is
+    setup_integration.runtime_data.device.password = "pa$s@1"
+    assert await async_get_stream_source(hass, "camera.garten_sub_stream") == (
+        "rtsp://192.0.2.10:554/user=admin&password=pa$s@1&channel=1&stream=1.sdp?real_stream"
+    )
 
 
 async def test_speaker_volume(
