@@ -1,0 +1,791 @@
+{
+  "config": {
+    "flow_title": "{name} ({host})",
+    "step": {
+      "user": {
+        "title": "Wybierz kamerę",
+        "description": "Te kamery zostały znalezione w Twojej sieci. Wybierz jedną lub wprowadź kamerę ręcznie.",
+        "data": {
+          "device": "Kamera"
+        }
+      },
+      "credentials": {
+        "title": "Szczegóły kamery",
+        "data": {
+          "name": "Nazwa",
+          "host": "Host lub adres IP",
+          "port": "Port",
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        },
+        "data_description": {
+          "name": "Nazwa kamery w Home Assistant.",
+          "host": "Adres IP lub nazwa hosta kamery.",
+          "port": "Port DVRIP. Zazwyczaj 34567. Zmieniaj tylko wtedy, gdy kamera używa innego (np. za przekierowaniem portów).",
+          "username": "Zazwyczaj admin.",
+          "password": "Hasło kamery (ustawione w aplikacji ICSee / XMEye). Zostaw puste, jeśli kamera go nie posiada."
+        }
+      },
+      "discovery_confirm": {
+        "title": "Dodaj {name}",
+        "description": "Znaleziono kamerę pod adresem {host}. Wprowadź jej dane logowania, aby ją dodać.",
+        "data": {
+          "name": "Nazwa",
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        },
+        "data_description": {
+          "name": "Nazwa kamery w Home Assistant.",
+          "username": "Zazwyczaj admin.",
+          "password": "Hasło kamery (ustawione w aplikacji ICSee / XMEye). Zostaw puste, jeśli kamera go nie posiada."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Zaloguj się ponownie",
+        "description": "{name} odrzuciła logowanie. Wprowadź aktualną nazwę użytkownika i hasło.",
+        "data": {
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        }
+      },
+      "reconfigure": {
+        "title": "Zmień połączenie",
+        "data": {
+          "host": "Host lub adres IP",
+          "port": "Port",
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        },
+        "data_description": {
+          "host": "Adres IP lub nazwa hosta kamery.",
+          "port": "Port DVRIP. Zazwyczaj 34567. Zmieniaj tylko wtedy, gdy kamera używa innego (np. za przekierowaniem portów).",
+          "username": "Zazwyczaj admin.",
+          "password": "Hasło kamery (ustawione w aplikacji ICSee / XMEye). Zostaw puste, jeśli kamera go nie posiada."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nie udało się połączyć",
+      "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło"
+    },
+    "abort": {
+      "already_configured": "Urządzenie jest już skonfigurowane",
+      "reauth_successful": "Ponowne uwierzytelnienie powiodło się",
+      "reconfigure_successful": "Ponowna konfiguracja powiodła się",
+      "wrong_device": "To jest inna kamera. Dodaj ją jako nowe urządzenie."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opcje",
+        "description": "Domyślne parametry PTZ. Krok (Step) oznacza prędkość. Preset jest używany tylko przez SetPreset/GotoPreset/ClearPreset. Kanał (Channel) to zazwyczaj 0. Domyślnie przyciski PTZ są tworzone tylko dla tego kanału. Ruch: alarm musi trwać minimalny czas, aby włączyć czujnik ruchu, a czujnik pozostaje włączony przez określony czas podtrzymania po ustaniu alarmu. Filtruje to bardzo krótkie fałszywe alarmy.",
+        "data": {
+          "channel": "Kanał",
+          "step": "Krok (prędkość)",
+          "preset": "Preset",
+          "add_ptz_buttons_all_channels": "Dodaj przyciski PTZ dla wszystkich kanałów",
+          "motion_min_ms": "Minimalny czas trwania ruchu (ms)",
+          "motion_stick_ms": "Czas podtrzymania wykrywania ruchu (ms)"
+        }
+      }
+    }
+  },
+  "selector": {
+    "device": {
+      "options": {
+        "manual": "Wprowadź ręcznie"
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "motion_alarm": {
+        "name": "Alarm ruchu"
+      },
+      "password_reset_questions": {
+        "name": "Resetowanie hasła przez pytania bezpieczeństwa"
+      },
+      "password_reset_contact": {
+        "name": "Ustawiono e-mail lub telefon do resetowania hasła"
+      },
+      "telnet_open": {
+        "name": "Dostęp debugowania Telnet"
+      },
+      "app_bound": {
+        "name": "Powiązano z kontem w aplikacji"
+      },
+      "upnp_ports_open": {
+        "name": "Otwarte porty UPnP routera"
+      }
+    },
+    "sensor": {
+      "users": {
+        "name": "Użytkownicy"
+      },
+      "logged_in_as": {
+        "name": "Zalogowano jako"
+      },
+      "wifi_signal": {
+        "name": "Sygnał Wi-Fi"
+      },
+      "cloud_status": {
+        "name": "Status chmury",
+        "state": {
+          "connected": "Połączono",
+          "not_connected": "Nie połączono",
+          "disabled": "Wyłączono"
+        }
+      },
+      "abnormal_restarts": {
+        "name": "Restart (awaria)"
+      },
+      "network_loss_restarts": {
+        "name": "Restart (utrata sieci)"
+      },
+      "video_standard": {
+        "name": "Standard wideo"
+      },
+      "exposure_time": {
+        "name": "Czas ekspozycji"
+      },
+      "storage_total": {
+        "name": "Pojemność karty SD"
+      },
+      "storage_free": {
+        "name": "Wolne miejsce na karcie SD"
+      }
+    },
+    "text": {
+      "video_name": {
+        "name": "Tekst nazwy wideo"
+      }
+    },
+    "button": {
+      "ptz_stop": {
+        "name": "Zatrzymaj PTZ"
+      },
+      "ptz_up": {
+        "name": "PTZ w górę"
+      },
+      "ptz_down": {
+        "name": "PTZ w dół"
+      },
+      "ptz_left": {
+        "name": "PTZ w lewo"
+      },
+      "ptz_right": {
+        "name": "PTZ w prawo"
+      },
+      "ptz_left_up": {
+        "name": "PTZ w lewo w górę"
+      },
+      "ptz_left_down": {
+        "name": "PTZ w lewo w dół"
+      },
+      "ptz_right_up": {
+        "name": "PTZ w prawo w górę"
+      },
+      "ptz_right_down": {
+        "name": "PTZ w prawo w dół"
+      },
+      "ptz_zoom_in": {
+        "name": "PTZ przybliż (zoom in)"
+      },
+      "ptz_zoom_out": {
+        "name": "PTZ oddal (zoom out)"
+      },
+      "home_go_to": {
+        "name": "PTZ idź do pozycji domowej"
+      },
+      "home_set": {
+        "name": "PTZ ustaw bieżącą pozycję jako domową"
+      },
+      "home_clear": {
+        "name": "PTZ wyczyść pozycję domową"
+      },
+      "sync_clock": {
+        "name": "Synchronizuj zegar"
+      },
+      "refresh_settings": {
+        "name": "Odśwież ustawienia"
+      }
+    },
+    "camera": {
+      "main_stream": {
+        "name": "Główny strumień"
+      },
+      "sub_stream": {
+        "name": "Pomocniczy strumień"
+      }
+    },
+    "media_player": {
+      "speaker": {
+        "name": "Głośnik"
+      }
+    },
+    "siren": {
+      "siren": {
+        "name": "Syrena"
+      }
+    },
+    "switch": {
+      "motion_detection": {
+        "name": "Wykrywanie ruchu"
+      },
+      "human_detection": {
+        "name": "Wykrywanie sylwetki ludzkiej"
+      },
+      "tamper_detection": {
+        "name": "Wykrywanie sabotażu"
+      },
+      "video_loss_detection": {
+        "name": "Wykrywanie utraty sygnału wideo"
+      },
+      "vehicle_detection": {
+        "name": "Wykrywanie pojazdów"
+      },
+      "motion_tracking": {
+        "name": "Śledzenie ruchu"
+      },
+      "white_light": {
+        "name": "Białe światło"
+      },
+      "white_light_one_key": {
+        "name": "Białe światło (ręczne)"
+      },
+      "night_vision": {
+        "name": "Tryb nocny"
+      },
+      "night_enhance": {
+        "name": "Wzmocnienie trybu nocnego"
+      },
+      "low_light_fill": {
+        "name": "Doświetlenie w słabym świetle"
+      },
+      "starlight": {
+        "name": "Tryb Starlight"
+      },
+      "wdr": {
+        "name": "Szeroki zakres dynamiki (WDR)"
+      },
+      "prevent_overexposure": {
+        "name": "Zapobieganie prześwietleniu"
+      },
+      "picture_flip": {
+        "name": "Odwrócenie obrazu"
+      },
+      "picture_mirror": {
+        "name": "Odbicie lustrzane obrazu"
+      },
+      "ircut_reverse": {
+        "name": "Odwrócony filtr podczerwieni (IR)"
+      },
+      "anti_fog": {
+        "name": "Redukcja zamglenia (Anti-fog)"
+      },
+      "privacy_mode": {
+        "name": "Tryb prywatności"
+      },
+      "sleep_schedule": {
+        "name": "Harmonogram uśpienia"
+      },
+      "status_led": {
+        "name": "Dioda LED stanu"
+      },
+      "voice_prompts": {
+        "name": "Komunikaty głosowe"
+      },
+      "rtsp_server": {
+        "name": "Serwer RTSP"
+      },
+      "anti_flicker": {
+        "name": "Redukcja migotania obrazu"
+      },
+      "stabilization": {
+        "name": "Stabilizacja obrazu"
+      },
+      "daylight_saving": {
+        "name": "Czas letni zegara"
+      },
+      "lens_correction": {
+        "name": "Korekcja zniekształceń obiektywu"
+      },
+      "auto_gain": {
+        "name": "Automatyczne wzmocnienie (Gain)"
+      },
+      "motion_push": {
+        "name": "Powiadomienia push o ruchu"
+      },
+      "motion_record": {
+        "name": "Nagrywanie po wykryciu ruchu"
+      },
+      "motion_snapshot": {
+        "name": "Zrzut ekranu po wykryciu ruchu"
+      },
+      "motion_beep": {
+        "name": "Sygnał dźwiękowy po wykryciu ruchu"
+      },
+      "motion_warning_light": {
+        "name": "Światło ostrzegawcze po wykryciu ruchu"
+      },
+      "onvif_password": {
+        "name": "Wymagane hasło ONVIF"
+      },
+      "cloud_block_all": {
+        "name": "Blokuj wszystkie serwery chmury"
+      },
+      "cloud_block_nat": {
+        "name": "Blokuj serwer P2P w chmurze"
+      },
+      "cloud_block_rps": {
+        "name": "Blokuj serwer przekaźnikowy (relay) w chmurze"
+      },
+      "cloud_block_dss": {
+        "name": "Blokuj serwer strumieniowania w chmurze"
+      },
+      "cloud_das": {
+        "name": "Serwer dostępu do chmury (DAS)"
+      },
+      "upnp": {
+        "name": "Przekierowanie portów UPnP"
+      },
+      "firmware_online_updates": {
+        "name": "Aktualizacje oprogramowania układowego online"
+      },
+      "firmware_auto_install": {
+        "name": "Automatyczna instalacja aktualizacji oprogramowania układowego"
+      },
+      "ntp": {
+        "name": "Czas sieciowy zegara (NTP)"
+      },
+      "reboot_on_network_loss": {
+        "name": "Uruchom ponownie po utracie połączenia z siecią"
+      },
+      "resume_ptz_position": {
+        "name": "Powrót do ostatniej pozycji po ponownym uruchomieniu"
+      },
+      "time_on_video": {
+        "name": "Wyświetlaj czas na wideo"
+      },
+      "name_on_video": {
+        "name": "Wyświetlaj nazwę na wideo"
+      },
+      "logo_on_video": {
+        "name": "Wyświetlaj logo na wideo"
+      },
+      "human_detection_box": {
+        "name": "Ramka wykrywania sylwetki ludzkiej"
+      },
+      "cloud_access": {
+        "name": "Dostęp do chmury (P2P)"
+      },
+      "cloud_push": {
+        "name": "Powiadomienia push w chmurze"
+      },
+      "password_reset_by_code": {
+        "name": "Resetowanie hasła za pomocą kodu"
+      },
+      "sub_stream": {
+        "name": "Pomocniczy strumień"
+      },
+      "main_stream_audio": {
+        "name": "Dźwięk głównego strumienia"
+      },
+      "sub_stream_audio": {
+        "name": "Dźwięk pomocniczego strumienia"
+      }
+    },
+    "select": {
+      "day_night_mode": {
+        "name": "Tryb dzień/noc",
+        "state": {
+          "auto": "Automatyczny (podczerwień w nocy)",
+          "starlight_infrared": "Starlight podczerwień",
+          "color": "Zawsze w kolorze (podczerwień wyłączona)",
+          "black_white": "Zawsze czarno-biały (podczerwień włączona)",
+          "smart_alarm_light": "Białe światło po wykryciu ruchu",
+          "auto_white_light": "Automatyczny, pełny kolor z białym światłem",
+          "auto_infrared": "Automatyczny, światło podczerwone",
+          "license_plate": "Tablica rejestracyjna"
+        }
+      },
+      "white_light_mode": {
+        "name": "Tryb białego światła",
+        "state": {
+          "close": "Wyłączone",
+          "keep_open": "Zawsze włączone",
+          "auto": "Automatyczny (w nocy)",
+          "timing": "Harmonogram",
+          "intelligent": "Po wykryciu ruchu",
+          "atmosphere": "Otoczenie",
+          "glint": "Muzyka"
+        }
+      },
+      "white_light_sensitivity": {
+        "name": "Czułość białego światła na ruch",
+        "state": {
+          "low": "Niska",
+          "medium": "Średnia",
+          "high": "Wysoka"
+        }
+      },
+      "day_night_switch": {
+        "name": "Przełącznik dzień/noc",
+        "state": {
+          "auto": "Automatyczny",
+          "day": "Dzień",
+          "night": "Noc",
+          "scheduled": "Harmonogram"
+        }
+      },
+      "image_style": {
+        "name": "Styl obrazu",
+        "state": {
+          "style_1": "Styl 1",
+          "style_2": "Styl 2",
+          "style_3": "Styl 3"
+        }
+      },
+      "tracking_sensitivity": {
+        "name": "Czułość śledzenia ruchu",
+        "state": {
+          "low": "Niska",
+          "medium": "Średnia",
+          "high": "Wysoka"
+        }
+      },
+      "human_detection_sensitivity": {
+        "name": "Czułość wykrywania sylwetki ludzkiej",
+        "state": {
+          "low": "Niska",
+          "medium": "Średnia",
+          "high": "Wysoka"
+        }
+      },
+      "detection_objects": {
+        "name": "Obiekty wykrywania sylwetki ludzkiej",
+        "state": {
+          "people": "Ludzie",
+          "vehicles": "Pojazdy",
+          "people_and_vehicles": "Ludzie i pojazdy"
+        }
+      },
+      "recording_mode": {
+        "name": "Nagrywanie na karcie SD",
+        "state": {
+          "schedule": "Według harmonogramu",
+          "always": "Zawsze",
+          "off": "Wyłączone"
+        }
+      },
+      "time_position": {
+        "name": "Pozycja czasu na wideo",
+        "state": {
+          "top_left": "Lewy górny róg",
+          "top_right": "Prawy górny róg",
+          "bottom_left": "Lewy dolny róg",
+          "bottom_right": "Prawy dolny róg"
+        }
+      },
+      "name_position": {
+        "name": "Pozycja nazwy na wideo",
+        "state": {
+          "top_left": "Lewy górny róg",
+          "top_right": "Prawy górny róg",
+          "bottom_left": "Lewy dolny róg",
+          "bottom_right": "Prawy dolny róg"
+        }
+      },
+      "auto_restart_day": {
+        "name": "Automatyczne ponowne uruchomienie",
+        "state": {
+          "never": "Nigdy",
+          "everyday": "Codziennie",
+          "monday": "Poniedziałek",
+          "tuesday": "Wtorek",
+          "wednesday": "Środa",
+          "thursday": "Czwartek",
+          "friday": "Piątek",
+          "saturday": "Sobota",
+          "sunday": "Niedziela"
+        }
+      },
+      "ptz_preset": {
+        "name": "PTZ idź do presetu"
+      },
+      "metering": {
+        "name": "Pomiar ekspozycji",
+        "state": {
+          "average": "Uśredniony",
+          "center": "Centralny"
+        }
+      },
+      "ircut_switching": {
+        "name": "Przełączanie filtra IR",
+        "state": {
+          "with_ir_light": "Razem ze światłem podczerwieni",
+          "automatic": "Automatycznie"
+        }
+      },
+      "corridor_mode": {
+        "name": "Tryb korytarzowy obrazu",
+        "state": {
+          "rotate_0": "Normalny",
+          "rotate_90": "Korytarz (90°)",
+          "rotate_180": "Obrócony o 180°",
+          "rotate_270": "Korytarz (270°)"
+        }
+      },
+      "time_format": {
+        "name": "Format czasu zegara",
+        "state": {
+          "hours_24": "24-godzinny",
+          "hours_12": "12-godzinny"
+        }
+      },
+      "date_format": {
+        "name": "Format daty zegara",
+        "state": {
+          "ymd": "Rok-miesiąc-dzień",
+          "mdy": "Miesiąc-dzień-rok",
+          "dmy": "Dzień-miesiąc-rok"
+        }
+      },
+      "smart_encoding": {
+        "name": "Inteligentne kodowanie głównego strumienia",
+        "state": {
+          "h264": "H.264",
+          "h264_plus": "H.264+",
+          "h265x": "H.265X"
+        }
+      },
+      "main_stream_resolution": {
+        "name": "Rozdzielczość głównego strumienia"
+      },
+      "main_stream_quality": {
+        "name": "Jakość głównego strumienia",
+        "state": {
+          "bad": "Bardzo słaba",
+          "poor": "Słaba",
+          "general": "Normalna",
+          "good": "Dobra",
+          "better": "Lepsza",
+          "best": "Najlepsza"
+        }
+      },
+      "main_stream_codec": {
+        "name": "Kodek głównego strumienia"
+      },
+      "main_stream_bitrate_control": {
+        "name": "Kontrola przepływności (bitrate) głównego strumienia",
+        "state": {
+          "cbr": "Stała (CBR)",
+          "vbr": "Zmienna (VBR)"
+        }
+      },
+      "sub_stream_resolution": {
+        "name": "Rozdzielczość pomocniczego strumienia"
+      },
+      "sub_stream_quality": {
+        "name": "Jakość pomocniczego strumienia",
+        "state": {
+          "bad": "Bardzo słaba",
+          "poor": "Słaba",
+          "general": "Normalna",
+          "good": "Dobra",
+          "better": "Lepsza",
+          "best": "Najlepsza"
+        }
+      },
+      "sub_stream_codec": {
+        "name": "Kodek pomocniczego strumienia"
+      },
+      "sub_stream_bitrate_control": {
+        "name": "Kontrola przepływności (bitrate) pomocniczego strumienia",
+        "state": {
+          "cbr": "Stała (CBR)",
+          "vbr": "Zmienna (VBR)"
+        }
+      }
+    },
+    "number": {
+      "main_stream_fps": {
+        "name": "Liczba klatek na sekundę głównego strumienia (FPS)"
+      },
+      "main_stream_bitrate": {
+        "name": "Przepływność (bitrate) głównego strumienia"
+      },
+      "main_stream_gop": {
+        "name": "Interwał klatek kluczowych głównego strumienia (GOP)"
+      },
+      "sub_stream_fps": {
+        "name": "Liczba klatek na sekundę pomocniczego strumienia (FPS)"
+      },
+      "sub_stream_bitrate": {
+        "name": "Przepływność (bitrate) pomocniczego strumienia"
+      },
+      "sub_stream_gop": {
+        "name": "Interwał klatek kluczowych pomocniczego strumienia (GOP)"
+      },
+      "speaker_volume": {
+        "name": "Głośność głośnika"
+      },
+      "microphone_volume": {
+        "name": "Czułość mikrofonu"
+      },
+      "white_light_brightness": {
+        "name": "Jasność białego światła"
+      },
+      "white_light_duration": {
+        "name": "Czas świecenia białego światła po wykryciu ruchu"
+      },
+      "image_brightness": {
+        "name": "Jasność obrazu"
+      },
+      "image_contrast": {
+        "name": "Kontrast obrazu"
+      },
+      "image_saturation": {
+        "name": "Nasycenie obrazu"
+      },
+      "image_hue": {
+        "name": "Odcień obrazu"
+      },
+      "anti_fog_level": {
+        "name": "Poziom redukcji zamglenia (Anti-fog)"
+      },
+      "motion_sensitivity": {
+        "name": "Czułość wykrywania ruchu"
+      },
+      "day_night_sensitivity": {
+        "name": "Czułość przełącznika dzień/noc"
+      },
+      "soft_light_threshold": {
+        "name": "Próg czujnika światła"
+      },
+      "tracking_return_time": {
+        "name": "Czas powrotu po śledzeniu ruchu"
+      },
+      "auto_restart_hour": {
+        "name": "Godzina automatycznego ponownego uruchomienia"
+      },
+      "motion_record_duration": {
+        "name": "Czas trwania nagrywania po wykryciu ruchu"
+      },
+      "motion_warning_light_duration": {
+        "name": "Czas świecenia światła ostrzegawczego po ruchu"
+      },
+      "motion_alarm_hold": {
+        "name": "Czas podtrzymania alarmu ruchu"
+      },
+      "pir_sensitivity": {
+        "name": "Czułość czujnika ruchu PIR"
+      },
+      "max_exposure_time": {
+        "name": "Czas ekspozycji (maksymalny)"
+      },
+      "tamper_sensitivity": {
+        "name": "Czułość wykrywania sabotażu"
+      },
+      "push_interval": {
+        "name": "Interwał powiadomień push w chmurze"
+      },
+      "pre_record": {
+        "name": "Wstępne nagrywanie na kartę SD (Pre-record)"
+      },
+      "recording_file_length": {
+        "name": "Długość pliku nagrania na karcie SD"
+      },
+      "noise_reduction_day": {
+        "name": "Redukcja szumów obrazu (dzień)"
+      },
+      "noise_reduction_night": {
+        "name": "Redukcja szumów obrazu (noc)"
+      },
+      "gain": {
+        "name": "Wzmocnienie (Gain)"
+      },
+      "exposure_sensitivity": {
+        "name": "Czułość ekspozycji"
+      },
+      "wdr_level": {
+        "name": "Poziom szerokiego zakresu dynamiki (WDR)"
+      }
+    }
+  },
+  "exceptions": {
+    "cannot_connect": {
+      "message": "Nie można połączyć się z kamerą."
+    },
+    "invalid_auth": {
+      "message": "Kamera odrzuciła nazwę użytkownika lub hasło."
+    },
+    "not_supported": {
+      "message": "Kamera nie obsługuje {config}."
+    },
+    "invalid_video_name": {
+      "message": "Nazwa musi zawierać od 1 do {max} znaków."
+    },
+    "no_daylight_saving": {
+      "message": "Strefa czasowa Home Assistant nie obsługuje czasu letniego."
+    },
+    "command_failed": {
+      "message": "Kamera odmówiła zmiany {config} (błąd {ret})."
+    },
+    "not_applied": {
+      "message": "Kamera zaakceptowała zmianę {config}, ale jej nie zastosowała."
+    },
+    "invalid_option": {
+      "message": "{option} nie jest prawidłową opcją dla tej kamery."
+    },
+    "over_encode_budget": {
+      "message": "Kamera nie może zakodować tego strumienia. Zmniejsz najpierw rozdzielczość lub liczbę klatek drugiego strumienia."
+    },
+    "audio_convert_failed": {
+      "message": "Nie udało się przekonwertować dźwięku dla głośnika kamery."
+    }
+  },
+  "issues": {
+    "rtsp_disabled": {
+      "title": "{name}: włącz serwer RTSP, aby wyświetlić wideo",
+      "description": "Home Assistant odtwarza wideo z kamery przez RTSP, ale serwer RTSP urządzenia {name} jest wyłączony. Włącz przełącznik **Serwer RTSP**, aby zobaczyć wideo."
+    },
+    "reboot_required": {
+      "title": "{name} wymaga ponownego uruchomienia",
+      "description": "Ustawienie zostało zapisane, ale kamera zastosuje je dopiero po ponownym uruchomieniu. Naciśnij przycisk ponownego uruchomienia kamery {name}."
+    }
+  },
+  "services": {
+    "move": {
+      "name": "Ruch",
+      "description": "Poruszaj kamerą ICSee/DVR-IP/NetSurveillance/Sofia.",
+      "fields": {
+        "cmd": {
+          "name": "Polecenie",
+          "description": "Polecenie PTZ."
+        },
+        "step": {
+          "name": "Krok",
+          "description": "Prędkość wykonywania operacji PTZ."
+        },
+        "preset": {
+          "name": "Preset",
+          "description": "Używane tylko przez SetPreset, GotoPreset i ClearPreset."
+        },
+        "channel": {
+          "name": "Kanał",
+          "description": "Kanał kamery. Domyślnie kanał z opcji."
+        }
+      }
+    },
+    "synchronize_clock": {
+      "name": "Synchronizuj zegar kamery",
+      "description": "Ustawia zegar kamery zgodnie z czasem Home Assistanta."
+    },
+    "force_frame": {
+      "name": "Wymuś klatkę",
+      "description": "Wymusza na kamerze wysłanie nowej klatki. Przydatne do przyspieszenia startu wideo."
+    }
+  }
+}
