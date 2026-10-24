@@ -134,3 +134,6 @@ dmypy.json
 /hass
 # macOS
 .DS_Store
+
+# Reverse engineering material (app, SDK, Ghidra), kept local
+/re/
