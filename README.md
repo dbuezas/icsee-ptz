@@ -161,6 +161,12 @@ Snapshots come from the stream too.
 The video comes from the camera's RTSP server (Home Assistant's built-in go2rtc has no DVRIP
 support). If it is off, a repair message tells you to turn on the camera's **RTSP server** switch.
 
+Some cameras have no RTSP server at all (no **RTSP server** switch). Their streams use DVRIP,
+which needs a full go2rtc: the go2rtc add-on, or [WebRTC Camera](https://github.com/AlexxIT/WebRTC)
+from HACS. Point Home Assistant to it with `go2rtc: url: http://<go2rtc host>:1984` in
+`configuration.yaml`. Some recent firmware only answers encrypted DVRIP, which go2rtc can't play
+yet ([#77](https://github.com/dbuezas/icsee-ptz/issues/77)).
+
 If you prefer your own go2rtc, these streams work there as well:
 
 ```yaml
